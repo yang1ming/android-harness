@@ -31,6 +31,23 @@ print(path)
 PY
 ```
 
+## Unicode Text Input
+
+Core `type_text()` uses `adb shell input text` and is only intended for simple
+ASCII. For Chinese, emoji, symbols, or vendor ROMs with broken shell input,
+install and enable ADBKeyboard on the device, then use the optional plugin:
+
+```bash
+android-harness <<'PY'
+type_unicode("你好 ☂️ 17°C 湿度 100%")
+clear_input()
+PY
+```
+
+The plugin lives at `plugins/adbkeyboard_plugin.py`. It sends text through
+`ADB_INPUT_B64`, switches to ADBKeyboard for the operation, and restores the
+previous input method by default.
+
 ## Architecture
 
 ```text
@@ -39,12 +56,15 @@ src/android_harness/
   helpers.py   # public agent-facing primitives
   adb.py       # ADB backend
   ui.py        # uiautomator XML parsing
-  plugins.py   # plugin registry and boundaries
+plugins.py   # plugin registry and boundaries
   admin.py     # diagnostics
 
 agent-workspace/
   agent_helpers.py
   app-skills/
+
+plugins/
+  adbkeyboard_plugin.py
 
 interaction-skills/
   permissions.md
