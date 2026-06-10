@@ -16,6 +16,11 @@ from .admin import doctor
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="android-harness")
     parser.add_argument("-s", "--serial", help="ADB device serial")
+    parser.add_argument(
+        "--no-workspace",
+        action="store_true",
+        help="do not load agent-workspace/agent_helpers.py",
+    )
     subparsers = parser.add_subparsers(dest="command")
     subparsers.add_parser("doctor", help="check adb and selected device")
     subparsers.add_parser("repl", help="open an interactive Python REPL with helpers")
@@ -31,24 +36,24 @@ def main(argv: list[str] | None = None) -> int:
         return 0 if report.get("device_ready") else 1
 
     if args.command == "repl":
-        code.interact(local=_execution_env())
+        code.interact(local=_execution_env(load_workspace=not args.no_workspace))
         return 0
 
     if args.command == "exec":
-        env = _execution_env()
+        env = _execution_env(load_workspace=not args.no_workspace)
         runpy.run_path(str(args.file), init_globals=env)
         return 0
 
     source = sys.stdin.read()
     if source.strip():
-        exec(compile(source, "<android-harness>", "exec"), _execution_env())
+        exec(compile(source, "<android-harness>", "exec"), _execution_env(load_workspace=not args.no_workspace))
         return 0
 
     parser.print_help()
     return 0
 
 
-def _execution_env() -> dict[str, object]:
+def _execution_env(*, load_workspace: bool = True) -> dict[str, object]:
     env: dict[str, object] = {"__name__": "__android_harness__"}
     for name in dir(helpers):
         if name.startswith("_"):
@@ -56,7 +61,7 @@ def _execution_env() -> dict[str, object]:
         env[name] = getattr(helpers, name)
 
     workspace = Path.cwd() / "agent-workspace" / "agent_helpers.py"
-    if workspace.exists():
+    if load_workspace and workspace.exists():
         workspace_env = dict(env)
         exec(compile(workspace.read_text(), str(workspace), "exec"), workspace_env)
         for name, value in workspace_env.items():

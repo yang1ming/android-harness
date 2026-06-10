@@ -1,3 +1,5 @@
+import json
+
 from android_harness import helpers
 from android_harness.ui import Bounds, Element
 
@@ -33,6 +35,29 @@ def test_tcpip_target_adds_default_port_only_when_needed():
 def test_bounds_center_supports_bounds_and_mapping():
     assert helpers.bounds_center(Bounds(10, 20, 110, 220)) == (60, 120)
     assert helpers.bounds_center({"left": 0, "top": 10, "right": 100, "bottom": 210}) == (50, 110)
+
+
+def test_get_client_returns_selected_client(monkeypatch):
+    client = object()
+    monkeypatch.setattr(helpers, "_client", client)
+
+    assert helpers.get_client() is client
+
+
+def test_page_info_is_json_serializable(monkeypatch):
+    element = _element("Allow")
+    monkeypatch.setattr(helpers, "ui_tree", lambda: [element])
+    monkeypatch.setattr(helpers, "current_app", lambda: {"package": "com.example", "activity": ".Main"})
+
+    info = helpers.page_info()
+
+    assert info["clickable"][0]["bounds"] == {
+        "left": 10,
+        "top": 20,
+        "right": 110,
+        "bottom": 220,
+    }
+    json.dumps(info)
 
 
 def test_permission_button_candidates():

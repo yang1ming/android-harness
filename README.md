@@ -1,26 +1,69 @@
 # Android Harness
 
-Android Harness 是一个轻量、可扩展、可由 agent 边用边增强的 Android
-设备控制层。它通过稳定原语操作真实设备或模拟器：ADB、截图、输入事件、
-uiautomator XML、日志和文件。
+[中文](README.zh.md) | English
 
-它是一个独立的 Android-focused 项目，参考了 Browser Harness 的架构思想；
-本项目不隶属于 Browser Use，也不代表 Browser Harness 官方 Android 版本。
+Android Harness is a lightweight, extensible Android device control layer that
+agents can use and improve incrementally. It exposes stable primitives for
+authorized real devices and emulators: ADB, screenshots, input events,
+uiautomator XML, logs, and files.
 
-- 核心保持小而稳定。
-- 任务级 helper 放在 `agent-workspace/agent_helpers.py`。
-- 可复用 App 经验放在 `agent-workspace/app-skills/`。
-- OCR、人类化操作、环境画像等能力放进插件层。
+It is an independent Android-focused project inspired by the architecture of
+Browser Harness. It is not affiliated with Browser Use, and it is not an
+official Android version of Browser Harness.
+
+Status: Alpha. The core API aims to stay small and stable, while plugins, skill
+conventions, and CLI ergonomics may still evolve.
+
+## Positioning
+
+- The core stays small and stable, exposing Android automation primitives.
+- It runs on the developer or agent host and controls devices through `adb`.
+- It is not an Android APK, AccessibilityService, or persistent on-device agent.
+- Task-specific helpers live in `agent-workspace/agent_helpers.py`.
+- Reusable app knowledge lives in `agent-workspace/app-skills/`.
+- Reusable interaction knowledge lives in `interaction-skills/`.
+- OCR, human-like interaction, environment reporting, input method adapters, and
+  policy checks belong in plugins.
+
+## ADB Or On-Device Deployment?
+
+Android Harness is **ADB-first / host-side** by default:
+
+```text
+agent or developer machine
+  -> android-harness
+  -> adb
+  -> authorized Android device or emulator
+```
+
+This means:
+
+- Install and run it on your local machine, CI runner, remote development host,
+  or agent execution environment.
+- The Android device only needs authorized USB debugging, or an authorized ADB
+  over TCP/IP connection.
+- The core does not install APKs, inject into apps, or enable AccessibilityService.
+- The core does not hide ADB, root, emulator, automation, or debugging signals.
+- Device-side components must be explicit plugin dependencies. For example,
+  `plugins/adbkeyboard_plugin.py` depends on the external ADBKeyboard IME.
+
+Do not deploy Android Harness itself directly onto Android devices. If an
+on-device agent is needed in the future, it should be a separate project or a
+clearly isolated plugin with its own permission, update, audit, and safety model.
 
 ## Quick Start
 
-连接已经授权 USB debugging 的 Android 设备或模拟器，然后运行：
+For full CLI and Agent Skill installation instructions, see
+[install.md](install.md). A Chinese version is available at
+[install.zh.md](install.zh.md).
+
+Connect an Android device or emulator with authorized USB debugging, then run:
 
 ```bash
 android-harness doctor
 ```
 
-通过 heredoc 执行 helper 代码：
+Run helper code through a heredoc:
 
 ```bash
 android-harness <<'PY'
@@ -31,11 +74,21 @@ print(path)
 PY
 ```
 
+Disable local workspace helpers:
+
+```bash
+android-harness --no-workspace <<'PY'
+print(page_info())
+PY
+```
+
 ## Unicode Text Input
 
-Core `type_text()` uses `adb shell input text` and is only intended for simple
-ASCII. For Chinese, emoji, symbols, or vendor ROMs with broken shell input,
-install and enable ADBKeyboard on the device, then use the optional plugin:
+The core `type_text()` helper uses `adb shell input text` and is only intended
+for simple ASCII. For Chinese, emoji, symbols, or vendor ROMs with broken shell
+input behavior, use an input-method plugin.
+
+After installing and enabling ADBKeyboard, use the optional plugin:
 
 ```bash
 android-harness <<'PY'
@@ -56,7 +109,7 @@ src/android_harness/
   helpers.py   # public agent-facing primitives
   adb.py       # ADB backend
   ui.py        # uiautomator XML parsing
-plugins.py   # plugin registry and boundaries
+  plugins.py   # plugin registry and boundaries
   admin.py     # diagnostics
 
 agent-workspace/
@@ -72,13 +125,99 @@ interaction-skills/
   text-input.md
 ```
 
-## Design Boundaries
+## Usage Boundaries
 
-核心包含设备事实、屏幕事实、App 状态、输入、文件、日志、等待和诊断。
+Appropriate use cases:
 
-核心不包含 OCR 引擎、特定 App 业务流程、隐藏/规避检测、账号处理、验证码处理、
-支付流程或业务逻辑。这些能力只能在明确授权的前提下放入插件或 skills，并在
-需要时通过 policy 插件做确认和约束。
+- Owned devices, test devices, emulators, and authorized remote devices.
+- App QA, automation testing, UI issue reproduction, screenshots, and diagnostics.
+- Agent-driven Android operation in authorized environments.
+- Capturing reusable Android interaction knowledge as skills.
+
+Out of scope or not accepted:
+
+- Unauthorized devices, unauthorized apps, or third-party account environments.
+- Account takeover, CAPTCHA handling, payment flows, bulk registration, or risk
+  control bypass.
+- Hiding ADB, root, emulator, automation, or debugging signals.
+- Adding app-specific business flows, account data, or private operational logic
+  to the core.
+- Presenting Android Harness as an official Android version of Browser Harness.
+
+## Core, Plugin, And Skill Boundaries
+
+Put in core:
+
+- ADB wrapper, device facts, screen facts, input events, files, logs, waits, and
+  diagnostics.
+- Stable primitives that do not depend on a specific app, account, model, or
+  external service.
+
+Put in plugins:
+
+- OCR, input-method adapters, human-like tapping, environment reporting, and
+  policy guards.
+- Capabilities that require an extra APK, service, model, network access, or
+  heavier dependency.
+
+Put in `interaction-skills/`:
+
+- Reusable Android interaction techniques, such as permissions, scrolling, and
+  text input.
+- Markdown instructions for agent operating strategy and caveats.
+
+Put in `agent-workspace/`:
+
+- Temporary helpers for the current task.
+- App-specific observations and authorized testing knowledge.
+
+Do not put in core:
+
+- App-specific business flows.
+- Account data.
+- Detection evasion.
+- Platform bypass logic.
+
+## Responsible Disclosure
+
+If you discover a security issue or a boundary issue that could enable misuse,
+please report it through a private channel first. If the GitHub repository has
+Security Advisories enabled, use a Security Advisory. Otherwise, open a public
+issue with a non-sensitive summary and request private coordination.
+
+Useful reports include:
+
+- Affected version or commit.
+- Host OS, Android version, device type, and ADB connection mode.
+- Minimal reproduction steps.
+- Impact and expected boundary.
+- Logs that do not contain real accounts, tokens, payment information, personal
+  data, or third-party private data.
+
+Please do not publicly post:
+
+- Steps that directly enable unauthorized device or account operation.
+- Detection bypass, platform bypass, or automation-hiding details.
+- Real device, account, token, SMS, CAPTCHA, payment, or personal data.
+
+## License And Attribution
+
+This project is licensed under the MIT License. MIT is a short permissive open
+source license that allows commercial use, distribution, modification, and
+private use, while requiring preservation of copyright and license notices.
+
+This project is independently implemented and inspired by the architecture of
+Browser Harness. It is not affiliated with Browser Use and is not an official
+Android version of Browser Harness. Unless explicitly stated in `NOTICE.md`,
+this repository does not include source code, documentation, or assets copied
+from Browser Harness or other third-party projects.
+
+If third-party code, documentation, models, datasets, or device-side components
+are introduced in the future, their license compatibility must be reviewed
+before merge, and upstream copyright, license, and attribution notices must be
+preserved in `NOTICE.md` or the relevant files.
+
+See `NOTICE.md` for attribution and third-party notices.
 
 ## License
 

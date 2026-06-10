@@ -36,6 +36,12 @@ def set_device(serial: str | None) -> None:
     _client = AdbClient(serial=serial)
 
 
+def get_client() -> AdbClient:
+    """Return the currently selected ADB client for plugins and advanced helpers."""
+
+    return _client
+
+
 def adb_connect(host: str, port: int = 5555) -> str:
     """Connect to an adb-over-TCP/IP endpoint and select it for later calls."""
 
@@ -322,7 +328,7 @@ def page_info() -> dict[str, object]:
                 "text": element.text,
                 "content_desc": element.content_desc,
                 "resource_id": element.resource_id,
-                "bounds": element.bounds,
+                "bounds": _bounds_to_dict(element.bounds),
             }
             for element in elements
             if element.clickable and element.enabled
@@ -340,6 +346,15 @@ def pull_file(remote: str, local: str | Path) -> None:
 
 def logcat_tail(lines: int = 200) -> str:
     return _client.run(["logcat", "-d", "-t", str(lines)], timeout=20).stdout
+
+
+def _bounds_to_dict(bounds: Bounds) -> dict[str, int]:
+    return {
+        "left": bounds.left,
+        "top": bounds.top,
+        "right": bounds.right,
+        "bottom": bounds.bottom,
+    }
 
 
 def _parse_wm_size(output: str) -> tuple[int, int]:

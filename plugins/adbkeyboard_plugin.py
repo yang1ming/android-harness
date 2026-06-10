@@ -18,14 +18,14 @@ ADB_KEYBOARD_IME = "com.android.adbkeyboard/.AdbIME"
 def list_imes() -> list[str]:
     """Return enabled input methods reported by Android."""
 
-    output = helpers._client.shell(["ime", "list", "-s"])
+    output = helpers.get_client().shell(["ime", "list", "-s"])
     return [line.strip() for line in output.splitlines() if line.strip()]
 
 
 def current_ime() -> str | None:
     """Return the current default input method, when Android reports one."""
 
-    output = helpers._client.shell(["settings", "get", "secure", "default_input_method"])
+    output = helpers.get_client().shell(["settings", "get", "secure", "default_input_method"])
     value = output.strip()
     if not value or value == "null":
         return None
@@ -37,7 +37,7 @@ def enable_adbkeyboard() -> str:
 
     if ADB_KEYBOARD_IME in list_imes():
         return "already enabled"
-    return helpers._client.shell(["ime", "enable", ADB_KEYBOARD_IME]).strip()
+    return helpers.get_client().shell(["ime", "enable", ADB_KEYBOARD_IME]).strip()
 
 
 def set_adbkeyboard() -> str | None:
@@ -47,7 +47,7 @@ def set_adbkeyboard() -> str | None:
     if previous == ADB_KEYBOARD_IME:
         return previous
     enable_adbkeyboard()
-    helpers._client.shell(["ime", "set", ADB_KEYBOARD_IME])
+    helpers.get_client().shell(["ime", "set", ADB_KEYBOARD_IME])
     return previous
 
 
@@ -55,7 +55,7 @@ def restore_ime(ime: str | None) -> None:
     """Restore a previous input method if one was captured."""
 
     if ime and ime != ADB_KEYBOARD_IME:
-        helpers._client.shell(["ime", "set", ime])
+        helpers.get_client().shell(["ime", "set", ime])
 
 
 def type_unicode(text: str, *, restore: bool = True) -> None:
@@ -64,7 +64,7 @@ def type_unicode(text: str, *, restore: bool = True) -> None:
     previous = set_adbkeyboard()
     try:
         encoded = base64.b64encode(text.encode("utf-8")).decode("ascii")
-        helpers._client.shell(["am", "broadcast", "-a", "ADB_INPUT_B64", "--es", "msg", encoded])
+        helpers.get_client().shell(["am", "broadcast", "-a", "ADB_INPUT_B64", "--es", "msg", encoded])
     finally:
         if restore:
             restore_ime(previous)
@@ -75,7 +75,7 @@ def clear_input(*, restore: bool = True) -> None:
 
     previous = set_adbkeyboard()
     try:
-        helpers._client.shell(["am", "broadcast", "-a", "ADB_CLEAR_TEXT"])
+        helpers.get_client().shell(["am", "broadcast", "-a", "ADB_CLEAR_TEXT"])
     finally:
         if restore:
             restore_ime(previous)
@@ -86,7 +86,7 @@ def send_keyevent(code: int, *, restore: bool = True) -> None:
 
     previous = set_adbkeyboard()
     try:
-        helpers._client.shell(["am", "broadcast", "-a", "ADB_INPUT_KEYEVENT", "--ei", "code", str(code)])
+        helpers.get_client().shell(["am", "broadcast", "-a", "ADB_INPUT_KEYEVENT", "--ei", "code", str(code)])
     finally:
         if restore:
             restore_ime(previous)
