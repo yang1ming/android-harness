@@ -19,9 +19,7 @@ uiautomator XML、日志和文件。
 任务，如果把关键步骤总结成 interaction skill 或 workspace note，后续执行通常会
 更快、更稳定。
 
-[![Android Harness skill 演示预览](docs/assets/demo-preview.gif)](Android_Harness_Skill_Demo_Video.webm)
-
-完整视频：[Android_Harness_Skill_Demo_Video.webm](Android_Harness_Skill_Demo_Video.webm)
+![Android Harness skill 演示预览](docs/assets/demo-preview.gif)
 
 ## 项目维护
 

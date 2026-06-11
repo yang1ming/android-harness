@@ -22,9 +22,7 @@ This demo shows execution without a self-summary or reusable task memory. For
 repeated tasks, capturing a short summary as an interaction skill or workspace
 note should make later runs faster and more consistent.
 
-[![Android Harness skill demo preview](docs/assets/demo-preview.gif)](Android_Harness_Skill_Demo_Video.webm)
-
-Full video: [Android_Harness_Skill_Demo_Video.webm](Android_Harness_Skill_Demo_Video.webm)
+![Android Harness skill demo preview](docs/assets/demo-preview.gif)
 
 ## Project Maintenance
 
