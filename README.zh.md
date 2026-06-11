@@ -55,6 +55,22 @@ agent or developer machine
 on-device agent，应作为单独项目或明确隔离的插件设计，并重新定义权限、更新、
 审计和安全边界。
 
+## 可选 ADB Daemon Transport
+
+Android Harness 默认直接通过 subprocess 调用 `adb`。对于较长的 agent 会话，可以
+显式启用本地 daemon，让 adb 命令通过 Unix socket 代理执行：
+
+```bash
+android-harness daemon start
+android-harness --transport daemon doctor
+android-harness daemon status
+android-harness daemon stop
+```
+
+daemon 是可选能力。未设置 `--transport daemon` 或
+`ANDROID_HARNESS_TRANSPORT=daemon` 时，行为仍然是默认 subprocess 路径。daemon
+只监听本地 Unix socket，不隐藏 ADB、root、模拟器、自动化或调试信号。
+
 ## 快速开始
 
 完整 CLI 和 Agent Skill 安装说明见 [install.md](install.md)，中文版见

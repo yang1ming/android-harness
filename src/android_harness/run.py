@@ -11,11 +11,17 @@ from pathlib import Path
 
 from . import helpers
 from .admin import doctor
+from .daemon import daemon_status, start_daemon, stop_daemon
 
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="android-harness")
     parser.add_argument("-s", "--serial", help="ADB device serial")
+    parser.add_argument(
+        "--transport",
+        choices=("subprocess", "daemon"),
+        help="ADB transport backend; defaults to ANDROID_HARNESS_TRANSPORT or subprocess",
+    )
     parser.add_argument(
         "--no-workspace",
         action="store_true",
@@ -26,12 +32,31 @@ def main(argv: list[str] | None = None) -> int:
     subparsers.add_parser("repl", help="open an interactive Python REPL with helpers")
     exec_parser = subparsers.add_parser("exec", help="execute a Python file with helpers")
     exec_parser.add_argument("file", type=Path)
+    daemon_parser = subparsers.add_parser("daemon", help="manage the local adb daemon")
+    daemon_subparsers = daemon_parser.add_subparsers(dest="daemon_command")
+    daemon_subparsers.add_parser("start", help="start the local adb daemon")
+    daemon_subparsers.add_parser("stop", help="stop the local adb daemon")
+    daemon_subparsers.add_parser("status", help="show local adb daemon status")
 
     args = parser.parse_args(argv)
-    helpers.set_device(args.serial)
+
+    if args.command == "daemon":
+        if args.daemon_command == "start":
+            print(start_daemon())
+            return 0
+        if args.daemon_command == "stop":
+            print(stop_daemon())
+            return 0
+        if args.daemon_command == "status":
+            print(daemon_status())
+            return 0
+        daemon_parser.print_help()
+        return 0
+
+    helpers.set_device(args.serial, transport_name=args.transport)
 
     if args.command == "doctor":
-        report = doctor(args.serial).to_dict()
+        report = doctor(args.serial, transport_name=args.transport).to_dict()
         print(json.dumps(report, ensure_ascii=False, indent=2))
         return 0 if report.get("device_ready") else 1
 

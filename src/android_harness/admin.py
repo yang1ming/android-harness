@@ -33,8 +33,8 @@ class DoctorReport:
         return asdict(self)
 
 
-def doctor(serial: str | None = None) -> DoctorReport:
-    client = AdbClient(serial=serial)
+def doctor(serial: str | None = None, *, transport_name: str | None = None) -> DoctorReport:
+    client = AdbClient(serial=serial, transport_name=transport_name)
     try:
         client.require_available()
         devices = client.devices()
@@ -82,7 +82,7 @@ def doctor(serial: str | None = None) -> DoctorReport:
             error=f"selected device is not authorized/ready: {detail}",
         )
 
-    selected_client = AdbClient(serial=selected)
+    selected_client = AdbClient(serial=selected, transport=client.transport)
     errors: list[str] = []
 
     def probe(label: str, action: Callable[[], object]) -> object | None:

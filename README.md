@@ -61,6 +61,24 @@ Do not deploy Android Harness itself directly onto Android devices. If an
 on-device agent is needed in the future, it should be a separate project or a
 clearly isolated plugin with its own permission, update, audit, and safety model.
 
+## Optional ADB Daemon Transport
+
+Android Harness uses direct subprocess-backed `adb` calls by default. For long
+agent sessions, an optional local daemon can proxy adb commands over a Unix
+socket:
+
+```bash
+android-harness daemon start
+android-harness --transport daemon doctor
+android-harness daemon status
+android-harness daemon stop
+```
+
+The daemon is opt-in. If `--transport daemon` or
+`ANDROID_HARNESS_TRANSPORT=daemon` is not set, behavior remains subprocess-first.
+The daemon listens only on a local Unix socket and does not hide ADB, root,
+emulator, automation, or debugging signals.
+
 ## Quick Start
 
 For full CLI and Agent Skill installation instructions, see

@@ -4,9 +4,10 @@ from android_harness import admin
 class FakeAdbClient:
     connected = False
 
-    def __init__(self, serial=None, adb_path="adb"):
+    def __init__(self, serial=None, adb_path="adb", **_kwargs):
         self.serial = serial
         self.adb_path = adb_path
+        self.transport = None
 
     def require_available(self):
         return None
