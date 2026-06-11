@@ -14,6 +14,16 @@ official Android version of Browser Harness.
 Status: Alpha. The core API aims to stay small and stable, while plugins, skill
 conventions, and CLI ergonomics may still evolve.
 
+## Project Maintenance
+
+- Contribution guide: [CONTRIBUTING.md](CONTRIBUTING.md)
+- Roadmap: [ROADMAP.md](ROADMAP.md)
+- Local checks:
+
+```bash
+make check
+```
+
 ## Positioning
 
 - The core stays small and stable, exposing Android automation primitives.

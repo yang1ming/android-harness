@@ -11,6 +11,16 @@ uiautomator XML、日志和文件。
 
 当前状态：Alpha。核心 API 会尽量保持稳定，但插件、skill 约定和 CLI 仍可能演进。
 
+## 项目维护
+
+- 贡献指南：[CONTRIBUTING.md](CONTRIBUTING.md)
+- 路线图：[ROADMAP.md](ROADMAP.md)
+- 本地检查：
+
+```bash
+make check
+```
+
 ## 核心定位
 
 - 核心保持小而稳定，只提供 Android 自动化 primitive。
