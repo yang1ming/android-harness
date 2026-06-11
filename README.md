@@ -14,6 +14,17 @@ official Android version of Browser Harness.
 Status: Alpha. The core API aims to stay small and stable, while plugins, skill
 conventions, and CLI ergonomics may still evolve.
 
+## Demo
+
+Watch the Android Harness skill demo:
+[Android_Harness_Skill_Demo_Video.webm](Android_Harness_Skill_Demo_Video.webm)
+
+This demo shows execution without a self-summary or reusable task memory. For
+repeated tasks, capturing a short summary as an interaction skill or workspace
+note should make later runs faster and more consistent.
+
+<video src="Android_Harness_Skill_Demo_Video.webm" controls width="100%"></video>
+
 ## Project Maintenance
 
 - Contribution guide: [CONTRIBUTING.md](CONTRIBUTING.md)

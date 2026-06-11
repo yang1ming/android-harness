@@ -11,6 +11,17 @@ uiautomator XML、日志和文件。
 
 当前状态：Alpha。核心 API 会尽量保持稳定，但插件、skill 约定和 CLI 仍可能演进。
 
+## 演示视频
+
+观看 Android Harness skill 演示：
+[Android_Harness_Skill_Demo_Video.webm](Android_Harness_Skill_Demo_Video.webm)
+
+这个演示展示的是没有进行自我总结、没有沉淀可复用任务经验时的执行效果。对于重复
+任务，如果把关键步骤总结成 interaction skill 或 workspace note，后续执行通常会
+更快、更稳定。
+
+<video src="Android_Harness_Skill_Demo_Video.webm" controls width="100%"></video>
+
 ## 项目维护
 
 - 贡献指南：[CONTRIBUTING.md](CONTRIBUTING.md)
