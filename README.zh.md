@@ -13,14 +13,15 @@ uiautomator XML、日志和文件。
 
 ## 演示视频
 
-观看 Android Harness skill 演示：
-[Android_Harness_Skill_Demo_Video.webm](Android_Harness_Skill_Demo_Video.webm)
+观看下面的 Android Harness skill 演示预览。
 
 这个演示展示的是没有进行自我总结、没有沉淀可复用任务经验时的执行效果。对于重复
 任务，如果把关键步骤总结成 interaction skill 或 workspace note，后续执行通常会
 更快、更稳定。
 
-<video src="Android_Harness_Skill_Demo_Video.webm" controls width="100%"></video>
+[![Android Harness skill 演示预览](docs/assets/demo-preview.gif)](Android_Harness_Skill_Demo_Video.webm)
+
+完整视频：[Android_Harness_Skill_Demo_Video.webm](Android_Harness_Skill_Demo_Video.webm)
 
 ## 项目维护
 

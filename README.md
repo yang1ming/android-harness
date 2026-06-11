@@ -16,14 +16,15 @@ conventions, and CLI ergonomics may still evolve.
 
 ## Demo
 
-Watch the Android Harness skill demo:
-[Android_Harness_Skill_Demo_Video.webm](Android_Harness_Skill_Demo_Video.webm)
+Watch the Android Harness skill demo preview below.
 
 This demo shows execution without a self-summary or reusable task memory. For
 repeated tasks, capturing a short summary as an interaction skill or workspace
 note should make later runs faster and more consistent.
 
-<video src="Android_Harness_Skill_Demo_Video.webm" controls width="100%"></video>
+[![Android Harness skill demo preview](docs/assets/demo-preview.gif)](Android_Harness_Skill_Demo_Video.webm)
+
+Full video: [Android_Harness_Skill_Demo_Video.webm](Android_Harness_Skill_Demo_Video.webm)
 
 ## Project Maintenance
 
