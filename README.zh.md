@@ -25,6 +25,7 @@ uiautomator XML、日志和文件。
 
 - 贡献指南：[CONTRIBUTING.md](CONTRIBUTING.md)
 - 路线图：[ROADMAP.md](ROADMAP.md)
+- 更新日志：[CHANGELOG.md](CHANGELOG.md)
 - 本地检查：
 
 ```bash

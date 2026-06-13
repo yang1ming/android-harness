@@ -28,6 +28,7 @@ note should make later runs faster and more consistent.
 
 - Contribution guide: [CONTRIBUTING.md](CONTRIBUTING.md)
 - Roadmap: [ROADMAP.md](ROADMAP.md)
+- Changelog: [CHANGELOG.md](CHANGELOG.md)
 - Local checks:
 
 ```bash
