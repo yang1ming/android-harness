@@ -31,6 +31,7 @@ note should make later runs faster and more consistent.
 - Changelog: [CHANGELOG.md](CHANGELOG.md)
 - Manual smoke test: [docs/manual-smoke.md](docs/manual-smoke.md)
 - Helper reference: [docs/helpers-reference.md](docs/helpers-reference.md)
+- Plugin author guide: [docs/plugin-author-guide.md](docs/plugin-author-guide.md)
 - Local checks:
 
 ```bash
