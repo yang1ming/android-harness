@@ -27,6 +27,7 @@ uiautomator XML、日志和文件。
 - 路线图：[ROADMAP.md](ROADMAP.md)
 - 更新日志：[CHANGELOG.md](CHANGELOG.md)
 - 手动验收：[docs/manual-smoke.md](docs/manual-smoke.md)
+- Helper 参考：[docs/helpers-reference.md](docs/helpers-reference.md)
 - 本地检查：
 
 ```bash

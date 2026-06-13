@@ -30,6 +30,7 @@ note should make later runs faster and more consistent.
 - Roadmap: [ROADMAP.md](ROADMAP.md)
 - Changelog: [CHANGELOG.md](CHANGELOG.md)
 - Manual smoke test: [docs/manual-smoke.md](docs/manual-smoke.md)
+- Helper reference: [docs/helpers-reference.md](docs/helpers-reference.md)
 - Local checks:
 
 ```bash
