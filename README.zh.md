@@ -2,6 +2,14 @@
 
 中文 | [English](README.md)
 
+![CI](https://github.com/yang1ming/android-harness/actions/workflows/ci.yml/badge.svg?branch=main)
+![Python](https://img.shields.io/badge/python-3.10%2B-blue)
+![Status](https://img.shields.io/badge/status-alpha-orange)
+![License](https://img.shields.io/badge/license-MIT-green)
+![Android](https://img.shields.io/badge/android-ADB--first-3DDC84)
+
+**一个小而清晰的 host-side Android agent 自动化层，基于 ADB 和可选插件构建。**
+
 Android Harness 是一个轻量、可扩展、可由 agent 边用边增强的 Android
 设备控制层。它通过稳定原语操作已授权的真实设备或模拟器：ADB、截图、输入事件、
 uiautomator XML、日志和文件。
@@ -10,6 +18,17 @@ uiautomator XML、日志和文件。
 本项目不隶属于 Browser Use，也不代表 Browser Harness 官方 Android 版本。
 
 当前状态：Alpha。核心 API 会尽量保持稳定，但插件、skill 约定和 CLI 仍可能演进。
+
+## 能力概览
+
+| 方向 | Android Harness 提供什么 |
+| --- | --- |
+| ADB 控制 | 默认直接通过 subprocess 调用 `adb`，也支持可选本地 daemon transport。 |
+| 观察能力 | 截图、uiautomator XML、设备信息、屏幕信息、当前 app、日志和文件。 |
+| 交互能力 | tap、swipe、keyevent、文本输入、等待，以及通过 CLI 执行 Python helper。 |
+| Agent 工作流 | 本地 workspace helper、可复用 interaction skill、示例和手动验收文档。 |
+| 扩展点 | 输入法、OCR、环境画像、policy check 等能力通过可选插件扩展。 |
+| 边界 | 只面向已授权设备；不支持账号接管、验证码、支付、绕过限制或隐藏自动化信号。 |
 
 ## 演示视频
 
@@ -21,15 +40,20 @@ uiautomator XML、日志和文件。
 
 ![Android Harness skill 演示预览](docs/assets/demo-preview.gif)
 
-## 项目维护
+## 文档入口
 
-- 贡献指南：[CONTRIBUTING.md](CONTRIBUTING.md)
-- 路线图：[ROADMAP.md](ROADMAP.md)
-- 更新日志：[CHANGELOG.md](CHANGELOG.md)
-- 手动验收：[docs/manual-smoke.md](docs/manual-smoke.md)
-- Helper 参考：[docs/helpers-reference.md](docs/helpers-reference.md)
-- 插件作者指南：[docs/plugin-author-guide.md](docs/plugin-author-guide.md)
-- 本地检查：
+| 资源 | 用途 |
+| --- | --- |
+| [install.zh.md](install.zh.md) | CLI 和 Agent Skill 安装说明。 |
+| [examples/](examples/) | 基础观察和 daemon transport 的可运行示例。 |
+| [docs/helpers-reference.md](docs/helpers-reference.md) | 面向 agent 的 helper API 参考。 |
+| [docs/plugin-author-guide.md](docs/plugin-author-guide.md) | 插件边界和扩展模式。 |
+| [docs/manual-smoke.md](docs/manual-smoke.md) | 面向已授权设备和模拟器的手动验收。 |
+| [CONTRIBUTING.md](CONTRIBUTING.md) | 贡献流程和协作预期。 |
+| [ROADMAP.md](ROADMAP.md) | 当前维护方向。 |
+| [CHANGELOG.md](CHANGELOG.md) | 面向用户的变更记录。 |
+
+本地检查：
 
 ```bash
 make check

@@ -2,6 +2,15 @@
 
 [中文](README.zh.md) | English
 
+![CI](https://github.com/yang1ming/android-harness/actions/workflows/ci.yml/badge.svg?branch=main)
+![Python](https://img.shields.io/badge/python-3.10%2B-blue)
+![Status](https://img.shields.io/badge/status-alpha-orange)
+![License](https://img.shields.io/badge/license-MIT-green)
+![Android](https://img.shields.io/badge/android-ADB--first-3DDC84)
+
+**A small host-side Android automation layer for agents, built on ADB and
+optional plugins.**
+
 Android Harness is a lightweight, extensible Android device control layer that
 agents can use and improve incrementally. It exposes stable primitives for
 authorized real devices and emulators: ADB, screenshots, input events,
@@ -14,6 +23,17 @@ official Android version of Browser Harness.
 Status: Alpha. The core API aims to stay small and stable, while plugins, skill
 conventions, and CLI ergonomics may still evolve.
 
+## Capabilities
+
+| Area | What Android Harness provides |
+| --- | --- |
+| ADB control | Direct subprocess-backed `adb` by default, with optional local daemon transport. |
+| Observation | Screenshots, uiautomator XML, device facts, screen facts, app facts, logs, and files. |
+| Interaction | Tap, swipe, keyevent, text input, waits, and Python helper execution through the CLI. |
+| Agent workflow | Local workspace helpers, reusable interaction skills, examples, and smoke-test docs. |
+| Extension points | Optional plugins for input methods, OCR, environment reporting, and policy checks. |
+| Boundaries | Authorized devices only; no account takeover, CAPTCHA, payment, bypass, or signal-hiding flows. |
+
 ## Demo
 
 Watch the Android Harness skill demo preview below.
@@ -24,15 +44,20 @@ note should make later runs faster and more consistent.
 
 ![Android Harness skill demo preview](docs/assets/demo-preview.gif)
 
-## Project Maintenance
+## Documentation
 
-- Contribution guide: [CONTRIBUTING.md](CONTRIBUTING.md)
-- Roadmap: [ROADMAP.md](ROADMAP.md)
-- Changelog: [CHANGELOG.md](CHANGELOG.md)
-- Manual smoke test: [docs/manual-smoke.md](docs/manual-smoke.md)
-- Helper reference: [docs/helpers-reference.md](docs/helpers-reference.md)
-- Plugin author guide: [docs/plugin-author-guide.md](docs/plugin-author-guide.md)
-- Local checks:
+| Resource | Purpose |
+| --- | --- |
+| [install.md](install.md) | CLI and Agent Skill installation. |
+| [examples/](examples/) | Runnable examples for basic observation and daemon transport. |
+| [docs/helpers-reference.md](docs/helpers-reference.md) | Agent-facing helper API reference. |
+| [docs/plugin-author-guide.md](docs/plugin-author-guide.md) | Plugin boundaries and extension patterns. |
+| [docs/manual-smoke.md](docs/manual-smoke.md) | Manual checks for authorized devices and emulators. |
+| [CONTRIBUTING.md](CONTRIBUTING.md) | Contribution process and expectations. |
+| [ROADMAP.md](ROADMAP.md) | Current maintenance direction. |
+| [CHANGELOG.md](CHANGELOG.md) | User-facing change history. |
+
+Local checks:
 
 ```bash
 make check
