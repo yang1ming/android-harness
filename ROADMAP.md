@@ -1,33 +1,51 @@
 # Roadmap
 
-This roadmap tracks near-term maintenance work. It is not a commitment to add
-large features to core; Android Harness should remain a small host-side Android
-automation layer.
+This roadmap tracks public maintenance direction for Android Harness. It is not
+a promise to add large features to core; the project should remain a small,
+host-side, ADB-first Android automation layer.
 
-## Near Term
+## Completed
+
+- Public README demo GIF preview.
+- GitHub Actions CI for Python 3.10, 3.11, and 3.12.
+- Issue templates for bug reports, feature proposals, and safety boundary
+  reports.
+- Pull request template with check and boundary reminders.
+- `CHANGELOG.md` with initial `0.1.0` notes.
+- Runnable examples for basic observation and daemon transport.
+- Manual smoke test checklist for authorized devices and emulators.
+- Helper reference documentation.
+- Plugin author guide.
+- Optional local ADB daemon transport.
+- ADBKeyboard Unicode input plugin example.
+
+## Next
 
 - Keep the CLI and helper API stable for common ADB-backed workflows.
-- Add focused tests for diagnostics, UI parsing, plugin registration, and CLI
-  execution behavior.
-- Improve installation and troubleshooting documentation for agent runtimes.
-- Document safe plugin patterns for optional device-side components.
-- Add examples for authorized emulator and test-device workflows.
+- Add focused tests for daemon lifecycle behavior, CLI error paths, UI parsing
+  edge cases, and plugin registry usage.
+- Improve installation and troubleshooting documentation for common Linux,
+  emulator, USB debugging, and ADB-over-TCP failures.
+- Add more authorized emulator and test-device examples.
+- Improve daemon diagnostics with clearer startup failure messages, stale socket
+  handling, and optional log output.
 
-## Plugin Candidates
+## Later
 
 - OCR observation plugin.
-- Environment reporting plugin.
-- Input method adapter improvements.
-- Policy guard plugin for local safety checks.
+- Environment reporting plugin for authorized test devices.
+- Input method adapter improvements beyond the current ADBKeyboard example.
+- Local policy guard plugin for misuse boundary checks.
+- More reusable interaction skills for common Android patterns.
 
-## CI And Release Work
+## Release Work
 
-- Add GitHub Actions for lint-free test execution.
-- Publish a `v0.1.0` release with changelog notes.
-- Add issue templates for bug reports, feature proposals, and safety boundary
-  reports.
+- Publish a `v0.1.0` GitHub Release and tag.
+- Keep `CHANGELOG.md` current for every user-facing change.
 - Keep `NOTICE.md` current when third-party code, documentation, models,
   datasets, or device-side components are introduced.
+- Consider packaging and publishing only after install, smoke-test, and release
+  workflows are stable.
 
 ## Non-Goals
 
@@ -35,3 +53,5 @@ automation layer.
 - Do not add account automation, payment automation, CAPTCHA handling, or risk
   control bypass workflows.
 - Do not hide ADB, root, emulator, automation, or debugging signals.
+- Do not turn core into an APK, AccessibilityService, or persistent on-device
+  agent.
