@@ -87,6 +87,8 @@ daemon 是可选能力。未设置 `--transport daemon` 或
 完整 CLI 和 Agent Skill 安装说明见 [install.md](install.md)，中文版见
 [install.zh.md](install.zh.md)。
 
+可运行示例见 [examples/](examples/)。
+
 连接已经授权 USB debugging 的 Android 设备或模拟器，然后运行：
 
 ```bash

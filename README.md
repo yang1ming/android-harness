@@ -96,6 +96,8 @@ For full CLI and Agent Skill installation instructions, see
 [install.md](install.md). A Chinese version is available at
 [install.zh.md](install.zh.md).
 
+Runnable examples are available in [examples/](examples/).
+
 Connect an Android device or emulator with authorized USB debugging, then run:
 
 ```bash
