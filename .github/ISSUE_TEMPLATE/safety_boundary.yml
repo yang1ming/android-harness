@@ -1,0 +1,37 @@
+name: Safety boundary report
+description: Report a misuse risk or boundary problem without public sensitive details.
+title: "[Safety]: "
+labels: ["safety"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        If the issue contains sensitive details, open only a non-sensitive summary and request private coordination.
+  - type: textarea
+    id: summary
+    attributes:
+      label: Non-sensitive summary
+      description: What boundary may be unclear or unsafe?
+    validations:
+      required: true
+  - type: textarea
+    id: impact
+    attributes:
+      label: Impact
+      description: Who could be affected, and what misuse could this enable?
+    validations:
+      required: true
+  - type: textarea
+    id: expected_boundary
+    attributes:
+      label: Expected boundary
+      description: What should Android Harness allow or reject instead?
+    validations:
+      required: true
+  - type: checkboxes
+    id: disclosure
+    attributes:
+      label: Disclosure
+      options:
+        - label: I have omitted exploit details, real account data, tokens, payment data, and private user data.
+          required: true

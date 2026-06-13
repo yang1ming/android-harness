@@ -1,0 +1,46 @@
+name: Bug report
+description: Report a reproducible Android Harness bug.
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping improve Android Harness. Do not include real accounts, tokens, payment data, private messages, or bypass details.
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: What failed, and what did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction
+      description: Minimal commands, helper code, or test case.
+      render: bash
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Host OS, Python version, adb version, Android version, device/emulator, connection mode.
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      description: Redacted output from android-harness, adb, or tests.
+      render: text
+  - type: checkboxes
+    id: boundary
+    attributes:
+      label: Safety boundary
+      options:
+        - label: This report involves only devices, apps, and accounts where automation is authorized.
+          required: true
+        - label: This report does not include detection evasion, platform bypass, CAPTCHA/payment abuse, or private account data.
+          required: true

@@ -1,0 +1,41 @@
+name: Feature proposal
+description: Propose a scoped Android Harness feature or documentation improvement.
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What authorized workflow or maintainer pain does this solve?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposal
+      description: Describe the smallest useful change.
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Core ADB primitive
+        - CLI or diagnostics
+        - Plugin
+        - Interaction skill
+        - Documentation
+        - Tests or CI
+    validations:
+      required: true
+  - type: checkboxes
+    id: boundaries
+    attributes:
+      label: Boundaries
+      options:
+        - label: This feature does not add app-specific business flows to core.
+          required: true
+        - label: This feature does not hide ADB, root, emulator, automation, or debugging signals.
+          required: true
