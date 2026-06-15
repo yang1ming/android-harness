@@ -18,6 +18,11 @@ from typing import Any
 from .transport import AdbError, SubprocessAdbTransport, default_socket_path
 
 
+DAEMON_START_TIMEOUT = 5.0
+DAEMON_START_POLL_INTERVAL = 0.05
+DAEMON_LOG_TAIL_BYTES = 4000
+
+
 class DaemonUnixServer(socketserver.ThreadingUnixStreamServer):
     daemon_threads = True
 
@@ -102,10 +107,9 @@ def handle_daemon_request(request: dict[str, Any], *, server: DaemonUnixServer |
 
 def serve(socket_path: Path | None = None) -> None:
     path = socket_path or default_socket_path()
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.parent.chmod(0o700)
+    _prepare_socket_dir(path)
     if path.exists():
-        path.unlink()
+        _unlink_stale_socket(path)
     server = DaemonUnixServer(str(path), DaemonRequestHandler)
     try:
         server.serve_forever()
@@ -119,30 +123,53 @@ def start_daemon(socket_path: Path | None = None) -> str:
     if _ping(path):
         return f"running: {path}"
     if path.exists():
-        path.unlink()
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.parent.chmod(0o700)
+        _unlink_stale_socket(path)
+    _prepare_socket_dir(path)
+    log_path = _daemon_log_path(path)
     cmd = [sys.executable, "-m", "android_harness.daemon", "--serve", "--socket", str(path)]
-    subprocess.Popen(
-        cmd,
-        stdin=subprocess.DEVNULL,
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
-        start_new_session=True,
-    )
-    deadline = time.monotonic() + 5
+    with log_path.open("ab") as log_file:
+        log_file.write(f"\nstarting android-harness daemon: {' '.join(cmd)}\n".encode("utf-8"))
+        log_file.flush()
+        try:
+            proc = subprocess.Popen(
+                cmd,
+                stdin=subprocess.DEVNULL,
+                stdout=log_file,
+                stderr=subprocess.STDOUT,
+                start_new_session=True,
+            )
+        except OSError as exc:
+            detail = f"could not launch process: {exc}"
+            raise AdbError(_daemon_start_error(path, detail, log_path)) from exc
+    deadline = time.monotonic() + DAEMON_START_TIMEOUT
     while time.monotonic() < deadline:
         if _ping(path):
             return f"started: {path}"
-        time.sleep(0.05)
-    raise AdbError(f"adb daemon did not start at {path}")
+        returncode = proc.poll()
+        if returncode is not None:
+            detail = f"exited with code {returncode}"
+            raise AdbError(_daemon_start_error(path, detail, log_path))
+        time.sleep(DAEMON_START_POLL_INTERVAL)
+    returncode = proc.poll()
+    if returncode is not None:
+        detail = f"exited with code {returncode}"
+    else:
+        detail = f"did not become ready within {DAEMON_START_TIMEOUT:.1f}s"
+    raise AdbError(_daemon_start_error(path, detail, log_path))
 
 
 def stop_daemon(socket_path: Path | None = None) -> str:
     path = socket_path or default_socket_path()
     if not path.exists():
         return f"not running: {path}"
-    response = _send(path, {"id": "stop", "op": "shutdown"})
+    try:
+        response = _send(path, {"id": "stop", "op": "shutdown"})
+    except Exception:
+        try:
+            _unlink_stale_socket(path)
+        except AdbError as exc:
+            return f"error: {exc}"
+        return f"not running: {path} (removed stale socket)"
     if response.get("ok"):
         return f"stopping: {path}"
     return f"error: {response.get('error', 'unknown error')}"
@@ -150,7 +177,11 @@ def stop_daemon(socket_path: Path | None = None) -> str:
 
 def daemon_status(socket_path: Path | None = None) -> str:
     path = socket_path or default_socket_path()
-    return f"running: {path}" if _ping(path) else f"not running: {path}"
+    if _ping(path):
+        return f"running: {path}"
+    if path.exists():
+        return f"not running: {path} (stale socket)"
+    return f"not running: {path}"
 
 
 def _ping(path: Path) -> bool:
@@ -181,6 +212,40 @@ def _send(path: Path, request: dict[str, Any]) -> dict[str, Any]:
     if not isinstance(value, dict):
         raise AdbError("daemon response must be a JSON object")
     return value
+
+
+def _prepare_socket_dir(path: Path) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.parent.chmod(0o700)
+
+
+def _daemon_log_path(socket_path: Path) -> Path:
+    return socket_path.with_name(f"{socket_path.name}.log")
+
+
+def _unlink_stale_socket(path: Path) -> None:
+    try:
+        path.unlink()
+    except OSError as exc:
+        raise AdbError(f"stale adb daemon socket exists at {path} but could not be removed: {exc}") from exc
+
+
+def _daemon_start_error(path: Path, detail: str, log_path: Path) -> str:
+    message = f"adb daemon did not start at {path}: {detail}; log: {log_path}"
+    log_tail = _read_log_tail(log_path)
+    if log_tail:
+        message += f"\n{log_tail}"
+    return message
+
+
+def _read_log_tail(path: Path) -> str:
+    try:
+        data = path.read_bytes()
+    except OSError:
+        return ""
+    if not data:
+        return ""
+    return data[-DAEMON_LOG_TAIL_BYTES:].decode("utf-8", "replace").strip()
 
 
 def main(argv: list[str] | None = None) -> int:

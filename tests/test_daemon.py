@@ -1,5 +1,9 @@
 import time
 
+import pytest
+
+from android_harness import daemon
+from android_harness.adb import AdbError
 from android_harness.daemon import daemon_status, start_daemon, stop_daemon
 
 
@@ -32,3 +36,73 @@ def test_daemon_status_and_stop_report_not_running_for_missing_socket(tmp_path):
 
     assert daemon_status(socket_path) == f"not running: {socket_path}"
     assert stop_daemon(socket_path) == f"not running: {socket_path}"
+
+
+def test_daemon_status_reports_stale_socket(tmp_path):
+    socket_path = tmp_path / "daemon.sock"
+    socket_path.write_text("stale\n")
+
+    assert daemon_status(socket_path) == f"not running: {socket_path} (stale socket)"
+    assert socket_path.exists()
+
+
+def test_stop_daemon_removes_stale_socket(tmp_path):
+    socket_path = tmp_path / "daemon.sock"
+    socket_path.write_text("stale\n")
+
+    assert stop_daemon(socket_path) == f"not running: {socket_path} (removed stale socket)"
+    assert not socket_path.exists()
+
+
+def test_start_daemon_removes_stale_socket_before_starting(tmp_path):
+    socket_path = tmp_path / "daemon.sock"
+    socket_path.write_text("stale\n")
+
+    try:
+        assert start_daemon(socket_path) == f"started: {socket_path}"
+        assert daemon_status(socket_path) == f"running: {socket_path}"
+    finally:
+        if daemon_status(socket_path) == f"running: {socket_path}":
+            stop_daemon(socket_path)
+        socket_path.unlink(missing_ok=True)
+
+
+def test_start_daemon_error_includes_exit_code_and_log_tail(tmp_path, monkeypatch):
+    socket_path = tmp_path / "daemon.sock"
+
+    class FailedProcess:
+        returncode = 2
+
+        def poll(self):
+            return self.returncode
+
+    def fake_popen(cmd, *, stdin, stdout, stderr, start_new_session):
+        stdout.write(b"daemon failed to import module\n")
+        stdout.flush()
+        return FailedProcess()
+
+    monkeypatch.setattr(daemon.subprocess, "Popen", fake_popen)
+
+    with pytest.raises(AdbError) as exc_info:
+        start_daemon(socket_path)
+
+    message = str(exc_info.value)
+    assert f"adb daemon did not start at {socket_path}: exited with code 2" in message
+    assert f"log: {socket_path}.log" in message
+    assert "daemon failed to import module" in message
+
+
+def test_start_daemon_wraps_process_launch_errors(tmp_path, monkeypatch):
+    socket_path = tmp_path / "daemon.sock"
+
+    def fake_popen(cmd, *, stdin, stdout, stderr, start_new_session):
+        raise OSError("exec failed")
+
+    monkeypatch.setattr(daemon.subprocess, "Popen", fake_popen)
+
+    with pytest.raises(AdbError) as exc_info:
+        start_daemon(socket_path)
+
+    message = str(exc_info.value)
+    assert f"adb daemon did not start at {socket_path}: could not launch process: exec failed" in message
+    assert f"log: {socket_path}.log" in message

@@ -17,18 +17,17 @@ host-side, ADB-first Android automation layer.
 - Helper reference documentation.
 - Plugin author guide.
 - Optional local ADB daemon transport.
+- Daemon lifecycle tests, stale socket handling, and startup diagnostics.
 - ADBKeyboard Unicode input plugin example.
 
 ## Next
 
 - Keep the CLI and helper API stable for common ADB-backed workflows.
-- Add focused tests for daemon lifecycle behavior, CLI error paths, UI parsing
-  edge cases, and plugin registry usage.
+- Add focused tests for CLI error paths, UI parsing edge cases, and plugin
+  registry usage.
 - Improve installation and troubleshooting documentation for common Linux,
   emulator, USB debugging, and ADB-over-TCP failures.
 - Add more authorized emulator and test-device examples.
-- Improve daemon diagnostics with clearer startup failure messages, stale socket
-  handling, and optional log output.
 
 ## Later
 
