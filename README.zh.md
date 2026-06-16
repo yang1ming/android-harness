@@ -45,6 +45,7 @@ uiautomator XML、日志和文件。
 | 资源 | 用途 |
 | --- | --- |
 | [install.zh.md](install.zh.md) | CLI 和 Agent Skill 安装说明。 |
+| [docs/troubleshooting.zh.md](docs/troubleshooting.zh.md) | Linux、ADB、模拟器、ADB-over-TCP 和 daemon 常见故障排查。 |
 | [examples/](examples/) | 基础观察和 daemon transport 的可运行示例。 |
 | [docs/helpers-reference.md](docs/helpers-reference.md) | 面向 agent 的 helper API 参考。 |
 | [docs/plugin-author-guide.md](docs/plugin-author-guide.md) | 插件边界和扩展模式。 |

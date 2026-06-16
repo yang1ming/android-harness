@@ -21,6 +21,9 @@ Android Harness 包含两个部分：
 Android Harness 默认是 host-side / ADB-first 工具。不要把本仓库本身部署到
 Android 设备上。
 
+如果 `adb`、模拟器、USB 授权、ADB-over-TCP 或 daemon transport 失败，请参考
+[docs/troubleshooting.zh.md](docs/troubleshooting.zh.md)。
+
 ## 从 Git 仓库安装
 
 把仓库克隆到稳定路径：
@@ -63,6 +66,7 @@ cp /path/to/android-harness/install.md ~/.codex/skills/android-harness/
 cp /path/to/android-harness/install.zh.md ~/.codex/skills/android-harness/
 cp /path/to/android-harness/NOTICE.md ~/.codex/skills/android-harness/
 cp /path/to/android-harness/LICENSE ~/.codex/skills/android-harness/
+cp -R /path/to/android-harness/docs ~/.codex/skills/android-harness/
 cp -R /path/to/android-harness/interaction-skills ~/.codex/skills/android-harness/
 ```
 

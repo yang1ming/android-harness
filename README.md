@@ -49,6 +49,7 @@ note should make later runs faster and more consistent.
 | Resource | Purpose |
 | --- | --- |
 | [install.md](install.md) | CLI and Agent Skill installation. |
+| [docs/troubleshooting.md](docs/troubleshooting.md) | Linux, ADB, emulator, ADB-over-TCP, and daemon failure checks. |
 | [examples/](examples/) | Runnable examples for basic observation and daemon transport. |
 | [docs/helpers-reference.md](docs/helpers-reference.md) | Agent-facing helper API reference. |
 | [docs/plugin-author-guide.md](docs/plugin-author-guide.md) | Plugin boundaries and extension patterns. |

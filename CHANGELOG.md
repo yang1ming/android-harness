@@ -2,6 +2,13 @@
 
 All notable changes to Android Harness are tracked here.
 
+## Unreleased
+
+### Added
+
+- Troubleshooting guides for Linux, ADB, emulators, ADB-over-TCP, and daemon
+  transport.
+
 ## 0.1.0 - 2026-06-13
 
 Initial alpha release for host-side, ADB-first Android device interaction.

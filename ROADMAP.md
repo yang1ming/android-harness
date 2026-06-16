@@ -16,6 +16,7 @@ host-side, ADB-first Android automation layer.
 - Manual smoke test checklist for authorized devices and emulators.
 - Helper reference documentation.
 - Plugin author guide.
+- Linux, ADB, emulator, ADB-over-TCP, and daemon troubleshooting guides.
 - Optional local ADB daemon transport.
 - Daemon lifecycle tests, stale socket handling, and startup diagnostics.
 - ADBKeyboard Unicode input plugin example.
@@ -25,8 +26,6 @@ host-side, ADB-first Android automation layer.
 - Keep the CLI and helper API stable for common ADB-backed workflows.
 - Add focused tests for CLI error paths, UI parsing edge cases, and plugin
   registry usage.
-- Improve installation and troubleshooting documentation for common Linux,
-  emulator, USB debugging, and ADB-over-TCP failures.
 - Add more authorized emulator and test-device examples.
 
 ## Later

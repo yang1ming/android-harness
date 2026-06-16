@@ -24,6 +24,9 @@ must also be able to run the `android-harness` CLI.
 Android Harness is host-side / ADB-first. Do not deploy this repository itself
 onto Android devices.
 
+If `adb`, the emulator, USB authorization, ADB-over-TCP, or daemon transport
+fails, see [docs/troubleshooting.md](docs/troubleshooting.md).
+
 ## Install From A Git Repository
 
 Clone the repository to a stable path:
@@ -67,6 +70,7 @@ cp /path/to/android-harness/install.md ~/.codex/skills/android-harness/
 cp /path/to/android-harness/install.zh.md ~/.codex/skills/android-harness/
 cp /path/to/android-harness/NOTICE.md ~/.codex/skills/android-harness/
 cp /path/to/android-harness/LICENSE ~/.codex/skills/android-harness/
+cp -R /path/to/android-harness/docs ~/.codex/skills/android-harness/
 cp -R /path/to/android-harness/interaction-skills ~/.codex/skills/android-harness/
 ```
 
