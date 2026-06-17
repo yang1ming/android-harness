@@ -1,3 +1,5 @@
+import pytest
+
 from android_harness import run
 from android_harness.transport import SubprocessAdbTransport
 
@@ -43,6 +45,47 @@ def test_cli_transport_argument_overrides_env_for_doctor(monkeypatch, capsys):
 
     assert captured == {"serial": None, "transport_name": "subprocess"}
     assert isinstance(run.helpers.get_client().transport, SubprocessAdbTransport)
+
+
+def test_cli_no_args_prints_help(capsys):
+    assert run.main([]) == 0
+    out = capsys.readouterr().out.lower()
+    assert "usage:" in out
+    assert "doctor" in out and "repl" in out and "exec" in out and "daemon" in out
+
+
+def test_cli_unknown_command_fails_with_error(capsys):
+    with pytest.raises(SystemExit) as exc:
+        run.main(["invalid"])
+    captured = capsys.readouterr()
+    output = captured.err + captured.out
+    assert exc.value.code == 2
+    assert "invalid choice" in output.lower()
+
+
+def test_cli_invalid_transport_fails_with_error(capsys):
+    with pytest.raises(SystemExit) as exc:
+        run.main(["--transport", "bad", "doctor"])
+    captured = capsys.readouterr()
+    output = captured.err + captured.out
+    assert exc.value.code == 2
+    assert "invalid choice" in output.lower()
+
+
+def test_cli_exec_missing_file_fails_with_error(capsys):
+    with pytest.raises(SystemExit) as exc:
+        run.main(["exec"])
+    captured = capsys.readouterr()
+    output = captured.err + captured.out
+    assert exc.value.code == 2
+    assert "arguments are required" in output.lower()
+
+
+def test_cli_daemon_without_subcommand_prints_help(capsys):
+    assert run.main(["daemon"]) == 0
+    out = capsys.readouterr().out.lower()
+    assert "usage:" in out
+    assert "start" in out and "stop" in out and "status" in out
 
 
 def test_cli_daemon_subcommands_dispatch_without_selecting_device(monkeypatch, capsys):
