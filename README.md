@@ -140,6 +140,9 @@ android-harness snapshot
 android-harness snapshot --screenshot
 ```
 
+Snapshot output includes a `schema_version` field so agents and CI jobs can
+parse it safely as the observation format evolves.
+
 Run helper code through a heredoc:
 
 ```bash

@@ -12,6 +12,7 @@ from pathlib import Path
 from . import helpers
 from .admin import doctor
 from .daemon import daemon_status, start_daemon, stop_daemon
+from .observation import versioned_snapshot
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -68,7 +69,7 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.command == "snapshot":
         snapshot = helpers.state_snapshot(include_screenshot=args.screenshot)
-        print(json.dumps(snapshot, ensure_ascii=False, indent=2))
+        print(json.dumps(versioned_snapshot(snapshot), ensure_ascii=False, indent=2))
         return 0
 
     if args.command == "repl":

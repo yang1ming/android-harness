@@ -130,6 +130,9 @@ android-harness snapshot
 android-harness snapshot --screenshot
 ```
 
+快照输出包含 `schema_version` 字段，便于 agent 和 CI 在后续 observation
+格式演进时稳定解析。
+
 通过 heredoc 执行 helper 代码：
 
 ```bash

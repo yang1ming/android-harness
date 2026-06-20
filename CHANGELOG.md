@@ -6,6 +6,7 @@ All notable changes to Android Harness are tracked here.
 
 ### Added
 
+- Stable `schema_version` marker for `android-harness snapshot` output.
 - `android-harness snapshot` for machine-readable device, foreground app, and
   visible text observation from the CLI.
 - Environment report plugin and example for authorized test-device issue

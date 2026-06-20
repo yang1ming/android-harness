@@ -80,6 +80,7 @@ def test_cli_snapshot_outputs_json_and_uses_device_selection(monkeypatch, capsys
     assert run.main(["-s", "emulator-5554", "--transport", "daemon", "snapshot", "--screenshot"]) == 0
 
     out = capsys.readouterr().out
+    assert '"schema_version": "android-harness.snapshot.v1"' in out
     assert '"serial": "emulator-5554"' in out
     assert '"screenshot": "/tmp/android-harness/screen.png"' in out
     assert captured == {
