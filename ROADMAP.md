@@ -21,10 +21,12 @@ host-side, ADB-first Android automation layer.
 - Daemon lifecycle tests, stale socket handling, and startup diagnostics.
 - ADBKeyboard Unicode input plugin example.
 - Environment reporting plugin for authorized test devices.
+- Machine-readable `android-harness snapshot` CLI command.
 
 ## Next
 
 - Keep the CLI and helper API stable for common ADB-backed workflows.
+- Improve machine-readable observation output for agent and CI use cases.
 - Add focused tests for CLI error paths, UI parsing edge cases, and plugin
   registry usage.
 - Add more authorized emulator and test-device examples.
@@ -32,6 +34,7 @@ host-side, ADB-first Android automation layer.
 ## Later
 
 - OCR observation plugin.
+- Structured observation schema versioning.
 - Input method adapter improvements beyond the current ADBKeyboard example.
 - Local policy guard plugin for misuse boundary checks.
 - More reusable interaction skills for common Android patterns.

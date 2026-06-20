@@ -55,7 +55,38 @@ def test_cli_no_args_prints_help(monkeypatch, capsys):
     assert run.main([]) == 0
     out = capsys.readouterr().out.lower()
     assert "usage:" in out
-    assert "doctor" in out and "repl" in out and "exec" in out and "daemon" in out
+    assert "doctor" in out and "snapshot" in out and "repl" in out and "exec" in out and "daemon" in out
+
+
+def test_cli_snapshot_outputs_json_and_uses_device_selection(monkeypatch, capsys):
+    captured = {}
+
+    def fake_set_device(serial=None, *, transport_name=None):
+        captured["serial"] = serial
+        captured["transport_name"] = transport_name
+
+    def fake_state_snapshot(include_screenshot=False):
+        captured["include_screenshot"] = include_screenshot
+        return {
+            "device_info": {"serial": "emulator-5554"},
+            "current_app": {"package": "com.example", "activity": ".Main"},
+            "visible_texts": ["Ready"],
+            "screenshot": "/tmp/android-harness/screen.png",
+        }
+
+    monkeypatch.setattr(run.helpers, "set_device", fake_set_device)
+    monkeypatch.setattr(run.helpers, "state_snapshot", fake_state_snapshot)
+
+    assert run.main(["-s", "emulator-5554", "--transport", "daemon", "snapshot", "--screenshot"]) == 0
+
+    out = capsys.readouterr().out
+    assert '"serial": "emulator-5554"' in out
+    assert '"screenshot": "/tmp/android-harness/screen.png"' in out
+    assert captured == {
+        "serial": "emulator-5554",
+        "transport_name": "daemon",
+        "include_screenshot": True,
+    }
 
 
 def test_cli_unknown_command_fails_with_error(capsys):

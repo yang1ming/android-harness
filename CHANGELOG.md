@@ -6,6 +6,8 @@ All notable changes to Android Harness are tracked here.
 
 ### Added
 
+- `android-harness snapshot` for machine-readable device, foreground app, and
+  visible text observation from the CLI.
 - Environment report plugin and example for authorized test-device issue
   triage without collecting logcat, UI text, screenshots, or account data.
 - Troubleshooting guides for Linux, ADB, emulators, ADB-over-TCP, and daemon

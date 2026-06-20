@@ -29,6 +29,12 @@ def main(argv: list[str] | None = None) -> int:
     )
     subparsers = parser.add_subparsers(dest="command")
     subparsers.add_parser("doctor", help="check adb and selected device")
+    snapshot_parser = subparsers.add_parser("snapshot", help="print a JSON state snapshot")
+    snapshot_parser.add_argument(
+        "--screenshot",
+        action="store_true",
+        help="include a screenshot path in the snapshot",
+    )
     subparsers.add_parser("repl", help="open an interactive Python REPL with helpers")
     exec_parser = subparsers.add_parser("exec", help="execute a Python file with helpers")
     exec_parser.add_argument("file", type=Path)
@@ -59,6 +65,11 @@ def main(argv: list[str] | None = None) -> int:
         report = doctor(args.serial, transport_name=args.transport).to_dict()
         print(json.dumps(report, ensure_ascii=False, indent=2))
         return 0 if report.get("device_ready") else 1
+
+    if args.command == "snapshot":
+        snapshot = helpers.state_snapshot(include_screenshot=args.screenshot)
+        print(json.dumps(snapshot, ensure_ascii=False, indent=2))
+        return 0
 
     if args.command == "repl":
         code.interact(local=_execution_env(load_workspace=not args.no_workspace))

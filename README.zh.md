@@ -123,6 +123,13 @@ daemon 是可选能力。未设置 `--transport daemon` 或
 android-harness doctor
 ```
 
+输出机器可读的状态快照：
+
+```bash
+android-harness snapshot
+android-harness snapshot --screenshot
+```
+
 通过 heredoc 执行 helper 代码：
 
 ```bash

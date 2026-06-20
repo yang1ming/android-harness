@@ -133,6 +133,13 @@ Connect an Android device or emulator with authorized USB debugging, then run:
 android-harness doctor
 ```
 
+Print a machine-readable state snapshot:
+
+```bash
+android-harness snapshot
+android-harness snapshot --screenshot
+```
+
 Run helper code through a heredoc:
 
 ```bash
