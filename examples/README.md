@@ -21,3 +21,14 @@ android-harness daemon stop
 ```
 
 The helper code is the same; only the transport selection changes.
+
+## Environment Report
+
+```bash
+android-harness exec examples/environment_report.py
+```
+
+This prints non-content metadata for issue triage, including adb selection,
+device facts, display facts, foreground app identity, and basic capability
+probes. It does not collect logcat, UI text, screenshots, account data, or
+app-private content.

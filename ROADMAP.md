@@ -20,6 +20,7 @@ host-side, ADB-first Android automation layer.
 - Optional local ADB daemon transport.
 - Daemon lifecycle tests, stale socket handling, and startup diagnostics.
 - ADBKeyboard Unicode input plugin example.
+- Environment reporting plugin for authorized test devices.
 
 ## Next
 
@@ -31,7 +32,6 @@ host-side, ADB-first Android automation layer.
 ## Later
 
 - OCR observation plugin.
-- Environment reporting plugin for authorized test devices.
 - Input method adapter improvements beyond the current ADBKeyboard example.
 - Local policy guard plugin for misuse boundary checks.
 - More reusable interaction skills for common Android patterns.
