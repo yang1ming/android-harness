@@ -1,3 +1,5 @@
+import io
+
 import pytest
 
 from android_harness import run
@@ -47,7 +49,9 @@ def test_cli_transport_argument_overrides_env_for_doctor(monkeypatch, capsys):
     assert isinstance(run.helpers.get_client().transport, SubprocessAdbTransport)
 
 
-def test_cli_no_args_prints_help(capsys):
+def test_cli_no_args_prints_help(monkeypatch, capsys):
+    monkeypatch.setattr(run.sys, "stdin", io.StringIO(""))
+
     assert run.main([]) == 0
     out = capsys.readouterr().out.lower()
     assert "usage:" in out
