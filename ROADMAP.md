@@ -23,6 +23,7 @@ host-side, ADB-first Android automation layer.
 - Environment reporting plugin for authorized test devices.
 - Machine-readable `android-harness snapshot` CLI command.
 - Structured observation schema versioning.
+- Snapshot page-info and JSON file output options.
 
 ## Next
 

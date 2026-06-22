@@ -1,4 +1,5 @@
 import io
+import json
 
 import pytest
 
@@ -88,6 +89,42 @@ def test_cli_snapshot_outputs_json_and_uses_device_selection(monkeypatch, capsys
         "transport_name": "daemon",
         "include_screenshot": True,
     }
+
+
+def test_cli_snapshot_can_include_page_info_and_write_output(tmp_path, monkeypatch, capsys):
+    def fake_state_snapshot(include_screenshot=False):
+        return {
+            "device_info": {"serial": "emulator-5554"},
+            "current_app": {"package": "com.example", "activity": ".Main"},
+            "visible_texts": ["Ready"],
+        }
+
+    def fake_page_info():
+        return {
+            "current_app": {"package": "com.example", "activity": ".Main"},
+            "visible_texts": ["Ready"],
+            "clickable": [
+                {
+                    "text": "Start",
+                    "content_desc": None,
+                    "resource_id": "pkg:id/start",
+                    "bounds": {"left": 1, "top": 2, "right": 101, "bottom": 202},
+                }
+            ],
+        }
+
+    output = tmp_path / "artifacts" / "snapshot.json"
+    monkeypatch.setattr(run.helpers, "set_device", lambda serial=None, *, transport_name=None: None)
+    monkeypatch.setattr(run.helpers, "state_snapshot", fake_state_snapshot)
+    monkeypatch.setattr(run.helpers, "page_info", fake_page_info)
+
+    assert run.main(["snapshot", "--page-info", "--output", str(output)]) == 0
+
+    stdout_payload = json.loads(capsys.readouterr().out)
+    file_payload = json.loads(output.read_text())
+    assert stdout_payload == file_payload
+    assert stdout_payload["schema_version"] == "android-harness.snapshot.v1"
+    assert stdout_payload["page_info"]["clickable"][0]["resource_id"] == "pkg:id/start"
 
 
 def test_cli_unknown_command_fails_with_error(capsys):

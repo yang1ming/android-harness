@@ -6,6 +6,8 @@ All notable changes to Android Harness are tracked here.
 
 ### Added
 
+- `android-harness snapshot --page-info` to include clickable element metadata.
+- `android-harness snapshot --output PATH` to write JSON snapshots to files.
 - Stable `schema_version` marker for `android-harness snapshot` output.
 - `android-harness snapshot` for machine-readable device, foreground app, and
   visible text observation from the CLI.

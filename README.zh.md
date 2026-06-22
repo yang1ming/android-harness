@@ -128,6 +128,7 @@ android-harness doctor
 ```bash
 android-harness snapshot
 android-harness snapshot --screenshot
+android-harness snapshot --page-info --output /tmp/android-snapshot.json
 ```
 
 快照输出包含 `schema_version` 字段，便于 agent 和 CI 在后续 observation

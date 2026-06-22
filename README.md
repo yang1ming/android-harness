@@ -138,6 +138,7 @@ Print a machine-readable state snapshot:
 ```bash
 android-harness snapshot
 android-harness snapshot --screenshot
+android-harness snapshot --page-info --output /tmp/android-snapshot.json
 ```
 
 Snapshot output includes a `schema_version` field so agents and CI jobs can

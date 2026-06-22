@@ -36,6 +36,16 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="include a screenshot path in the snapshot",
     )
+    snapshot_parser.add_argument(
+        "--page-info",
+        action="store_true",
+        help="include visible text and clickable element details",
+    )
+    snapshot_parser.add_argument(
+        "--output",
+        type=Path,
+        help="write the JSON snapshot to a file",
+    )
     subparsers.add_parser("repl", help="open an interactive Python REPL with helpers")
     exec_parser = subparsers.add_parser("exec", help="execute a Python file with helpers")
     exec_parser.add_argument("file", type=Path)
@@ -69,7 +79,13 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.command == "snapshot":
         snapshot = helpers.state_snapshot(include_screenshot=args.screenshot)
-        print(json.dumps(versioned_snapshot(snapshot), ensure_ascii=False, indent=2))
+        if args.page_info:
+            snapshot["page_info"] = helpers.page_info()
+        payload = json.dumps(versioned_snapshot(snapshot), ensure_ascii=False, indent=2)
+        if args.output:
+            args.output.parent.mkdir(parents=True, exist_ok=True)
+            args.output.write_text(payload + "\n")
+        print(payload)
         return 0
 
     if args.command == "repl":
