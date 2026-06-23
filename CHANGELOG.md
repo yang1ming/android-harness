@@ -6,6 +6,8 @@ All notable changes to Android Harness are tracked here.
 
 ### Added
 
+- Local policy guard plugin for advisory project-boundary checks.
+- UI XML parsing edge-case coverage and clearer bounds validation.
 - `android-harness snapshot --page-info` to include clickable element metadata.
 - `android-harness snapshot --output PATH` to write JSON snapshots to files.
 - Stable `schema_version` marker for `android-harness snapshot` output.

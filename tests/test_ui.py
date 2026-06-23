@@ -1,3 +1,5 @@
+import pytest
+
 from android_harness.ui import parse_bounds, parse_ui_xml, visible_texts
 
 
@@ -9,6 +11,11 @@ def test_parse_bounds_center():
     assert bounds.right == 110
     assert bounds.bottom == 220
     assert bounds.center == (60, 120)
+
+
+def test_parse_bounds_rejects_malformed_value():
+    with pytest.raises(ValueError, match="invalid uiautomator bounds"):
+        parse_bounds("10,20,110,220")
 
 
 def test_parse_ui_xml_elements():
@@ -30,3 +37,19 @@ def test_parse_ui_xml_elements():
     assert elements[0].clickable is True
     assert elements[0].enabled is True
     assert visible_texts(elements) == ["允许"]
+
+
+def test_parse_ui_xml_skips_nodes_without_valid_bounds():
+    xml = """
+    <hierarchy>
+      <node text="missing" clickable="true" enabled="true" />
+      <node text="bad" clickable="true" enabled="true" bounds="oops" />
+      <node text="valid" clickable="true" enabled="true" bounds="[1,2][3,4]" />
+    </hierarchy>
+    """
+
+    elements = parse_ui_xml(xml)
+
+    assert len(elements) == 1
+    assert elements[0].text == "valid"
+    assert elements[0].bounds.center == (2, 3)

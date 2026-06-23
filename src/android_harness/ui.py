@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import re
 from xml.etree import ElementTree
 
 
@@ -31,9 +32,10 @@ class Element:
 
 
 def parse_bounds(value: str) -> Bounds:
-    left_top, right_bottom = value.split("][")
-    left, top = left_top.strip("[]").split(",")
-    right, bottom = right_bottom.strip("[]").split(",")
+    match = re.fullmatch(r"\[(\d+),(\d+)\]\[(\d+),(\d+)\]", value)
+    if match is None:
+        raise ValueError(f"invalid uiautomator bounds: {value!r}")
+    left, top, right, bottom = match.groups()
     return Bounds(int(left), int(top), int(right), int(bottom))
 
 
@@ -48,6 +50,10 @@ def parse_ui_xml(xml: str) -> list[Element]:
         bounds_raw = node.attrib.get("bounds")
         if not bounds_raw:
             continue
+        try:
+            bounds = parse_bounds(bounds_raw)
+        except ValueError:
+            continue
         text = node.attrib.get("text") or None
         desc = node.attrib.get("content-desc") or None
         elements.append(
@@ -56,7 +62,7 @@ def parse_ui_xml(xml: str) -> list[Element]:
                 resource_id=node.attrib.get("resource-id") or None,
                 class_name=node.attrib.get("class") or None,
                 content_desc=desc,
-                bounds=parse_bounds(bounds_raw),
+                bounds=bounds,
                 clickable=parse_bool(node.attrib.get("clickable")),
                 enabled=parse_bool(node.attrib.get("enabled")),
                 focused=parse_bool(node.attrib.get("focused")),
