@@ -26,13 +26,13 @@ host-side, ADB-first Android automation layer.
 - Snapshot page-info and JSON file output options.
 - UI XML bounds validation and edge-case tests.
 - Local policy guard plugin for misuse boundary checks.
+- Focused plugin registry usage tests.
+- Authorized emulator and test-device smoke examples.
 
 ## Next
 
 - Keep the CLI and helper API stable for common ADB-backed workflows.
 - Improve machine-readable observation output for agent and CI use cases.
-- Add focused tests for plugin registry usage.
-- Add more authorized emulator and test-device examples.
 
 ## Later
 

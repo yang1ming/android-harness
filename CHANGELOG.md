@@ -6,6 +6,9 @@ All notable changes to Android Harness are tracked here.
 
 ### Added
 
+- Focused plugin registry behavior tests for sorting, replacement, and
+  instance isolation.
+- Authorized device smoke example for real devices and emulators.
 - Local policy guard plugin for advisory project-boundary checks.
 - UI XML parsing edge-case coverage and clearer bounds validation.
 - `android-harness snapshot --page-info` to include clickable element metadata.
