@@ -37,7 +37,8 @@ authorized.
 - `screenshot(path=None)` captures a PNG screenshot and returns the local path.
 - `state_snapshot(include_screenshot=False)` returns device info, current app,
   visible texts, and optionally a screenshot path. The CLI `snapshot` command
-  can also include `page_info()` and write the JSON payload to a file.
+  can also include `page_info()`, write the JSON payload to a file, and print
+  compact single-line JSON with `--compact`.
 - `ui_xml()` dumps uiautomator XML and returns it as text.
 - `ui_tree()` parses uiautomator XML into `Element` objects.
 - `visible_texts()` returns visible text and content descriptions from the UI

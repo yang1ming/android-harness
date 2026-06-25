@@ -8,6 +8,8 @@ input method.
 from __future__ import annotations
 
 import base64
+from collections.abc import Iterator
+from contextlib import contextmanager
 
 from android_harness import helpers
 
@@ -58,35 +60,35 @@ def restore_ime(ime: str | None) -> None:
         helpers.get_client().shell(["ime", "set", ime])
 
 
-def type_unicode(text: str, *, restore: bool = True) -> None:
-    """Type Unicode text through ADBKeyboard using base64 transport."""
+@contextmanager
+def adbkeyboard_active(*, restore: bool = True) -> Iterator[str | None]:
+    """Temporarily switch to ADBKeyboard and optionally restore the previous IME."""
 
     previous = set_adbkeyboard()
     try:
-        encoded = base64.b64encode(text.encode("utf-8")).decode("ascii")
-        helpers.get_client().shell(["am", "broadcast", "-a", "ADB_INPUT_B64", "--es", "msg", encoded])
+        yield previous
     finally:
         if restore:
             restore_ime(previous)
+
+
+def type_unicode(text: str, *, restore: bool = True) -> None:
+    """Type Unicode text through ADBKeyboard using base64 transport."""
+
+    with adbkeyboard_active(restore=restore):
+        encoded = base64.b64encode(text.encode("utf-8")).decode("ascii")
+        helpers.get_client().shell(["am", "broadcast", "-a", "ADB_INPUT_B64", "--es", "msg", encoded])
 
 
 def clear_input(*, restore: bool = True) -> None:
     """Clear the focused text field through ADBKeyboard."""
 
-    previous = set_adbkeyboard()
-    try:
+    with adbkeyboard_active(restore=restore):
         helpers.get_client().shell(["am", "broadcast", "-a", "ADB_CLEAR_TEXT"])
-    finally:
-        if restore:
-            restore_ime(previous)
 
 
 def send_keyevent(code: int, *, restore: bool = True) -> None:
     """Send a keyevent through ADBKeyboard."""
 
-    previous = set_adbkeyboard()
-    try:
+    with adbkeyboard_active(restore=restore):
         helpers.get_client().shell(["am", "broadcast", "-a", "ADB_INPUT_KEYEVENT", "--ei", "code", str(code)])
-    finally:
-        if restore:
-            restore_ime(previous)

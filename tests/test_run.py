@@ -127,6 +127,25 @@ def test_cli_snapshot_can_include_page_info_and_write_output(tmp_path, monkeypat
     assert stdout_payload["page_info"]["clickable"][0]["resource_id"] == "pkg:id/start"
 
 
+def test_cli_snapshot_can_print_compact_json(monkeypatch, capsys):
+    def fake_state_snapshot(include_screenshot=False):
+        return {
+            "device_info": {"serial": "emulator-5554"},
+            "current_app": {"package": "com.example", "activity": ".Main"},
+            "visible_texts": ["Ready"],
+        }
+
+    monkeypatch.setattr(run.helpers, "set_device", lambda serial=None, *, transport_name=None: None)
+    monkeypatch.setattr(run.helpers, "state_snapshot", fake_state_snapshot)
+
+    assert run.main(["snapshot", "--compact"]) == 0
+
+    out = capsys.readouterr().out
+    assert "\n" not in out.strip()
+    assert " " not in out.strip()
+    assert json.loads(out)["schema_version"] == "android-harness.snapshot.v1"
+
+
 def test_cli_unknown_command_fails_with_error(capsys):
     with pytest.raises(SystemExit) as exc:
         run.main(["invalid"])

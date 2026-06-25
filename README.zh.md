@@ -128,11 +128,13 @@ android-harness doctor
 ```bash
 android-harness snapshot
 android-harness snapshot --screenshot
+android-harness snapshot --compact
 android-harness snapshot --page-info --output /tmp/android-snapshot.json
 ```
 
 快照输出包含 `schema_version` 字段，便于 agent 和 CI 在后续 observation
-格式演进时稳定解析。
+格式演进时稳定解析。如果日志或 pipeline 更适合消费单行 JSON，可以使用
+`--compact`。
 
 通过 heredoc 执行 helper 代码：
 
@@ -168,7 +170,8 @@ PY
 ```
 
 该插件位于 `plugins/adbkeyboard_plugin.py`。它通过 `ADB_INPUT_B64` 发送文本，
-执行期间切换到 ADBKeyboard，并默认恢复之前的输入法。
+执行期间切换到 ADBKeyboard，并默认恢复之前的输入法。多个输入操作需要连续执行时，
+可以使用 `adbkeyboard_active()` 在一个代码块内只切换一次，退出时恢复。
 
 ## 架构
 

@@ -16,6 +16,7 @@ small UI summary.
 
 ```bash
 android-harness -s emulator-5554 exec examples/authorized_device_smoke.py
+android-harness snapshot --compact
 android-harness snapshot --page-info --output /tmp/android-snapshot.json
 ```
 

@@ -1,5 +1,7 @@
 import base64
 
+import pytest
+
 from android_harness import helpers
 from plugins import adbkeyboard_plugin
 
@@ -58,3 +60,16 @@ def test_send_keyevent_broadcasts_code(monkeypatch):
     adbkeyboard_plugin.send_keyevent(66)
 
     assert ["am", "broadcast", "-a", "ADB_INPUT_KEYEVENT", "--ei", "code", "66"] in client.calls
+
+
+def test_adbkeyboard_active_restores_ime_after_exception(monkeypatch):
+    client = FakeClient()
+    monkeypatch.setattr(helpers, "_client", client)
+
+    with pytest.raises(RuntimeError):
+        with adbkeyboard_plugin.adbkeyboard_active():
+            assert client.current == adbkeyboard_plugin.ADB_KEYBOARD_IME
+            raise RuntimeError("boom")
+
+    assert client.current == "com.example/.Ime"
+    assert client.calls[-1] == ["ime", "set", "com.example/.Ime"]

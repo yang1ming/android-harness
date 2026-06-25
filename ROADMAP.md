@@ -24,10 +24,12 @@ host-side, ADB-first Android automation layer.
 - Machine-readable `android-harness snapshot` CLI command.
 - Structured observation schema versioning.
 - Snapshot page-info and JSON file output options.
+- Snapshot compact JSON output option.
 - UI XML bounds validation and edge-case tests.
 - Local policy guard plugin for misuse boundary checks.
 - Focused plugin registry usage tests.
 - Authorized emulator and test-device smoke examples.
+- ADBKeyboard context manager for reusable IME switching.
 
 ## Next
 
@@ -37,7 +39,7 @@ host-side, ADB-first Android automation layer.
 ## Later
 
 - OCR observation plugin.
-- Input method adapter improvements beyond the current ADBKeyboard example.
+- Additional input-method adapter plugins beyond ADBKeyboard.
 - More reusable interaction skills for common Android patterns.
 
 ## Release Work

@@ -6,6 +6,10 @@ All notable changes to Android Harness are tracked here.
 
 ### Added
 
+- `android-harness snapshot --compact` for single-line JSON output in agent
+  pipelines and CI logs.
+- `adbkeyboard_active()` context manager in the ADBKeyboard plugin for reusable
+  IME switching with automatic restoration.
 - Focused plugin registry behavior tests for sorting, replacement, and
   instance isolation.
 - Authorized device smoke example for real devices and emulators.

@@ -46,6 +46,11 @@ def main(argv: list[str] | None = None) -> int:
         type=Path,
         help="write the JSON snapshot to a file",
     )
+    snapshot_parser.add_argument(
+        "--compact",
+        action="store_true",
+        help="print compact single-line JSON",
+    )
     subparsers.add_parser("repl", help="open an interactive Python REPL with helpers")
     exec_parser = subparsers.add_parser("exec", help="execute a Python file with helpers")
     exec_parser.add_argument("file", type=Path)
@@ -81,7 +86,10 @@ def main(argv: list[str] | None = None) -> int:
         snapshot = helpers.state_snapshot(include_screenshot=args.screenshot)
         if args.page_info:
             snapshot["page_info"] = helpers.page_info()
-        payload = json.dumps(versioned_snapshot(snapshot), ensure_ascii=False, indent=2)
+        if args.compact:
+            payload = json.dumps(versioned_snapshot(snapshot), ensure_ascii=False, separators=(",", ":"))
+        else:
+            payload = json.dumps(versioned_snapshot(snapshot), ensure_ascii=False, indent=2)
         if args.output:
             args.output.parent.mkdir(parents=True, exist_ok=True)
             args.output.write_text(payload + "\n")

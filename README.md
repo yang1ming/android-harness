@@ -138,11 +138,13 @@ Print a machine-readable state snapshot:
 ```bash
 android-harness snapshot
 android-harness snapshot --screenshot
+android-harness snapshot --compact
 android-harness snapshot --page-info --output /tmp/android-snapshot.json
 ```
 
 Snapshot output includes a `schema_version` field so agents and CI jobs can
-parse it safely as the observation format evolves.
+parse it safely as the observation format evolves. Use `--compact` when a
+single-line JSON record is easier to consume in logs or pipelines.
 
 Run helper code through a heredoc:
 
@@ -180,7 +182,8 @@ PY
 
 The plugin lives at `plugins/adbkeyboard_plugin.py`. It sends text through
 `ADB_INPUT_B64`, switches to ADBKeyboard for the operation, and restores the
-previous input method by default.
+previous input method by default. For several input operations in one block,
+use `adbkeyboard_active()` to switch once and restore when the block exits.
 
 ## Architecture
 
