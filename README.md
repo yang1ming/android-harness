@@ -168,8 +168,9 @@ PY
 ## Unicode Text Input
 
 The core `type_text()` helper uses `adb shell input text` and is only intended
-for simple ASCII. For Chinese, emoji, symbols, or vendor ROMs with broken shell
-input behavior, use an input-method plugin.
+for simple printable ASCII without literal `%`. For Chinese, emoji, percent
+signs, newlines, symbols, or vendor ROMs with broken shell input behavior, use
+an input-method plugin.
 
 After installing and enabling ADBKeyboard, use the optional plugin:
 

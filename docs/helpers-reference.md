@@ -66,8 +66,9 @@ authorized.
 - `press_key(key)` sends a key event. Common names include `BACK`, `HOME`,
   `ENTER`, `MENU`, `POWER`, `RECENTS`, and `TAB`.
 - `clear_text(max_chars=80)` best-effort clears the focused text field.
-- `type_text(text)` types simple text through `adb shell input text`; use an
-  input-method plugin for complex Unicode.
+- `type_text(text)` types printable ASCII without literal `%` through
+  `adb shell input text`; use an input-method plugin for percent signs,
+  newlines, complex Unicode, and device-specific shell input failures.
 - `launch_app(package, activity=None)` starts an app by package or explicit
   component.
 - `force_stop(package)` force-stops an app.

@@ -116,9 +116,7 @@ def main(argv: list[str] | None = None) -> int:
 
 def _execution_env(*, load_workspace: bool = True) -> dict[str, object]:
     env: dict[str, object] = {"__name__": "__android_harness__"}
-    for name in dir(helpers):
-        if name.startswith("_"):
-            continue
+    for name in helpers.__all__:
         env[name] = getattr(helpers, name)
 
     workspace = Path.cwd() / "agent-workspace" / "agent_helpers.py"

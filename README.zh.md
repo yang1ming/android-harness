@@ -157,8 +157,9 @@ PY
 
 ## Unicode 文本输入
 
-core `type_text()` 使用 `adb shell input text`，只适合简单 ASCII 文本。中文、
-emoji、符号，或 shell input 行为异常的厂商 ROM，应该通过输入法插件处理。
+core `type_text()` 使用 `adb shell input text`，只适合不包含字面量 `%` 的简单
+可打印 ASCII 文本。中文、emoji、百分号、换行、符号，或 shell input 行为异常的厂商
+ROM，应该通过输入法插件处理。
 
 安装并启用 ADBKeyboard 后，可以使用可选插件：
 

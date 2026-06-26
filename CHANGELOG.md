@@ -6,6 +6,8 @@ All notable changes to Android Harness are tracked here.
 
 ### Added
 
+- Explicit `helpers.__all__` public surface for agent wildcard imports and CLI
+  execution environments.
 - `android-harness snapshot --compact` for single-line JSON output in agent
   pipelines and CI logs.
 - `adbkeyboard_active()` context manager in the ADBKeyboard plugin for reusable
@@ -24,6 +26,11 @@ All notable changes to Android Harness are tracked here.
   triage without collecting logcat, UI text, screenshots, or account data.
 - Troubleshooting guides for Linux, ADB, emulators, ADB-over-TCP, and daemon
   transport.
+
+### Fixed
+
+- `type_text()` now rejects literal `%`, Unicode, and control characters instead
+  of sending text that `adb shell input text` may silently mangle.
 
 ## 0.1.0 - 2026-06-13
 

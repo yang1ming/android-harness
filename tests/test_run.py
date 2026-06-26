@@ -29,6 +29,18 @@ def test_execution_env_can_skip_workspace(tmp_path, monkeypatch):
     assert "custom_helper" not in env
 
 
+def test_execution_env_uses_helpers_public_surface():
+    env = run._execution_env(load_workspace=False)
+
+    assert "tap" in env
+    assert "type_text" in env
+    assert "os" not in env
+    assert "re" not in env
+    assert "Path" not in env
+    assert "AdbClient" not in env
+    assert "annotations" not in env
+
+
 def test_cli_transport_argument_overrides_env_for_doctor(monkeypatch, capsys):
     captured = {}
 

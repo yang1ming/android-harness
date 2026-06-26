@@ -16,6 +16,46 @@ from .ui import Bounds
 from .ui import Element, parse_ui_xml, visible_texts as _visible_texts
 
 
+__all__ = [
+    "adb_connect",
+    "adb_disconnect",
+    "adb_tcpip",
+    "bounds_center",
+    "clear_text",
+    "current_app",
+    "device_info",
+    "find_text",
+    "force_stop",
+    "get_client",
+    "handle_permission_dialog",
+    "launch_app",
+    "logcat_tail",
+    "long_press",
+    "open_deeplink",
+    "page_info",
+    "press_key",
+    "pull_file",
+    "push_file",
+    "screen_size",
+    "screenshot",
+    "set_device",
+    "state_snapshot",
+    "swipe",
+    "tap",
+    "tap_element",
+    "tap_if_text",
+    "tap_text",
+    "type_text",
+    "ui_tree",
+    "ui_xml",
+    "visible_texts",
+    "wait_for_activity",
+    "wait_for_app",
+    "wait_for_screen_change",
+    "wait_for_text",
+    "wait_until_screen_stable",
+]
+
 _client = AdbClient()
 
 _ALLOW_PERMISSION_TEXTS = (
@@ -156,11 +196,12 @@ def clear_text(max_chars: int = 80) -> None:
 def type_text(text: str) -> None:
     """Type text through adb shell input.
 
-    This is best for simple text. Complex Unicode input should be implemented as
-    an input-method plugin rather than folded into core.
+    This is only for printable ASCII text that does not contain a literal
+    percent sign. Complex Unicode, percent signs, and multi-line input should be
+    implemented through an input-method plugin rather than folded into core.
     """
 
-    escaped = shlex.quote(text.replace(" ", "%s"))
+    escaped = _adb_input_text_arg(text)
     _client.shell(f"input text {escaped}")
 
 
@@ -370,6 +411,20 @@ def _tcpip_target(host: str, port: int = 5555) -> str:
     if ":" in host:
         return host
     return f"{host}:{port}"
+
+
+def _adb_input_text_arg(text: str) -> str:
+    if "%" in text:
+        raise AdbError(
+            "type_text() cannot reliably type literal '%' through adb shell input text; "
+            "use the ADBKeyboard plugin for percent signs or complex text."
+        )
+    if any(ord(char) < 0x20 or ord(char) >= 0x7F for char in text):
+        raise AdbError(
+            "type_text() only supports printable ASCII through adb shell input text; "
+            "use the ADBKeyboard plugin for Unicode, newlines, or complex text."
+        )
+    return shlex.quote(text.replace(" ", "%s"))
 
 
 def _permission_button_texts(allow: bool) -> tuple[str, ...]:

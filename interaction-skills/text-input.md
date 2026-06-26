@@ -1,7 +1,8 @@
 # Text Input
 
-Prefer `type_text()` for simple ASCII text. For complex Unicode text or apps that
-reject shell input escaping, add an input-method plugin rather than changing core.
+Prefer `type_text()` for simple printable ASCII text without literal `%`. For
+complex Unicode text, percent signs, newlines, or apps that reject shell input
+escaping, add an input-method plugin rather than changing core.
 
 ## ADB shell input limits
 
@@ -12,7 +13,7 @@ English input or ignore `%s` space escaping.
 
 Use `type_text()` only when all of these are true:
 
-- The text is simple ASCII.
+- The text is printable ASCII and does not contain a literal `%`.
 - The target device has already been checked with a real input field.
 - Corruption would not cause account, payment, or destructive actions.
 

@@ -1,5 +1,8 @@
 import json
 
+import pytest
+
+from android_harness.adb import AdbError
 from android_harness import helpers
 from android_harness.ui import Bounds, Element
 
@@ -42,6 +45,60 @@ def test_get_client_returns_selected_client(monkeypatch):
     monkeypatch.setattr(helpers, "_client", client)
 
     assert helpers.get_client() is client
+
+
+def test_helpers_star_import_exports_only_agent_surface():
+    namespace = {}
+
+    exec("from android_harness.helpers import *", namespace)
+
+    assert "tap" in namespace
+    assert "type_text" in namespace
+    assert "os" not in namespace
+    assert "re" not in namespace
+    assert "shlex" not in namespace
+    assert "Path" not in namespace
+    assert "AdbClient" not in namespace
+    assert "annotations" not in namespace
+
+
+def test_type_text_keeps_spaces_and_shell_metacharacters_safe(monkeypatch):
+    class FakeClient:
+        def __init__(self):
+            self.commands = []
+
+        def shell(self, args, timeout=30):
+            self.commands.append(args)
+            return ""
+
+    client = FakeClient()
+    monkeypatch.setattr(helpers, "_client", client)
+
+    helpers.type_text("foo & bar")
+
+    assert client.commands == ["input text 'foo%s&%sbar'"]
+
+
+def test_type_text_rejects_literal_percent(monkeypatch):
+    class FakeClient:
+        def shell(self, args, timeout=30):
+            raise AssertionError("unsafe text should not be sent to adb")
+
+    monkeypatch.setattr(helpers, "_client", FakeClient())
+
+    with pytest.raises(AdbError, match="ADBKeyboard"):
+        helpers.type_text("50% discount")
+
+
+def test_type_text_rejects_non_ascii(monkeypatch):
+    class FakeClient:
+        def shell(self, args, timeout=30):
+            raise AssertionError("unsafe text should not be sent to adb")
+
+    monkeypatch.setattr(helpers, "_client", FakeClient())
+
+    with pytest.raises(AdbError, match="printable ASCII"):
+        helpers.type_text("你好")
 
 
 def test_page_info_is_json_serializable(monkeypatch):
