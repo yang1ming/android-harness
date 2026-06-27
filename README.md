@@ -198,6 +198,14 @@ The plugin lives at `plugins/adbkeyboard_plugin.py`. It sends text through
 previous input method by default. For several input operations in one block,
 use `adbkeyboard_active()` to switch once and restore when the block exits.
 
+For devices that support Android's clipboard service and focused fields that
+accept paste input, `plugins/clipboard_input_plugin.py` provides a best-effort
+clipboard adapter:
+
+```bash
+android-harness exec examples/clipboard_input.py
+```
+
 ## Architecture
 
 ```text

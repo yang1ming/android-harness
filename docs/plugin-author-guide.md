@@ -85,3 +85,7 @@ state and reliably restore it when the operation exits.
 The `plugins/ocr_plugin.py` module is the reference example for a host-side
 optional dependency. It shells out to Tesseract only when the plugin is imported
 and leaves core free of OCR dependencies.
+
+The `plugins/clipboard_input_plugin.py` module is the reference example for a
+device-dependent optional adapter. It uses Android's clipboard service and
+KEYCODE_PASTE without reading clipboard contents.

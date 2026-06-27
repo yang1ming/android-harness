@@ -33,6 +33,7 @@ host-side, ADB-first Android automation layer.
 - Redacted snapshot output for safer CI and agent logs.
 - Optional host-side Tesseract OCR observation plugin.
 - Snapshot summary output for count-based CI and agent logs.
+- Optional clipboard input plugin as an additional input adapter.
 
 ## Next
 
@@ -41,7 +42,7 @@ host-side, ADB-first Android automation layer.
 
 ## Later
 
-- Additional input-method adapter plugins beyond ADBKeyboard.
+- Additional device-specific input adapters beyond the current examples.
 - More reusable interaction skills for common Android patterns.
 
 ## Release Work

@@ -53,3 +53,13 @@ android-harness exec examples/ocr_observe.py
 This optional example uses `plugins/ocr_plugin.py` and the host's Tesseract CLI.
 Use it only when collecting visible screen text is appropriate for the
 authorized device or emulator under test.
+
+## Clipboard Input
+
+```bash
+android-harness exec examples/clipboard_input.py
+```
+
+This optional example uses `plugins/clipboard_input_plugin.py` to set clipboard
+text and send KEYCODE_PASTE. It is device-dependent and should only be used with
+authorized devices and focused fields where paste input is expected.

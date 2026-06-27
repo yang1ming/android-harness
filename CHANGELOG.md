@@ -6,6 +6,8 @@ All notable changes to Android Harness are tracked here.
 
 ### Added
 
+- Optional `plugins/clipboard_input_plugin.py` for device-dependent clipboard
+  text input through Android's clipboard service and KEYCODE_PASTE.
 - `android-harness snapshot --summary` for count-based CI and agent log output.
 - Optional `plugins/ocr_plugin.py` for host-side Tesseract OCR observation.
 - `android-harness snapshot --redact-text` to keep snapshot structure and counts

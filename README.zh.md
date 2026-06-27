@@ -184,6 +184,13 @@ PY
 执行期间切换到 ADBKeyboard，并默认恢复之前的输入法。多个输入操作需要连续执行时，
 可以使用 `adbkeyboard_active()` 在一个代码块内只切换一次，退出时恢复。
 
+对于支持 Android clipboard service、且当前输入框允许 paste 的设备，
+`plugins/clipboard_input_plugin.py` 提供一个 best-effort 剪贴板输入适配器：
+
+```bash
+android-harness exec examples/clipboard_input.py
+```
+
 ## 架构
 
 ```text
