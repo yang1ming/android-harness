@@ -32,6 +32,7 @@ host-side, ADB-first Android automation layer.
 - ADBKeyboard context manager for reusable IME switching.
 - Redacted snapshot output for safer CI and agent logs.
 - Optional host-side Tesseract OCR observation plugin.
+- Snapshot summary output for count-based CI and agent logs.
 
 ## Next
 

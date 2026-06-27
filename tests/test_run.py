@@ -196,6 +196,43 @@ def test_cli_snapshot_can_redact_text(monkeypatch, capsys):
     assert payload["page_info"]["clickable"][0]["resource_id"] == "pkg:id/pay"
 
 
+def test_cli_snapshot_can_print_summary(monkeypatch, capsys):
+    def fake_state_snapshot(include_screenshot=False):
+        return {
+            "device_info": {"serial": "emulator-5554"},
+            "current_app": {"package": "com.example", "activity": ".Main"},
+            "visible_texts": ["Secret"],
+        }
+
+    def fake_page_info():
+        return {
+            "current_app": {"package": "com.example", "activity": ".Main"},
+            "visible_texts": ["Secret"],
+            "clickable": [
+                {
+                    "text": "Pay",
+                    "content_desc": "Pay now",
+                    "resource_id": "pkg:id/pay",
+                    "bounds": {"left": 1, "top": 2, "right": 101, "bottom": 202},
+                }
+            ],
+        }
+
+    monkeypatch.setattr(run.helpers, "set_device", lambda serial=None, *, transport_name=None: None)
+    monkeypatch.setattr(run.helpers, "state_snapshot", fake_state_snapshot)
+    monkeypatch.setattr(run.helpers, "page_info", fake_page_info)
+
+    assert run.main(["snapshot", "--page-info", "--summary"]) == 0
+
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["summary"] is True
+    assert payload["visible_text_count"] == 1
+    assert payload["page_info"]["visible_text_count"] == 1
+    assert payload["page_info"]["clickable_count"] == 1
+    assert "visible_texts" not in payload
+    assert "clickable" not in payload["page_info"]
+
+
 def test_cli_unknown_command_fails_with_error(capsys):
     with pytest.raises(SystemExit) as exc:
         run.main(["invalid"])

@@ -34,6 +34,37 @@ def redact_snapshot_text(snapshot: Mapping[str, Any]) -> dict[str, Any]:
     return redacted
 
 
+def summarize_snapshot(snapshot: Mapping[str, Any]) -> dict[str, Any]:
+    """Return a compact count-based snapshot summary for logs and CI."""
+
+    summary: dict[str, Any] = {
+        "summary": True,
+        "device_info": snapshot.get("device_info"),
+        "current_app": snapshot.get("current_app"),
+    }
+    if "screenshot" in snapshot:
+        summary["screenshot"] = snapshot["screenshot"]
+
+    visible_texts = snapshot.get("visible_texts")
+    if isinstance(visible_texts, list):
+        summary["visible_text_count"] = len(visible_texts)
+
+    page_info = snapshot.get("page_info")
+    if isinstance(page_info, Mapping):
+        page_summary: dict[str, Any] = {}
+        if "current_app" in page_info:
+            page_summary["current_app"] = page_info["current_app"]
+        page_visible_texts = page_info.get("visible_texts")
+        if isinstance(page_visible_texts, list):
+            page_summary["visible_text_count"] = len(page_visible_texts)
+        clickable = page_info.get("clickable")
+        if isinstance(clickable, list):
+            page_summary["clickable_count"] = len(clickable)
+        summary["page_info"] = page_summary
+
+    return summary
+
+
 def _redact_visible_texts(payload: dict[str, Any]) -> None:
     visible_texts = payload.get("visible_texts")
     if isinstance(visible_texts, list):

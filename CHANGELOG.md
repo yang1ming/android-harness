@@ -6,6 +6,7 @@ All notable changes to Android Harness are tracked here.
 
 ### Added
 
+- `android-harness snapshot --summary` for count-based CI and agent log output.
 - Optional `plugins/ocr_plugin.py` for host-side Tesseract OCR observation.
 - `android-harness snapshot --redact-text` to keep snapshot structure and counts
   while removing visible UI text and content descriptions from logs.
