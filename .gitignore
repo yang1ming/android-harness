@@ -28,6 +28,8 @@ build/
 *.log
 *.tmp
 
+AGENTS.md
+
 screenshots/
 artifacts/
 reports/
