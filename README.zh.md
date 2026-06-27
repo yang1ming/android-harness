@@ -129,12 +129,20 @@ android-harness doctor
 android-harness snapshot
 android-harness snapshot --screenshot
 android-harness snapshot --compact
+android-harness snapshot --redact-text
 android-harness snapshot --page-info --output /tmp/android-snapshot.json
 ```
 
 快照输出包含 `schema_version` 字段，便于 agent 和 CI 在后续 observation
 格式演进时稳定解析。如果日志或 pipeline 更适合消费单行 JSON，可以使用
-`--compact`。
+`--compact`。如果日志只需要保留结构和数量，不应该暴露可见 UI 文本或
+content description，可以使用 `--redact-text`。
+
+可选 OCR 放在插件层，在 host 上存在 Tesseract CLI 时可用：
+
+```bash
+android-harness exec examples/ocr_observe.py
+```
 
 通过 heredoc 执行 helper 代码：
 

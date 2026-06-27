@@ -81,3 +81,7 @@ optional device-side component. It documents its external IME dependency and
 keeps Unicode text input outside core. Its `adbkeyboard_active()` context
 manager is the preferred shape when a plugin needs to temporarily switch Android
 state and reliably restore it when the operation exits.
+
+The `plugins/ocr_plugin.py` module is the reference example for a host-side
+optional dependency. It shells out to Tesseract only when the plugin is imported
+and leaves core free of OCR dependencies.

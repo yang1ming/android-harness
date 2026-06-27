@@ -12,7 +12,7 @@ from pathlib import Path
 from . import helpers
 from .admin import doctor
 from .daemon import daemon_status, start_daemon, stop_daemon
-from .observation import versioned_snapshot
+from .observation import redact_snapshot_text, versioned_snapshot
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -51,6 +51,11 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="print compact single-line JSON",
     )
+    snapshot_parser.add_argument(
+        "--redact-text",
+        action="store_true",
+        help="remove visible UI text and content descriptions from the snapshot",
+    )
     subparsers.add_parser("repl", help="open an interactive Python REPL with helpers")
     exec_parser = subparsers.add_parser("exec", help="execute a Python file with helpers")
     exec_parser.add_argument("file", type=Path)
@@ -86,6 +91,8 @@ def main(argv: list[str] | None = None) -> int:
         snapshot = helpers.state_snapshot(include_screenshot=args.screenshot)
         if args.page_info:
             snapshot["page_info"] = helpers.page_info()
+        if args.redact_text:
+            snapshot = redact_snapshot_text(snapshot)
         if args.compact:
             payload = json.dumps(versioned_snapshot(snapshot), ensure_ascii=False, separators=(",", ":"))
         else:

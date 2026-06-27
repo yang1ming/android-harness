@@ -43,3 +43,13 @@ This prints non-content metadata for issue triage, including adb selection,
 device facts, display facts, foreground app identity, and basic capability
 probes. It does not collect logcat, UI text, screenshots, account data, or
 app-private content.
+
+## OCR Observation
+
+```bash
+android-harness exec examples/ocr_observe.py
+```
+
+This optional example uses `plugins/ocr_plugin.py` and the host's Tesseract CLI.
+Use it only when collecting visible screen text is appropriate for the
+authorized device or emulator under test.

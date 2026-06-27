@@ -30,6 +30,8 @@ host-side, ADB-first Android automation layer.
 - Focused plugin registry usage tests.
 - Authorized emulator and test-device smoke examples.
 - ADBKeyboard context manager for reusable IME switching.
+- Redacted snapshot output for safer CI and agent logs.
+- Optional host-side Tesseract OCR observation plugin.
 
 ## Next
 
@@ -38,7 +40,6 @@ host-side, ADB-first Android automation layer.
 
 ## Later
 
-- OCR observation plugin.
 - Additional input-method adapter plugins beyond ADBKeyboard.
 - More reusable interaction skills for common Android patterns.
 

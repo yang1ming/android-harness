@@ -6,6 +6,9 @@ All notable changes to Android Harness are tracked here.
 
 ### Added
 
+- Optional `plugins/ocr_plugin.py` for host-side Tesseract OCR observation.
+- `android-harness snapshot --redact-text` to keep snapshot structure and counts
+  while removing visible UI text and content descriptions from logs.
 - Explicit `helpers.__all__` public surface for agent wildcard imports and CLI
   execution environments.
 - `android-harness snapshot --compact` for single-line JSON output in agent

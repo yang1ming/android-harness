@@ -139,12 +139,22 @@ Print a machine-readable state snapshot:
 android-harness snapshot
 android-harness snapshot --screenshot
 android-harness snapshot --compact
+android-harness snapshot --redact-text
 android-harness snapshot --page-info --output /tmp/android-snapshot.json
 ```
 
 Snapshot output includes a `schema_version` field so agents and CI jobs can
 parse it safely as the observation format evolves. Use `--compact` when a
-single-line JSON record is easier to consume in logs or pipelines.
+single-line JSON record is easier to consume in logs or pipelines. Use
+`--redact-text` when logs should keep structure and counts without visible UI
+text or content descriptions.
+
+Optional OCR lives in the plugin layer and uses the host's Tesseract CLI when
+available:
+
+```bash
+android-harness exec examples/ocr_observe.py
+```
 
 Run helper code through a heredoc:
 
