@@ -54,6 +54,7 @@ note should make later runs faster and more consistent.
 | [docs/helpers-reference.md](docs/helpers-reference.md) | Agent-facing helper API reference. |
 | [docs/plugin-author-guide.md](docs/plugin-author-guide.md) | Plugin boundaries and extension patterns. |
 | [docs/manual-smoke.md](docs/manual-smoke.md) | Manual checks for authorized devices and emulators. |
+| [docs/release.md](docs/release.md) | Release checklist, package build, and artifact boundary. |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | Contribution process and expectations. |
 | [ROADMAP.md](ROADMAP.md) | Current maintenance direction. |
 | [CHANGELOG.md](CHANGELOG.md) | User-facing change history. |

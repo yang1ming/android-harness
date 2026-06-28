@@ -50,6 +50,7 @@ uiautomator XML、日志和文件。
 | [docs/helpers-reference.md](docs/helpers-reference.md) | 面向 agent 的 helper API 参考。 |
 | [docs/plugin-author-guide.md](docs/plugin-author-guide.md) | 插件边界和扩展模式。 |
 | [docs/manual-smoke.md](docs/manual-smoke.md) | 面向已授权设备和模拟器的手动验收。 |
+| [docs/release.zh.md](docs/release.zh.md) | 发布检查清单、包构建和 artifact 边界。 |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | 贡献流程和协作预期。 |
 | [ROADMAP.md](ROADMAP.md) | 当前维护方向。 |
 | [CHANGELOG.md](CHANGELOG.md) | 面向用户的变更记录。 |

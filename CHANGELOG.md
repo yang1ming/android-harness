@@ -6,6 +6,8 @@ All notable changes to Android Harness are tracked here.
 
 ### Added
 
+- GitHub Actions `Release Build` workflow and release checklist documentation
+  for repeatable package artifacts.
 - Optional `plugins/clipboard_input_plugin.py` for device-dependent clipboard
   text input through Android's clipboard service and KEYCODE_PASTE.
 - `android-harness snapshot --summary` for count-based CI and agent log output.

@@ -34,6 +34,7 @@ host-side, ADB-first Android automation layer.
 - Optional host-side Tesseract OCR observation plugin.
 - Snapshot summary output for count-based CI and agent logs.
 - Optional clipboard input plugin as an additional input adapter.
+- Release build workflow and release checklist documentation.
 
 ## Next
 
@@ -47,7 +48,8 @@ host-side, ADB-first Android automation layer.
 
 ## Release Work
 
-- Publish a `v0.1.0` GitHub Release and tag.
+- Publish a `v0.1.0` GitHub Release and tag after `CI` and `Release Build`
+  pass.
 - Keep `CHANGELOG.md` current for every user-facing change.
 - Keep `NOTICE.md` current when third-party code, documentation, models,
   datasets, or device-side components are introduced.
