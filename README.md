@@ -30,7 +30,7 @@ conventions, and CLI ergonomics may still evolve.
 | ADB control | Direct subprocess-backed `adb` by default, with optional local daemon transport. |
 | Observation | Screenshots, uiautomator XML, device facts, screen facts, app facts, logs, and files. |
 | Interaction | Tap, swipe, keyevent, text input, waits, and Python helper execution through the CLI. |
-| Agent workflow | Local workspace helpers, reusable interaction skills, examples, and smoke-test docs. |
+| Agent workflow | Local workspace helpers, reusable interaction skills, examples, and JSON/manual smoke checks. |
 | Extension points | Optional plugins for input methods, OCR, environment reporting, and policy checks. |
 | Boundaries | Authorized devices only; no account takeover, CAPTCHA, payment, bypass, or signal-hiding flows. |
 
@@ -63,6 +63,13 @@ Local checks:
 
 ```bash
 make check
+```
+
+Authorized-device smoke checks:
+
+```bash
+android-harness smoke
+android-harness smoke --compact --output /tmp/android-harness-smoke.json
 ```
 
 ## Positioning

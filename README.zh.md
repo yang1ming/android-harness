@@ -26,7 +26,7 @@ uiautomator XML、日志和文件。
 | ADB 控制 | 默认直接通过 subprocess 调用 `adb`，也支持可选本地 daemon transport。 |
 | 观察能力 | 截图、uiautomator XML、设备信息、屏幕信息、当前 app、日志和文件。 |
 | 交互能力 | tap、swipe、keyevent、文本输入、等待，以及通过 CLI 执行 Python helper。 |
-| Agent 工作流 | 本地 workspace helper、可复用 interaction skill、示例和手动验收文档。 |
+| Agent 工作流 | 本地 workspace helper、可复用 interaction skill、示例，以及 JSON/手动 smoke check。 |
 | 扩展点 | 输入法、OCR、环境画像、policy check 等能力通过可选插件扩展。 |
 | 边界 | 只面向已授权设备；不支持账号接管、验证码、支付、绕过限制或隐藏自动化信号。 |
 
@@ -59,6 +59,13 @@ uiautomator XML、日志和文件。
 
 ```bash
 make check
+```
+
+已授权设备 smoke check：
+
+```bash
+android-harness smoke
+android-harness smoke --compact --output /tmp/android-harness-smoke.json
 ```
 
 ## 核心定位

@@ -41,7 +41,7 @@ This guide keeps Android Harness releases small, repeatable, and auditable.
 9. Run the manual smoke checklist on an authorized device or emulator:
 
    ```bash
-   android-harness doctor
+   android-harness smoke
    android-harness exec examples/basic_observe.py
    ```
 

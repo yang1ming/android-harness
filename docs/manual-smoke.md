@@ -30,6 +30,22 @@ Expected result:
 - pytest passes.
 - compileall passes.
 
+## Executable Smoke Summary
+
+```bash
+android-harness smoke
+android-harness smoke --compact --output /tmp/android-harness-smoke.json
+```
+
+Expected result:
+
+- The command prints a JSON report with `schema_version`,
+  `ok`, `checks`, `doctor`, and `daemon`.
+- The exit code is `0` only when adb, the selected device, screenshot capture,
+  and uiautomator probing are available.
+- The report can be attached to issues after removing any environment-specific
+  paths or device identifiers that should stay private.
+
 ## Device Readiness
 
 ```bash

@@ -35,11 +35,13 @@ host-side, ADB-first Android automation layer.
 - Snapshot summary output for count-based CI and agent logs.
 - Optional clipboard input plugin as an additional input adapter.
 - Release build workflow and release checklist documentation.
+- Executable JSON smoke runner for release and issue triage.
 
 ## Next
 
 - Keep the CLI and helper API stable for common ADB-backed workflows.
 - Improve machine-readable observation output for agent and CI use cases.
+- Add schema compatibility fixtures for public JSON outputs.
 
 ## Later
 

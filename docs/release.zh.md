@@ -41,7 +41,7 @@
 9. 在已授权设备或模拟器上运行手动 smoke check：
 
    ```bash
-   android-harness doctor
+   android-harness smoke
    android-harness exec examples/basic_observe.py
    ```
 

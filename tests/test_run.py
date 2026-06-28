@@ -68,7 +68,7 @@ def test_cli_no_args_prints_help(monkeypatch, capsys):
     assert run.main([]) == 0
     out = capsys.readouterr().out.lower()
     assert "usage:" in out
-    assert "doctor" in out and "snapshot" in out and "repl" in out and "exec" in out and "daemon" in out
+    assert "doctor" in out and "snapshot" in out and "smoke" in out and "repl" in out and "exec" in out and "daemon" in out
 
 
 def test_cli_snapshot_outputs_json_and_uses_device_selection(monkeypatch, capsys):
@@ -231,6 +231,32 @@ def test_cli_snapshot_can_print_summary(monkeypatch, capsys):
     assert payload["page_info"]["clickable_count"] == 1
     assert "visible_texts" not in payload
     assert "clickable" not in payload["page_info"]
+
+
+def test_cli_smoke_outputs_json_and_uses_exit_status(tmp_path, monkeypatch, capsys):
+    captured = {}
+
+    def fake_run_smoke(serial=None, *, transport_name=None):
+        captured["serial"] = serial
+        captured["transport_name"] = transport_name
+        return {
+            "schema_version": "android-harness.smoke.v1",
+            "ok": False,
+            "transport": transport_name,
+            "checks": [{"name": "device_ready", "ok": False}],
+        }
+
+    output = tmp_path / "reports" / "smoke.json"
+    monkeypatch.setattr(run.helpers, "set_device", lambda serial=None, *, transport_name=None: None)
+    monkeypatch.setattr(run, "run_smoke", fake_run_smoke)
+
+    assert run.main(["-s", "emulator-5554", "--transport", "daemon", "smoke", "--compact", "--output", str(output)]) == 1
+
+    stdout_payload = json.loads(capsys.readouterr().out)
+    file_payload = json.loads(output.read_text())
+    assert stdout_payload == file_payload
+    assert stdout_payload["schema_version"] == "android-harness.smoke.v1"
+    assert captured == {"serial": "emulator-5554", "transport_name": "daemon"}
 
 
 def test_cli_unknown_command_fails_with_error(capsys):

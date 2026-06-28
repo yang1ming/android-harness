@@ -13,6 +13,7 @@ from . import helpers
 from .admin import doctor
 from .daemon import daemon_status, start_daemon, stop_daemon
 from .observation import redact_snapshot_text, summarize_snapshot, versioned_snapshot
+from .smoke import run_smoke
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -61,6 +62,17 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="print a count-based snapshot summary for logs and CI",
     )
+    smoke_parser = subparsers.add_parser("smoke", help="run JSON smoke checks")
+    smoke_parser.add_argument(
+        "--output",
+        type=Path,
+        help="write the JSON smoke report to a file",
+    )
+    smoke_parser.add_argument(
+        "--compact",
+        action="store_true",
+        help="print compact single-line JSON",
+    )
     subparsers.add_parser("repl", help="open an interactive Python REPL with helpers")
     exec_parser = subparsers.add_parser("exec", help="execute a Python file with helpers")
     exec_parser.add_argument("file", type=Path)
@@ -84,6 +96,18 @@ def main(argv: list[str] | None = None) -> int:
             return 0
         daemon_parser.print_help()
         return 0
+
+    if args.command == "smoke":
+        report = run_smoke(args.serial, transport_name=args.transport)
+        if args.compact:
+            payload = json.dumps(report, ensure_ascii=False, separators=(",", ":"))
+        else:
+            payload = json.dumps(report, ensure_ascii=False, indent=2)
+        if args.output:
+            args.output.parent.mkdir(parents=True, exist_ok=True)
+            args.output.write_text(payload + "\n")
+        print(payload)
+        return 0 if report.get("ok") else 1
 
     helpers.set_device(args.serial, transport_name=args.transport)
 
