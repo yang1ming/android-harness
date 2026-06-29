@@ -1,4 +1,10 @@
+import json
+from pathlib import Path
+
 from android_harness.observation import SNAPSHOT_SCHEMA_VERSION, redact_snapshot_text, summarize_snapshot, versioned_snapshot
+
+
+FIXTURES = Path(__file__).parent / "fixtures"
 
 
 def test_versioned_snapshot_adds_schema_marker_without_nesting_payload():
@@ -80,3 +86,25 @@ def test_summarize_snapshot_returns_counts_without_text_content():
             "clickable_count": 2,
         },
     }
+
+
+def test_snapshot_summary_matches_public_schema_fixture():
+    snapshot = {
+        "device_info": {"serial": "emulator-5554", "model": "Pixel Test"},
+        "current_app": {"package": "com.example", "activity": ".Main"},
+        "visible_texts": ["Ready", "Secret"],
+        "screenshot": "/tmp/android-harness/screen.png",
+        "page_info": {
+            "current_app": {"package": "com.example", "activity": ".Main"},
+            "visible_texts": ["Ready"],
+            "clickable": [
+                {"text": "Start", "content_desc": "Start button"},
+                {"text": "Stop", "content_desc": "Stop button"},
+            ],
+        },
+    }
+
+    payload = versioned_snapshot(summarize_snapshot(snapshot))
+    fixture = json.loads((FIXTURES / "snapshot_summary_v1.json").read_text())
+
+    assert payload == fixture

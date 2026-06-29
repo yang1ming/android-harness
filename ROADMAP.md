@@ -36,12 +36,12 @@ host-side, ADB-first Android automation layer.
 - Optional clipboard input plugin as an additional input adapter.
 - Release build workflow and release checklist documentation.
 - Executable JSON smoke runner for release and issue triage.
+- Public JSON schema compatibility fixtures for snapshot and smoke outputs.
 
 ## Next
 
 - Keep the CLI and helper API stable for common ADB-backed workflows.
 - Improve machine-readable observation output for agent and CI use cases.
-- Add schema compatibility fixtures for public JSON outputs.
 
 ## Later
 

@@ -1,4 +1,10 @@
+import json
+from pathlib import Path
+
 from android_harness import smoke
+
+
+FIXTURES = Path(__file__).parent / "fixtures"
 
 
 class FakeReport:
@@ -16,7 +22,7 @@ def test_run_smoke_returns_passed_structured_report(monkeypatch):
         return FakeReport(
             {
                 "adb_available": True,
-                "devices": [("emulator-5554", "device")],
+                "devices": [["emulator-5554", "device"]],
                 "selected_serial": "emulator-5554",
                 "device_ready": True,
                 "screenshot_available": True,
@@ -42,6 +48,29 @@ def test_run_smoke_returns_passed_structured_report(monkeypatch):
         "uiautomator_available",
     ]
     assert all(check["ok"] for check in report["checks"])
+
+
+def test_smoke_report_matches_public_schema_fixture(monkeypatch):
+    def fake_doctor(serial=None, *, transport_name=None):
+        return FakeReport(
+            {
+                "adb_available": True,
+                "devices": [["emulator-5554", "device"]],
+                "selected_serial": "emulator-5554",
+                "device_ready": True,
+                "screenshot_available": True,
+                "uiautomator_available": True,
+                "error": None,
+            }
+        )
+
+    monkeypatch.setattr(smoke, "doctor", fake_doctor)
+    monkeypatch.setattr(smoke, "daemon_status", lambda: "running: /tmp/android-harness/daemon.sock")
+
+    payload = json.loads(json.dumps(smoke.run_smoke("emulator-5554", transport_name="daemon")))
+    fixture = json.loads((FIXTURES / "smoke_report_v1.json").read_text())
+
+    assert payload == fixture
 
 
 def test_run_smoke_marks_failed_device_probe(monkeypatch):

@@ -1,0 +1,22 @@
+{
+  "schema_version": "android-harness.snapshot.v1",
+  "summary": true,
+  "device_info": {
+    "serial": "emulator-5554",
+    "model": "Pixel Test"
+  },
+  "current_app": {
+    "package": "com.example",
+    "activity": ".Main"
+  },
+  "screenshot": "/tmp/android-harness/screen.png",
+  "visible_text_count": 2,
+  "page_info": {
+    "current_app": {
+      "package": "com.example",
+      "activity": ".Main"
+    },
+    "visible_text_count": 1,
+    "clickable_count": 2
+  }
+}

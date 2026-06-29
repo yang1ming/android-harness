@@ -1,0 +1,42 @@
+{
+  "schema_version": "android-harness.smoke.v1",
+  "ok": true,
+  "transport": "daemon",
+  "selected_serial": "emulator-5554",
+  "checks": [
+    {
+      "name": "adb_available",
+      "ok": true
+    },
+    {
+      "name": "device_ready",
+      "ok": true
+    },
+    {
+      "name": "screenshot_available",
+      "ok": true
+    },
+    {
+      "name": "uiautomator_available",
+      "ok": true
+    }
+  ],
+  "doctor": {
+    "adb_available": true,
+    "devices": [
+      [
+        "emulator-5554",
+        "device"
+      ]
+    ],
+    "selected_serial": "emulator-5554",
+    "device_ready": true,
+    "screenshot_available": true,
+    "uiautomator_available": true,
+    "error": null
+  },
+  "daemon": {
+    "running": true,
+    "status": "running: /tmp/android-harness/daemon.sock"
+  }
+}

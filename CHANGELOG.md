@@ -10,6 +10,7 @@ All notable changes to Android Harness are tracked here.
   for repeatable package artifacts.
 - `android-harness smoke` for structured release and issue-triage smoke
   reports.
+- Public JSON schema fixtures for snapshot summary and smoke report outputs.
 - Optional `plugins/clipboard_input_plugin.py` for device-dependent clipboard
   text input through Android's clipboard service and KEYCODE_PASTE.
 - `android-harness snapshot --summary` for count-based CI and agent log output.
