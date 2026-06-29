@@ -40,6 +40,8 @@ All notable changes to Android Harness are tracked here.
 
 ### Fixed
 
+- `android-harness smoke` now explains skipped screenshot and uiautomator
+  probes when no selected device is ready.
 - `type_text()` now rejects literal `%`, Unicode, and control characters instead
   of sending text that `adb shell input text` may silently mangle.
 

@@ -45,12 +45,12 @@ def _checks_from_doctor(doctor_report: dict[str, Any]) -> list[dict[str, object]
         _check(
             "screenshot_available",
             doctor_report.get("screenshot_available") is True,
-            "screenshot probe failed" if doctor_report.get("screenshot_available") is False else None,
+            _probe_detail(doctor_report, "screenshot_available", "screenshot probe failed"),
         ),
         _check(
             "uiautomator_available",
             doctor_report.get("uiautomator_available") is True,
-            "uiautomator probe failed" if doctor_report.get("uiautomator_available") is False else None,
+            _probe_detail(doctor_report, "uiautomator_available", "uiautomator probe failed"),
         ),
     ]
 
@@ -60,6 +60,15 @@ def _check(name: str, ok: bool, detail: object | None = None) -> dict[str, objec
     if detail:
         payload["detail"] = detail
     return payload
+
+
+def _probe_detail(doctor_report: dict[str, Any], key: str, fallback: str) -> str | None:
+    value = doctor_report.get(key)
+    if value is False:
+        return fallback
+    if value is None and doctor_report.get("device_ready") is not True:
+        return "not checked because device is not ready"
+    return None
 
 
 def _daemon_probe() -> dict[str, object]:

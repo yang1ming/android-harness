@@ -100,3 +100,37 @@ def test_run_smoke_marks_failed_device_probe(monkeypatch):
         "ok": False,
         "detail": "screenshot probe failed",
     }
+
+
+def test_run_smoke_explains_skipped_device_probes(monkeypatch):
+    def fake_doctor(serial=None, *, transport_name=None):
+        return FakeReport(
+            {
+                "adb_available": True,
+                "devices": [],
+                "selected_serial": None,
+                "device_ready": False,
+                "screenshot_available": None,
+                "uiautomator_available": None,
+                "error": "select a single authorized device with ANDROID_SERIAL or -s",
+            }
+        )
+
+    monkeypatch.setattr(smoke, "doctor", fake_doctor)
+    monkeypatch.setattr(smoke, "daemon_status", lambda: "not running: /tmp/android-harness/daemon.sock")
+
+    report = smoke.run_smoke()
+
+    assert report["ok"] is False
+    screenshot_check = next(check for check in report["checks"] if check["name"] == "screenshot_available")
+    uiautomator_check = next(check for check in report["checks"] if check["name"] == "uiautomator_available")
+    assert screenshot_check == {
+        "name": "screenshot_available",
+        "ok": False,
+        "detail": "not checked because device is not ready",
+    }
+    assert uiautomator_check == {
+        "name": "uiautomator_available",
+        "ok": False,
+        "detail": "not checked because device is not ready",
+    }
