@@ -6,6 +6,8 @@ All notable changes to Android Harness are tracked here.
 
 ### Added
 
+- `android-harness doctor --compact` and `--output PATH` for machine-readable
+  diagnostic artifacts.
 - GitHub Actions `Release Build` workflow and release checklist documentation
   for repeatable package artifacts.
 - `android-harness smoke` for structured release and issue-triage smoke

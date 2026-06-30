@@ -30,7 +30,17 @@ def main(argv: list[str] | None = None) -> int:
         help="do not load agent-workspace/agent_helpers.py",
     )
     subparsers = parser.add_subparsers(dest="command")
-    subparsers.add_parser("doctor", help="check adb and selected device")
+    doctor_parser = subparsers.add_parser("doctor", help="check adb and selected device")
+    doctor_parser.add_argument(
+        "--output",
+        type=Path,
+        help="write the JSON doctor report to a file",
+    )
+    doctor_parser.add_argument(
+        "--compact",
+        action="store_true",
+        help="print compact single-line JSON",
+    )
     snapshot_parser = subparsers.add_parser("snapshot", help="print a JSON state snapshot")
     snapshot_parser.add_argument(
         "--screenshot",
@@ -113,7 +123,14 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.command == "doctor":
         report = doctor(args.serial, transport_name=args.transport).to_dict()
-        print(json.dumps(report, ensure_ascii=False, indent=2))
+        if args.compact:
+            payload = json.dumps(report, ensure_ascii=False, separators=(",", ":"))
+        else:
+            payload = json.dumps(report, ensure_ascii=False, indent=2)
+        if args.output:
+            args.output.parent.mkdir(parents=True, exist_ok=True)
+            args.output.write_text(payload + "\n")
+        print(payload)
         return 0 if report.get("device_ready") else 1
 
     if args.command == "snapshot":

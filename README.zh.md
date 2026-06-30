@@ -61,6 +61,13 @@ uiautomator XML、日志和文件。
 make check
 ```
 
+设备诊断：
+
+```bash
+android-harness doctor
+android-harness doctor --compact --output /tmp/android-harness-doctor.json
+```
+
 已授权设备 smoke check：
 
 ```bash

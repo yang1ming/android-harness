@@ -62,6 +62,38 @@ def test_cli_transport_argument_overrides_env_for_doctor(monkeypatch, capsys):
     assert isinstance(run.helpers.get_client().transport, SubprocessAdbTransport)
 
 
+def test_cli_doctor_can_print_compact_json_and_write_output(tmp_path, monkeypatch, capsys):
+    captured = {}
+
+    class FakeReport:
+        def to_dict(self):
+            return {
+                "adb_available": True,
+                "devices": [["emulator-5554", "device"]],
+                "selected_serial": "emulator-5554",
+                "device_ready": True,
+            }
+
+    def fake_doctor(serial=None, *, transport_name=None):
+        captured["serial"] = serial
+        captured["transport_name"] = transport_name
+        return FakeReport()
+
+    output = tmp_path / "reports" / "doctor.json"
+    monkeypatch.setattr(run, "doctor", fake_doctor)
+
+    assert run.main(["-s", "emulator-5554", "--transport", "daemon", "doctor", "--compact", "--output", str(output)]) == 0
+
+    stdout = capsys.readouterr().out
+    assert "\n" not in stdout.strip()
+    assert " " not in stdout.strip()
+    stdout_payload = json.loads(stdout)
+    file_payload = json.loads(output.read_text())
+    assert stdout_payload == file_payload
+    assert stdout_payload["selected_serial"] == "emulator-5554"
+    assert captured == {"serial": "emulator-5554", "transport_name": "daemon"}
+
+
 def test_cli_no_args_prints_help(monkeypatch, capsys):
     monkeypatch.setattr(run.sys, "stdin", io.StringIO(""))
 

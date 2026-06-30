@@ -65,6 +65,13 @@ Local checks:
 make check
 ```
 
+Device diagnostics:
+
+```bash
+android-harness doctor
+android-harness doctor --compact --output /tmp/android-harness-doctor.json
+```
+
 Authorized-device smoke checks:
 
 ```bash
