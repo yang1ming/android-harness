@@ -77,6 +77,7 @@ Authorized-device smoke checks:
 ```bash
 android-harness smoke
 android-harness smoke --compact --output /tmp/android-harness-smoke.json
+android-harness smoke --redact-device --output /tmp/android-harness-smoke-redacted.json
 ```
 
 ## Positioning

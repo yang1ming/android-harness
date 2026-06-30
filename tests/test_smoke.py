@@ -73,6 +73,39 @@ def test_smoke_report_matches_public_schema_fixture(monkeypatch):
     assert payload == fixture
 
 
+def test_redact_smoke_report_removes_device_identifiers():
+    report = {
+        "schema_version": smoke.SMOKE_SCHEMA_VERSION,
+        "ok": False,
+        "selected_serial": "emulator-5554",
+        "checks": [
+            {
+                "name": "device_ready",
+                "ok": False,
+                "detail": "selected device emulator-5554 is offline",
+            }
+        ],
+        "doctor": {
+            "selected_serial": "emulator-5554",
+            "devices": [["emulator-5554", "offline"], ["192.168.1.20:5555", "device"]],
+            "error": "selected device emulator-5554 is not ready",
+        },
+    }
+
+    redacted = smoke.redact_smoke_report(report)
+
+    encoded = json.dumps(redacted)
+    assert "emulator-5554" not in encoded
+    assert "192.168.1.20:5555" not in encoded
+    assert redacted["device_redacted"] is True
+    assert redacted["selected_serial"] == smoke.REDACTED_DEVICE
+    assert redacted["doctor"]["devices"] == [
+        [smoke.REDACTED_DEVICE, "offline"],
+        [smoke.REDACTED_DEVICE, "device"],
+    ]
+    assert report["selected_serial"] == "emulator-5554"
+
+
 def test_run_smoke_marks_failed_device_probe(monkeypatch):
     def fake_doctor(serial=None, *, transport_name=None):
         return FakeReport(

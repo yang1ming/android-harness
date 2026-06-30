@@ -38,6 +38,7 @@ host-side, ADB-first Android automation layer.
 - Executable JSON smoke runner for release and issue triage.
 - Public JSON schema compatibility fixtures for snapshot and smoke outputs.
 - Doctor compact and file JSON output options.
+- Smoke report device identifier redaction for safer issue triage.
 
 ## Next
 

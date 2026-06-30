@@ -13,7 +13,7 @@ from . import helpers
 from .admin import doctor
 from .daemon import daemon_status, start_daemon, stop_daemon
 from .observation import redact_snapshot_text, summarize_snapshot, versioned_snapshot
-from .smoke import run_smoke
+from .smoke import redact_smoke_report, run_smoke
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -83,6 +83,11 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="print compact single-line JSON",
     )
+    smoke_parser.add_argument(
+        "--redact-device",
+        action="store_true",
+        help="redact selected device identifiers from the smoke report",
+    )
     subparsers.add_parser("repl", help="open an interactive Python REPL with helpers")
     exec_parser = subparsers.add_parser("exec", help="execute a Python file with helpers")
     exec_parser.add_argument("file", type=Path)
@@ -109,6 +114,8 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.command == "smoke":
         report = run_smoke(args.serial, transport_name=args.transport)
+        if args.redact_device:
+            report = redact_smoke_report(report)
         if args.compact:
             payload = json.dumps(report, ensure_ascii=False, separators=(",", ":"))
         else:

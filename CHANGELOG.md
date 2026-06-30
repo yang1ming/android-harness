@@ -8,6 +8,8 @@ All notable changes to Android Harness are tracked here.
 
 - `android-harness doctor --compact` and `--output PATH` for machine-readable
   diagnostic artifacts.
+- `android-harness smoke --redact-device` to hide selected device identifiers in
+  issue-triage reports.
 - GitHub Actions `Release Build` workflow and release checklist documentation
   for repeatable package artifacts.
 - `android-harness smoke` for structured release and issue-triage smoke

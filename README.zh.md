@@ -73,6 +73,7 @@ android-harness doctor --compact --output /tmp/android-harness-doctor.json
 ```bash
 android-harness smoke
 android-harness smoke --compact --output /tmp/android-harness-smoke.json
+android-harness smoke --redact-device --output /tmp/android-harness-smoke-redacted.json
 ```
 
 ## 核心定位

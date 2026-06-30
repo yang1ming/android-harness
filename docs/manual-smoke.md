@@ -35,6 +35,7 @@ Expected result:
 ```bash
 android-harness smoke
 android-harness smoke --compact --output /tmp/android-harness-smoke.json
+android-harness smoke --redact-device --output /tmp/android-harness-smoke-redacted.json
 ```
 
 Expected result:
@@ -45,6 +46,8 @@ Expected result:
   and uiautomator probing are available.
 - The report can be attached to issues after removing any environment-specific
   paths or device identifiers that should stay private.
+- Use `--redact-device` when the report should preserve check results but hide
+  selected device serials.
 
 ## Device Readiness
 

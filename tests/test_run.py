@@ -291,6 +291,37 @@ def test_cli_smoke_outputs_json_and_uses_exit_status(tmp_path, monkeypatch, caps
     assert captured == {"serial": "emulator-5554", "transport_name": "daemon"}
 
 
+def test_cli_smoke_can_redact_device_identifiers(monkeypatch, capsys):
+    def fake_run_smoke(serial=None, *, transport_name=None):
+        return {
+            "schema_version": "android-harness.smoke.v1",
+            "ok": False,
+            "selected_serial": "emulator-5554",
+            "checks": [
+                {
+                    "name": "device_ready",
+                    "ok": False,
+                    "detail": "selected device emulator-5554 is offline",
+                }
+            ],
+            "doctor": {
+                "selected_serial": "emulator-5554",
+                "devices": [["emulator-5554", "offline"]],
+                "error": "selected device emulator-5554 is not ready",
+            },
+        }
+
+    monkeypatch.setattr(run, "run_smoke", fake_run_smoke)
+
+    assert run.main(["smoke", "--redact-device"]) == 1
+
+    out = capsys.readouterr().out
+    assert "emulator-5554" not in out
+    payload = json.loads(out)
+    assert payload["device_redacted"] is True
+    assert payload["selected_serial"] == "<redacted-device>"
+
+
 def test_cli_unknown_command_fails_with_error(capsys):
     with pytest.raises(SystemExit) as exc:
         run.main(["invalid"])
