@@ -90,6 +90,7 @@ def test_cli_doctor_can_print_compact_json_and_write_output(tmp_path, monkeypatc
     stdout_payload = json.loads(stdout)
     file_payload = json.loads(output.read_text())
     assert stdout_payload == file_payload
+    assert stdout_payload["schema_version"] == "android-harness.doctor.v1"
     assert stdout_payload["selected_serial"] == "emulator-5554"
     assert captured == {"serial": "emulator-5554", "transport_name": "daemon"}
 

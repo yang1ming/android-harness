@@ -2,12 +2,16 @@
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from dataclasses import asdict, dataclass
 import tempfile
 from pathlib import Path
-from typing import Callable
+from typing import Any, Callable
 
 from .adb import AdbClient
+
+
+DOCTOR_SCHEMA_VERSION = "android-harness.doctor.v1"
 
 
 @dataclass(frozen=True)
@@ -31,6 +35,12 @@ class DoctorReport:
 
     def to_dict(self) -> dict[str, object]:
         return asdict(self)
+
+
+def versioned_doctor_report(report: Mapping[str, Any]) -> dict[str, Any]:
+    """Add a stable schema marker to a doctor report payload."""
+
+    return {"schema_version": DOCTOR_SCHEMA_VERSION, **dict(report)}
 
 
 def doctor(serial: str | None = None, *, transport_name: str | None = None) -> DoctorReport:

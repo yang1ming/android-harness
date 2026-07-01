@@ -8,6 +8,8 @@ All notable changes to Android Harness are tracked here.
 
 - `android-harness doctor --compact` and `--output PATH` for machine-readable
   diagnostic artifacts.
+- Stable `schema_version` marker and fixture coverage for `android-harness
+  doctor` JSON output.
 - `android-harness smoke --redact-device` to hide selected device identifiers in
   issue-triage reports.
 - GitHub Actions `Release Build` workflow and release checklist documentation

@@ -1,4 +1,10 @@
+import json
+from pathlib import Path
+
 from android_harness import admin
+
+
+FIXTURES = Path(__file__).parent / "fixtures"
 
 
 class FakeAdbClient:
@@ -63,3 +69,14 @@ def test_doctor_connects_tcpip_serial(monkeypatch):
     assert report["tcpip_target"] == "192.168.1.20:5555"
     assert report["tcpip_connected"] is True
     assert report["current_package"] == "com.example"
+
+
+def test_doctor_report_matches_public_schema_fixture(monkeypatch):
+    FakeAdbClient.connected = False
+    monkeypatch.setattr(admin, "AdbClient", FakeAdbClient)
+
+    report = admin.versioned_doctor_report(admin.doctor("192.168.1.20:5555").to_dict())
+    payload = json.loads(json.dumps(report))
+    fixture = json.loads((FIXTURES / "doctor_report_v1.json").read_text())
+
+    assert payload == fixture

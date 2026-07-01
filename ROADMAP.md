@@ -39,6 +39,7 @@ host-side, ADB-first Android automation layer.
 - Public JSON schema compatibility fixtures for snapshot and smoke outputs.
 - Doctor compact and file JSON output options.
 - Smoke report device identifier redaction for safer issue triage.
+- Doctor JSON schema marker and compatibility fixture.
 
 ## Next
 

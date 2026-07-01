@@ -1,0 +1,24 @@
+{
+  "schema_version": "android-harness.doctor.v1",
+  "adb_available": true,
+  "devices": [
+    [
+      "192.168.1.20:5555",
+      "device"
+    ]
+  ],
+  "selected_serial": "192.168.1.20:5555",
+  "device_ready": true,
+  "tcpip_target": "192.168.1.20:5555",
+  "tcpip_connected": true,
+  "model": "Pixel Test",
+  "android_version": "15",
+  "sdk_version": "35",
+  "screen_size": "Physical size: 1080x2400",
+  "screen_density": "Physical density: 420",
+  "uiautomator_available": true,
+  "screenshot_available": true,
+  "current_package": "com.example",
+  "current_activity": "com.example.MainActivity",
+  "error": null
+}

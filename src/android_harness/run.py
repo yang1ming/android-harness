@@ -10,7 +10,7 @@ import sys
 from pathlib import Path
 
 from . import helpers
-from .admin import doctor
+from .admin import doctor, versioned_doctor_report
 from .daemon import daemon_status, start_daemon, stop_daemon
 from .observation import redact_snapshot_text, summarize_snapshot, versioned_snapshot
 from .smoke import redact_smoke_report, run_smoke
@@ -129,7 +129,7 @@ def main(argv: list[str] | None = None) -> int:
     helpers.set_device(args.serial, transport_name=args.transport)
 
     if args.command == "doctor":
-        report = doctor(args.serial, transport_name=args.transport).to_dict()
+        report = versioned_doctor_report(doctor(args.serial, transport_name=args.transport).to_dict())
         if args.compact:
             payload = json.dumps(report, ensure_ascii=False, separators=(",", ":"))
         else:
