@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
+import copy
 from dataclasses import asdict, dataclass
 import tempfile
 from pathlib import Path
@@ -12,6 +13,7 @@ from .adb import AdbClient
 
 
 DOCTOR_SCHEMA_VERSION = "android-harness.doctor.v1"
+REDACTED_DEVICE = "<redacted-device>"
 
 
 @dataclass(frozen=True)
@@ -41,6 +43,29 @@ def versioned_doctor_report(report: Mapping[str, Any]) -> dict[str, Any]:
     """Add a stable schema marker to a doctor report payload."""
 
     return {"schema_version": DOCTOR_SCHEMA_VERSION, **dict(report)}
+
+
+def redact_doctor_report(report: Mapping[str, Any]) -> dict[str, Any]:
+    """Remove selected device identifiers from a doctor report."""
+
+    redacted = copy.deepcopy(dict(report))
+    identifiers = _doctor_device_identifiers(redacted)
+
+    if redacted.get("selected_serial"):
+        redacted["selected_serial"] = REDACTED_DEVICE
+    if redacted.get("tcpip_target"):
+        redacted["tcpip_target"] = REDACTED_DEVICE
+
+    devices = redacted.get("devices")
+    if isinstance(devices, list):
+        redacted["devices"] = [_redact_device_entry(entry) for entry in devices]
+
+    error = redacted.get("error")
+    if isinstance(error, str):
+        redacted["error"] = _replace_identifiers(error, identifiers)
+
+    redacted["device_redacted"] = True
+    return redacted
 
 
 def doctor(serial: str | None = None, *, transport_name: str | None = None) -> DoctorReport:
@@ -193,3 +218,35 @@ def _parse_component_line(line: str) -> tuple[str | None, str | None]:
             activity = package + activity
         return package or None, activity or None
     return None, None
+
+
+def _doctor_device_identifiers(report: dict[str, Any]) -> list[str]:
+    identifiers: list[str] = []
+    for key in ("selected_serial", "tcpip_target"):
+        value = report.get(key)
+        if isinstance(value, str) and value:
+            identifiers.append(value)
+
+    devices = report.get("devices")
+    if isinstance(devices, list):
+        for entry in devices:
+            if isinstance(entry, (list, tuple)) and entry and isinstance(entry[0], str) and entry[0]:
+                identifiers.append(entry[0])
+
+    return sorted(set(identifiers), key=len, reverse=True)
+
+
+def _redact_device_entry(entry: Any) -> Any:
+    if not isinstance(entry, (list, tuple)) or not entry:
+        return entry
+    redacted = list(entry)
+    if isinstance(redacted[0], str) and redacted[0]:
+        redacted[0] = REDACTED_DEVICE
+    return redacted
+
+
+def _replace_identifiers(value: str, identifiers: list[str]) -> str:
+    redacted = value
+    for identifier in identifiers:
+        redacted = redacted.replace(identifier, REDACTED_DEVICE)
+    return redacted

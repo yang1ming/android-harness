@@ -80,3 +80,29 @@ def test_doctor_report_matches_public_schema_fixture(monkeypatch):
     fixture = json.loads((FIXTURES / "doctor_report_v1.json").read_text())
 
     assert payload == fixture
+
+
+def test_redact_doctor_report_removes_device_identifiers():
+    report = {
+        "schema_version": admin.DOCTOR_SCHEMA_VERSION,
+        "adb_available": True,
+        "devices": [["emulator-5554", "offline"], ("192.168.1.20:5555", "device")],
+        "selected_serial": "emulator-5554",
+        "device_ready": False,
+        "tcpip_target": "192.168.1.20:5555",
+        "error": "selected device emulator-5554 failed; 192.168.1.20:5555 unavailable",
+    }
+
+    redacted = admin.redact_doctor_report(report)
+    encoded = json.dumps(redacted)
+
+    assert "emulator-5554" not in encoded
+    assert "192.168.1.20:5555" not in encoded
+    assert redacted["device_redacted"] is True
+    assert redacted["selected_serial"] == admin.REDACTED_DEVICE
+    assert redacted["tcpip_target"] == admin.REDACTED_DEVICE
+    assert redacted["devices"] == [
+        [admin.REDACTED_DEVICE, "offline"],
+        [admin.REDACTED_DEVICE, "device"],
+    ]
+    assert report["selected_serial"] == "emulator-5554"

@@ -10,7 +10,7 @@ import sys
 from pathlib import Path
 
 from . import helpers
-from .admin import doctor, versioned_doctor_report
+from .admin import doctor, redact_doctor_report, versioned_doctor_report
 from .daemon import daemon_status, start_daemon, stop_daemon
 from .observation import redact_snapshot_text, summarize_snapshot, versioned_snapshot
 from .smoke import redact_smoke_report, run_smoke
@@ -40,6 +40,11 @@ def main(argv: list[str] | None = None) -> int:
         "--compact",
         action="store_true",
         help="print compact single-line JSON",
+    )
+    doctor_parser.add_argument(
+        "--redact-device",
+        action="store_true",
+        help="redact selected device identifiers from the doctor report",
     )
     snapshot_parser = subparsers.add_parser("snapshot", help="print a JSON state snapshot")
     snapshot_parser.add_argument(
@@ -130,6 +135,8 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.command == "doctor":
         report = versioned_doctor_report(doctor(args.serial, transport_name=args.transport).to_dict())
+        if args.redact_device:
+            report = redact_doctor_report(report)
         if args.compact:
             payload = json.dumps(report, ensure_ascii=False, separators=(",", ":"))
         else:

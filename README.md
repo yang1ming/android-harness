@@ -70,6 +70,7 @@ Device diagnostics:
 ```bash
 android-harness doctor
 android-harness doctor --compact --output /tmp/android-harness-doctor.json
+android-harness doctor --redact-device --output /tmp/android-harness-doctor-redacted.json
 ```
 
 Authorized-device smoke checks:

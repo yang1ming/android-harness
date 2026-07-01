@@ -10,6 +10,8 @@ All notable changes to Android Harness are tracked here.
   diagnostic artifacts.
 - Stable `schema_version` marker and fixture coverage for `android-harness
   doctor` JSON output.
+- `android-harness doctor --redact-device` to hide selected device identifiers
+  in diagnostic reports.
 - `android-harness smoke --redact-device` to hide selected device identifiers in
   issue-triage reports.
 - GitHub Actions `Release Build` workflow and release checklist documentation

@@ -95,6 +95,29 @@ def test_cli_doctor_can_print_compact_json_and_write_output(tmp_path, monkeypatc
     assert captured == {"serial": "emulator-5554", "transport_name": "daemon"}
 
 
+def test_cli_doctor_can_redact_device_identifiers(monkeypatch, capsys):
+    class FakeReport:
+        def to_dict(self):
+            return {
+                "adb_available": True,
+                "devices": [["emulator-5554", "offline"]],
+                "selected_serial": "emulator-5554",
+                "device_ready": False,
+                "error": "selected device emulator-5554 is offline",
+            }
+
+    monkeypatch.setattr(run, "doctor", lambda serial=None, *, transport_name=None: FakeReport())
+
+    assert run.main(["doctor", "--redact-device"]) == 1
+
+    out = capsys.readouterr().out
+    assert "emulator-5554" not in out
+    payload = json.loads(out)
+    assert payload["schema_version"] == "android-harness.doctor.v1"
+    assert payload["device_redacted"] is True
+    assert payload["selected_serial"] == "<redacted-device>"
+
+
 def test_cli_no_args_prints_help(monkeypatch, capsys):
     monkeypatch.setattr(run.sys, "stdin", io.StringIO(""))
 
