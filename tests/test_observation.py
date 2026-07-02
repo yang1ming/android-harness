@@ -1,7 +1,14 @@
 import json
 from pathlib import Path
 
-from android_harness.observation import SNAPSHOT_SCHEMA_VERSION, redact_snapshot_text, summarize_snapshot, versioned_snapshot
+from android_harness.observation import (
+    REDACTED_DEVICE,
+    SNAPSHOT_SCHEMA_VERSION,
+    redact_snapshot_device,
+    redact_snapshot_text,
+    summarize_snapshot,
+    versioned_snapshot,
+)
 
 
 FIXTURES = Path(__file__).parent / "fixtures"
@@ -54,6 +61,26 @@ def test_redact_snapshot_text_removes_text_content_but_preserves_counts():
         "bounds": {"left": 1, "top": 2, "right": 3, "bottom": 4},
     }
     assert snapshot["visible_texts"] == ["Ready", "Secret"]
+
+
+def test_redact_snapshot_device_removes_serial_without_mutating_source():
+    snapshot = {
+        "device_info": {
+            "serial": "emulator-5554",
+            "model": "Pixel Test",
+        },
+        "current_app": {"package": "com.example", "activity": ".Main"},
+        "visible_texts": ["Ready"],
+    }
+
+    redacted = redact_snapshot_device(snapshot)
+
+    assert redacted["device_redacted"] is True
+    assert redacted["device_info"] == {
+        "serial": REDACTED_DEVICE,
+        "model": "Pixel Test",
+    }
+    assert snapshot["device_info"]["serial"] == "emulator-5554"
 
 
 def test_summarize_snapshot_returns_counts_without_text_content():

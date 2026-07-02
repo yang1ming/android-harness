@@ -252,6 +252,28 @@ def test_cli_snapshot_can_redact_text(monkeypatch, capsys):
     assert payload["page_info"]["clickable"][0]["resource_id"] == "pkg:id/pay"
 
 
+def test_cli_snapshot_can_redact_device_identifiers(monkeypatch, capsys):
+    def fake_state_snapshot(include_screenshot=False):
+        return {
+            "device_info": {"serial": "emulator-5554", "model": "Pixel Test"},
+            "current_app": {"package": "com.example", "activity": ".Main"},
+            "visible_texts": ["Ready"],
+        }
+
+    monkeypatch.setattr(run.helpers, "set_device", lambda serial=None, *, transport_name=None: None)
+    monkeypatch.setattr(run.helpers, "state_snapshot", fake_state_snapshot)
+
+    assert run.main(["snapshot", "--redact-device"]) == 0
+
+    out = capsys.readouterr().out
+    assert "emulator-5554" not in out
+    payload = json.loads(out)
+    assert payload["schema_version"] == "android-harness.snapshot.v1"
+    assert payload["device_redacted"] is True
+    assert payload["device_info"]["serial"] == "<redacted-device>"
+    assert payload["device_info"]["model"] == "Pixel Test"
+
+
 def test_cli_snapshot_can_print_summary(monkeypatch, capsys):
     def fake_state_snapshot(include_screenshot=False):
         return {

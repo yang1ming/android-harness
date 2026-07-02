@@ -2,11 +2,13 @@
 
 from __future__ import annotations
 
+import copy
 from collections.abc import Mapping
 from typing import Any
 
 
 SNAPSHOT_SCHEMA_VERSION = "android-harness.snapshot.v1"
+REDACTED_DEVICE = "<redacted-device>"
 
 
 def versioned_snapshot(snapshot: Mapping[str, Any]) -> dict[str, Any]:
@@ -31,6 +33,17 @@ def redact_snapshot_text(snapshot: Mapping[str, Any]) -> dict[str, Any]:
         redacted["page_info"] = page
 
     redacted["text_redacted"] = True
+    return redacted
+
+
+def redact_snapshot_device(snapshot: Mapping[str, Any]) -> dict[str, Any]:
+    """Remove selected device identifiers from a snapshot payload."""
+
+    redacted = copy.deepcopy(dict(snapshot))
+    device_info = redacted.get("device_info")
+    if isinstance(device_info, dict) and device_info.get("serial"):
+        device_info["serial"] = REDACTED_DEVICE
+    redacted["device_redacted"] = True
     return redacted
 
 

@@ -8,6 +8,8 @@ All notable changes to Android Harness are tracked here.
 
 - `android-harness doctor --compact` and `--output PATH` for machine-readable
   diagnostic artifacts.
+- `android-harness snapshot --redact-device` to hide selected device identifiers
+  in snapshot artifacts.
 - Stable `schema_version` marker and fixture coverage for `android-harness
   doctor` JSON output.
 - `android-harness doctor --redact-device` to hide selected device identifiers
