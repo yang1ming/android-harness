@@ -6,6 +6,8 @@ All notable changes to Android Harness are tracked here.
 
 ### Added
 
+- `android-harness version` with optional JSON output for release and issue
+  triage.
 - `android-harness doctor --compact` and `--output PATH` for machine-readable
   diagnostic artifacts.
 - `android-harness snapshot --redact-device` to hide selected device identifiers

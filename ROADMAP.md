@@ -42,6 +42,7 @@ host-side, ADB-first Android automation layer.
 - Doctor JSON schema marker and compatibility fixture.
 - Doctor report device identifier redaction for safer issue triage.
 - Snapshot device identifier redaction for safer issue triage.
+- Version command with JSON output for release and issue triage.
 
 ## Next
 

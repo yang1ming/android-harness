@@ -9,11 +9,15 @@ import runpy
 import sys
 from pathlib import Path
 
+from . import __version__
 from . import helpers
 from .admin import doctor, redact_doctor_report, versioned_doctor_report
 from .daemon import daemon_status, start_daemon, stop_daemon
 from .observation import redact_snapshot_device, redact_snapshot_text, summarize_snapshot, versioned_snapshot
 from .smoke import redact_smoke_report, run_smoke
+
+
+VERSION_SCHEMA_VERSION = "android-harness.version.v1"
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -98,6 +102,17 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="redact selected device identifiers from the smoke report",
     )
+    version_parser = subparsers.add_parser("version", help="print version information")
+    version_parser.add_argument(
+        "--json",
+        action="store_true",
+        help="print version information as JSON",
+    )
+    version_parser.add_argument(
+        "--compact",
+        action="store_true",
+        help="print compact single-line JSON with --json",
+    )
     subparsers.add_parser("repl", help="open an interactive Python REPL with helpers")
     exec_parser = subparsers.add_parser("exec", help="execute a Python file with helpers")
     exec_parser.add_argument("file", type=Path)
@@ -135,6 +150,17 @@ def main(argv: list[str] | None = None) -> int:
             args.output.write_text(payload + "\n")
         print(payload)
         return 0 if report.get("ok") else 1
+
+    if args.command == "version":
+        if args.json:
+            report = _version_report()
+            if args.compact:
+                print(json.dumps(report, ensure_ascii=False, separators=(",", ":")))
+            else:
+                print(json.dumps(report, ensure_ascii=False, indent=2))
+        else:
+            print(f"android-harness {__version__}")
+        return 0
 
     helpers.set_device(args.serial, transport_name=args.transport)
 
@@ -203,6 +229,15 @@ def _execution_env(*, load_workspace: bool = True) -> dict[str, object]:
             if not name.startswith("_"):
                 env[name] = value
     return env
+
+
+def _version_report() -> dict[str, str]:
+    return {
+        "schema_version": VERSION_SCHEMA_VERSION,
+        "name": "android-harness",
+        "version": __version__,
+        "python_version": sys.version.split()[0],
+    }
 
 
 if __name__ == "__main__":

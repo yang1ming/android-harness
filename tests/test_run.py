@@ -124,7 +124,36 @@ def test_cli_no_args_prints_help(monkeypatch, capsys):
     assert run.main([]) == 0
     out = capsys.readouterr().out.lower()
     assert "usage:" in out
-    assert "doctor" in out and "snapshot" in out and "smoke" in out and "repl" in out and "exec" in out and "daemon" in out
+    assert "doctor" in out and "snapshot" in out and "smoke" in out and "version" in out
+    assert "repl" in out and "exec" in out and "daemon" in out
+
+
+def test_cli_version_prints_without_selecting_device(monkeypatch, capsys):
+    def fail_set_device(serial=None, *, transport_name=None):
+        raise AssertionError("version should not select an adb device")
+
+    monkeypatch.setattr(run.helpers, "set_device", fail_set_device)
+
+    assert run.main(["version"]) == 0
+
+    assert capsys.readouterr().out == "android-harness 0.1.0\n"
+
+
+def test_cli_version_can_print_compact_json(monkeypatch, capsys):
+    def fail_set_device(serial=None, *, transport_name=None):
+        raise AssertionError("version should not select an adb device")
+
+    monkeypatch.setattr(run.helpers, "set_device", fail_set_device)
+
+    assert run.main(["version", "--json", "--compact"]) == 0
+
+    out = capsys.readouterr().out
+    assert "\n" not in out.strip()
+    payload = json.loads(out)
+    assert payload["schema_version"] == "android-harness.version.v1"
+    assert payload["name"] == "android-harness"
+    assert payload["version"] == "0.1.0"
+    assert payload["python_version"]
 
 
 def test_cli_snapshot_outputs_json_and_uses_device_selection(monkeypatch, capsys):
