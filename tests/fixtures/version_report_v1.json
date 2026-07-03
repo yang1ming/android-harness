@@ -1,0 +1,6 @@
+{
+  "schema_version": "android-harness.version.v1",
+  "name": "android-harness",
+  "version": "0.1.0",
+  "python_version": "<runtime>"
+}

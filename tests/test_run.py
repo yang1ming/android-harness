@@ -1,10 +1,14 @@
 import io
 import json
+from pathlib import Path
 
 import pytest
 
 from android_harness import run
 from android_harness.transport import SubprocessAdbTransport
+
+
+FIXTURES = Path(__file__).parent / "fixtures"
 
 
 def test_execution_env_loads_workspace_by_default(tmp_path, monkeypatch):
@@ -154,6 +158,14 @@ def test_cli_version_can_print_compact_json(monkeypatch, capsys):
     assert payload["name"] == "android-harness"
     assert payload["version"] == "0.1.0"
     assert payload["python_version"]
+
+
+def test_version_report_matches_public_schema_fixture():
+    payload = run._version_report()
+    payload["python_version"] = "<runtime>"
+    fixture = json.loads((FIXTURES / "version_report_v1.json").read_text())
+
+    assert payload == fixture
 
 
 def test_cli_snapshot_outputs_json_and_uses_device_selection(monkeypatch, capsys):
