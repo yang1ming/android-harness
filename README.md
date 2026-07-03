@@ -70,6 +70,7 @@ Device diagnostics:
 ```bash
 android-harness version
 android-harness version --json --compact
+android-harness version --json --compact --output /tmp/android-harness-version.json
 android-harness doctor
 android-harness doctor --compact --output /tmp/android-harness-doctor.json
 android-harness doctor --redact-device --output /tmp/android-harness-doctor-redacted.json

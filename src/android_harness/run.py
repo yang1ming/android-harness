@@ -113,6 +113,11 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="print compact single-line JSON with --json",
     )
+    version_parser.add_argument(
+        "--output",
+        type=Path,
+        help="write version output to a file",
+    )
     subparsers.add_parser("repl", help="open an interactive Python REPL with helpers")
     exec_parser = subparsers.add_parser("exec", help="execute a Python file with helpers")
     exec_parser.add_argument("file", type=Path)
@@ -155,11 +160,15 @@ def main(argv: list[str] | None = None) -> int:
         if args.json:
             report = _version_report()
             if args.compact:
-                print(json.dumps(report, ensure_ascii=False, separators=(",", ":")))
+                payload = json.dumps(report, ensure_ascii=False, separators=(",", ":"))
             else:
-                print(json.dumps(report, ensure_ascii=False, indent=2))
+                payload = json.dumps(report, ensure_ascii=False, indent=2)
         else:
-            print(f"android-harness {__version__}")
+            payload = f"android-harness {__version__}"
+        if args.output:
+            args.output.parent.mkdir(parents=True, exist_ok=True)
+            args.output.write_text(payload + "\n")
+        print(payload)
         return 0
 
     helpers.set_device(args.serial, transport_name=args.transport)

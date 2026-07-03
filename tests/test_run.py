@@ -160,6 +160,21 @@ def test_cli_version_can_print_compact_json(monkeypatch, capsys):
     assert payload["python_version"]
 
 
+def test_cli_version_can_write_output(tmp_path, monkeypatch, capsys):
+    def fail_set_device(serial=None, *, transport_name=None):
+        raise AssertionError("version should not select an adb device")
+
+    output = tmp_path / "reports" / "version.json"
+    monkeypatch.setattr(run.helpers, "set_device", fail_set_device)
+
+    assert run.main(["version", "--json", "--compact", "--output", str(output)]) == 0
+
+    stdout_payload = json.loads(capsys.readouterr().out)
+    file_payload = json.loads(output.read_text())
+    assert stdout_payload == file_payload
+    assert stdout_payload["schema_version"] == "android-harness.version.v1"
+
+
 def test_version_report_matches_public_schema_fixture():
     payload = run._version_report()
     payload["python_version"] = "<runtime>"
