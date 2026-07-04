@@ -330,6 +330,27 @@ def test_cli_snapshot_can_redact_device_identifiers(monkeypatch, capsys):
     assert payload["device_info"]["model"] == "Pixel Test"
 
 
+def test_cli_snapshot_can_redact_paths(monkeypatch, capsys):
+    def fake_state_snapshot(include_screenshot=False):
+        return {
+            "device_info": {"serial": "emulator-5554"},
+            "current_app": {"package": "com.example", "activity": ".Main"},
+            "visible_texts": ["Ready"],
+            "screenshot": "/tmp/android-harness/screen.png",
+        }
+
+    monkeypatch.setattr(run.helpers, "set_device", lambda serial=None, *, transport_name=None: None)
+    monkeypatch.setattr(run.helpers, "state_snapshot", fake_state_snapshot)
+
+    assert run.main(["snapshot", "--screenshot", "--redact-paths"]) == 0
+
+    out = capsys.readouterr().out
+    assert "/tmp/android-harness/screen.png" not in out
+    payload = json.loads(out)
+    assert payload["paths_redacted"] is True
+    assert payload["screenshot"] == "<redacted-path>"
+
+
 def test_cli_snapshot_can_print_summary(monkeypatch, capsys):
     def fake_state_snapshot(include_screenshot=False):
         return {

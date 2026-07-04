@@ -7,6 +7,8 @@ All notable changes to Android Harness are tracked here.
 ### Added
 
 - `android-harness daemon status --json` with compact and file output options.
+- `android-harness snapshot --redact-paths` to hide local filesystem paths in
+  snapshot artifacts.
 - `android-harness version` with optional JSON output for release and issue
   triage.
 - `android-harness version --output PATH` for version artifacts.

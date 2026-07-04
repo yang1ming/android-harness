@@ -13,7 +13,13 @@ from . import __version__
 from . import helpers
 from .admin import doctor, redact_doctor_report, versioned_doctor_report
 from .daemon import daemon_status, daemon_status_report, start_daemon, stop_daemon
-from .observation import redact_snapshot_device, redact_snapshot_text, summarize_snapshot, versioned_snapshot
+from .observation import (
+    redact_snapshot_device,
+    redact_snapshot_paths,
+    redact_snapshot_text,
+    summarize_snapshot,
+    versioned_snapshot,
+)
 from .smoke import redact_smoke_report, run_smoke
 
 
@@ -80,6 +86,11 @@ def main(argv: list[str] | None = None) -> int:
         "--redact-device",
         action="store_true",
         help="redact selected device identifiers from the snapshot",
+    )
+    snapshot_parser.add_argument(
+        "--redact-paths",
+        action="store_true",
+        help="redact local filesystem paths from the snapshot",
     )
     snapshot_parser.add_argument(
         "--summary",
@@ -223,6 +234,8 @@ def main(argv: list[str] | None = None) -> int:
             snapshot = redact_snapshot_text(snapshot)
         if args.redact_device:
             snapshot = redact_snapshot_device(snapshot)
+        if args.redact_paths:
+            snapshot = redact_snapshot_paths(snapshot)
         if args.compact:
             payload = json.dumps(versioned_snapshot(snapshot), ensure_ascii=False, separators=(",", ":"))
         else:

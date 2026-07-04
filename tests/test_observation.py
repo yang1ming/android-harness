@@ -3,8 +3,10 @@ from pathlib import Path
 
 from android_harness.observation import (
     REDACTED_DEVICE,
+    REDACTED_PATH,
     SNAPSHOT_SCHEMA_VERSION,
     redact_snapshot_device,
+    redact_snapshot_paths,
     redact_snapshot_text,
     summarize_snapshot,
     versioned_snapshot,
@@ -81,6 +83,21 @@ def test_redact_snapshot_device_removes_serial_without_mutating_source():
         "model": "Pixel Test",
     }
     assert snapshot["device_info"]["serial"] == "emulator-5554"
+
+
+def test_redact_snapshot_paths_removes_screenshot_path_without_mutating_source():
+    snapshot = {
+        "device_info": {"serial": "emulator-5554"},
+        "current_app": {"package": "com.example", "activity": ".Main"},
+        "visible_texts": ["Ready"],
+        "screenshot": "/tmp/android-harness/screen.png",
+    }
+
+    redacted = redact_snapshot_paths(snapshot)
+
+    assert redacted["paths_redacted"] is True
+    assert redacted["screenshot"] == REDACTED_PATH
+    assert snapshot["screenshot"] == "/tmp/android-harness/screen.png"
 
 
 def test_summarize_snapshot_returns_counts_without_text_content():
