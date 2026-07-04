@@ -47,6 +47,7 @@ host-side, ADB-first Android automation layer.
 - Version file output option for release and issue triage artifacts.
 - Daemon status JSON output for release and issue triage artifacts.
 - Snapshot local path redaction for safer issue triage artifacts.
+- Daemon status path redaction for safer issue triage artifacts.
 
 ## Next
 

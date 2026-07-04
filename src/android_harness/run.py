@@ -12,7 +12,7 @@ from pathlib import Path
 from . import __version__
 from . import helpers
 from .admin import doctor, redact_doctor_report, versioned_doctor_report
-from .daemon import daemon_status, daemon_status_report, start_daemon, stop_daemon
+from .daemon import daemon_status, daemon_status_report, redact_daemon_status_report, start_daemon, stop_daemon
 from .observation import (
     redact_snapshot_device,
     redact_snapshot_paths,
@@ -152,6 +152,11 @@ def main(argv: list[str] | None = None) -> int:
         type=Path,
         help="write daemon status output to a file",
     )
+    daemon_status_parser.add_argument(
+        "--redact-paths",
+        action="store_true",
+        help="redact local filesystem paths from daemon status output",
+    )
 
     args = parser.parse_args(argv)
 
@@ -165,9 +170,15 @@ def main(argv: list[str] | None = None) -> int:
         if args.daemon_command == "status":
             if args.json:
                 report = daemon_status_report()
+                if args.redact_paths:
+                    report = redact_daemon_status_report(report)
                 payload = _json_payload(report, compact=args.compact)
             else:
-                payload = daemon_status()
+                if args.redact_paths:
+                    report = redact_daemon_status_report(daemon_status_report())
+                    payload = str(report["status"])
+                else:
+                    payload = daemon_status()
             _emit_payload(payload, output=args.output)
             return 0
         daemon_parser.print_help()

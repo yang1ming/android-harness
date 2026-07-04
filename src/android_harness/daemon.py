@@ -22,6 +22,7 @@ DAEMON_START_TIMEOUT = 5.0
 DAEMON_START_POLL_INTERVAL = 0.05
 DAEMON_LOG_TAIL_BYTES = 4000
 DAEMON_STATUS_SCHEMA_VERSION = "android-harness.daemon.status.v1"
+REDACTED_PATH = "<redacted-path>"
 
 
 class DaemonUnixServer(socketserver.ThreadingUnixStreamServer):
@@ -195,6 +196,18 @@ def daemon_status_report(socket_path: Path | None = None) -> dict[str, object]:
         "socket_path": str(path),
         "status": status,
     }
+
+
+def redact_daemon_status_report(report: dict[str, object]) -> dict[str, object]:
+    redacted = dict(report)
+    socket_path = redacted.get("socket_path")
+    if isinstance(socket_path, str) and socket_path:
+        redacted["socket_path"] = REDACTED_PATH
+        status = redacted.get("status")
+        if isinstance(status, str):
+            redacted["status"] = status.replace(socket_path, REDACTED_PATH)
+    redacted["paths_redacted"] = True
+    return redacted
 
 
 def _ping(path: Path) -> bool:

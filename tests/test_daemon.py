@@ -54,6 +54,25 @@ def test_daemon_status_report_matches_public_schema_fixture(monkeypatch):
     assert report == fixture
 
 
+def test_redact_daemon_status_report_removes_socket_path():
+    report = {
+        "schema_version": daemon.DAEMON_STATUS_SCHEMA_VERSION,
+        "running": False,
+        "stale_socket": True,
+        "socket_path": "/tmp/android-harness/daemon.sock",
+        "status": "not running: /tmp/android-harness/daemon.sock (stale socket)",
+    }
+
+    redacted = daemon.redact_daemon_status_report(report)
+
+    encoded = json.dumps(redacted)
+    assert "/tmp/android-harness/daemon.sock" not in encoded
+    assert redacted["paths_redacted"] is True
+    assert redacted["socket_path"] == daemon.REDACTED_PATH
+    assert redacted["status"] == "not running: <redacted-path> (stale socket)"
+    assert report["socket_path"] == "/tmp/android-harness/daemon.sock"
+
+
 def test_daemon_status_reports_stale_socket(tmp_path):
     socket_path = tmp_path / "daemon.sock"
     socket_path.write_text("stale\n")

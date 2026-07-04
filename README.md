@@ -132,6 +132,7 @@ android-harness daemon start
 android-harness --transport daemon doctor
 android-harness daemon status
 android-harness daemon status --json --compact --output /tmp/android-harness-daemon-status.json
+android-harness daemon status --json --redact-paths
 android-harness daemon stop
 ```
 

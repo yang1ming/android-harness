@@ -538,3 +538,43 @@ def test_cli_daemon_status_can_print_compact_json_and_write_output(tmp_path, mon
     file_payload = json.loads(output.read_text())
     assert stdout_payload == file_payload
     assert stdout_payload["schema_version"] == "android-harness.daemon.status.v1"
+
+
+def test_cli_daemon_status_can_redact_paths(monkeypatch, capsys):
+    def fake_daemon_status_report():
+        return {
+            "schema_version": "android-harness.daemon.status.v1",
+            "running": False,
+            "stale_socket": True,
+            "socket_path": "/tmp/android-harness/daemon.sock",
+            "status": "not running: /tmp/android-harness/daemon.sock (stale socket)",
+        }
+
+    monkeypatch.setattr(run, "daemon_status_report", fake_daemon_status_report)
+
+    assert run.main(["daemon", "status", "--json", "--redact-paths"]) == 0
+
+    out = capsys.readouterr().out
+    assert "/tmp/android-harness/daemon.sock" not in out
+    payload = json.loads(out)
+    assert payload["paths_redacted"] is True
+    assert payload["socket_path"] == "<redacted-path>"
+
+
+def test_cli_daemon_status_can_redact_paths_in_text(monkeypatch, capsys):
+    def fake_daemon_status_report():
+        return {
+            "schema_version": "android-harness.daemon.status.v1",
+            "running": False,
+            "stale_socket": True,
+            "socket_path": "/tmp/android-harness/daemon.sock",
+            "status": "not running: /tmp/android-harness/daemon.sock (stale socket)",
+        }
+
+    monkeypatch.setattr(run, "daemon_status_report", fake_daemon_status_report)
+
+    assert run.main(["daemon", "status", "--redact-paths"]) == 0
+
+    out = capsys.readouterr().out
+    assert out == "not running: <redacted-path> (stale socket)\n"
+    assert "/tmp/android-harness/daemon.sock" not in out
