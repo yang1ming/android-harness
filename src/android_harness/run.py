@@ -165,16 +165,10 @@ def main(argv: list[str] | None = None) -> int:
         if args.daemon_command == "status":
             if args.json:
                 report = daemon_status_report()
-                if args.compact:
-                    payload = json.dumps(report, ensure_ascii=False, separators=(",", ":"))
-                else:
-                    payload = json.dumps(report, ensure_ascii=False, indent=2)
+                payload = _json_payload(report, compact=args.compact)
             else:
                 payload = daemon_status()
-            if args.output:
-                args.output.parent.mkdir(parents=True, exist_ok=True)
-                args.output.write_text(payload + "\n")
-            print(payload)
+            _emit_payload(payload, output=args.output)
             return 0
         daemon_parser.print_help()
         return 0
@@ -183,29 +177,17 @@ def main(argv: list[str] | None = None) -> int:
         report = run_smoke(args.serial, transport_name=args.transport)
         if args.redact_device:
             report = redact_smoke_report(report)
-        if args.compact:
-            payload = json.dumps(report, ensure_ascii=False, separators=(",", ":"))
-        else:
-            payload = json.dumps(report, ensure_ascii=False, indent=2)
-        if args.output:
-            args.output.parent.mkdir(parents=True, exist_ok=True)
-            args.output.write_text(payload + "\n")
-        print(payload)
+        payload = _json_payload(report, compact=args.compact)
+        _emit_payload(payload, output=args.output)
         return 0 if report.get("ok") else 1
 
     if args.command == "version":
         if args.json:
             report = _version_report()
-            if args.compact:
-                payload = json.dumps(report, ensure_ascii=False, separators=(",", ":"))
-            else:
-                payload = json.dumps(report, ensure_ascii=False, indent=2)
+            payload = _json_payload(report, compact=args.compact)
         else:
             payload = f"android-harness {__version__}"
-        if args.output:
-            args.output.parent.mkdir(parents=True, exist_ok=True)
-            args.output.write_text(payload + "\n")
-        print(payload)
+        _emit_payload(payload, output=args.output)
         return 0
 
     helpers.set_device(args.serial, transport_name=args.transport)
@@ -214,14 +196,8 @@ def main(argv: list[str] | None = None) -> int:
         report = versioned_doctor_report(doctor(args.serial, transport_name=args.transport).to_dict())
         if args.redact_device:
             report = redact_doctor_report(report)
-        if args.compact:
-            payload = json.dumps(report, ensure_ascii=False, separators=(",", ":"))
-        else:
-            payload = json.dumps(report, ensure_ascii=False, indent=2)
-        if args.output:
-            args.output.parent.mkdir(parents=True, exist_ok=True)
-            args.output.write_text(payload + "\n")
-        print(payload)
+        payload = _json_payload(report, compact=args.compact)
+        _emit_payload(payload, output=args.output)
         return 0 if report.get("device_ready") else 1
 
     if args.command == "snapshot":
@@ -236,14 +212,8 @@ def main(argv: list[str] | None = None) -> int:
             snapshot = redact_snapshot_device(snapshot)
         if args.redact_paths:
             snapshot = redact_snapshot_paths(snapshot)
-        if args.compact:
-            payload = json.dumps(versioned_snapshot(snapshot), ensure_ascii=False, separators=(",", ":"))
-        else:
-            payload = json.dumps(versioned_snapshot(snapshot), ensure_ascii=False, indent=2)
-        if args.output:
-            args.output.parent.mkdir(parents=True, exist_ok=True)
-            args.output.write_text(payload + "\n")
-        print(payload)
+        payload = _json_payload(versioned_snapshot(snapshot), compact=args.compact)
+        _emit_payload(payload, output=args.output)
         return 0
 
     if args.command == "repl":
@@ -277,6 +247,19 @@ def _execution_env(*, load_workspace: bool = True) -> dict[str, object]:
             if not name.startswith("_"):
                 env[name] = value
     return env
+
+
+def _json_payload(value: object, *, compact: bool = False) -> str:
+    if compact:
+        return json.dumps(value, ensure_ascii=False, separators=(",", ":"))
+    return json.dumps(value, ensure_ascii=False, indent=2)
+
+
+def _emit_payload(payload: str, *, output: Path | None = None) -> None:
+    if output:
+        output.parent.mkdir(parents=True, exist_ok=True)
+        output.write_text(payload + "\n")
+    print(payload)
 
 
 def _version_report() -> dict[str, str]:
