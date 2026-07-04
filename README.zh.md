@@ -123,6 +123,7 @@ Android Harness 默认直接通过 subprocess 调用 `adb`。对于较长的 age
 android-harness daemon start
 android-harness --transport daemon doctor
 android-harness daemon status
+android-harness daemon status --json --compact --output /tmp/android-harness-daemon-status.json
 android-harness daemon stop
 ```
 

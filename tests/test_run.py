@@ -491,3 +491,29 @@ def test_cli_daemon_subcommands_dispatch_without_selecting_device(monkeypatch, c
     assert capsys.readouterr().out == "stopping: /tmp/android-harness/daemon.sock\n"
 
     assert calls == ["start", "status", "stop"]
+
+
+def test_cli_daemon_status_can_print_compact_json_and_write_output(tmp_path, monkeypatch, capsys):
+    output = tmp_path / "reports" / "daemon-status.json"
+
+    def fail_set_device(serial=None, *, transport_name=None):
+        raise AssertionError("daemon commands should not select an adb device")
+
+    def fake_daemon_status_report():
+        return {
+            "schema_version": "android-harness.daemon.status.v1",
+            "running": False,
+            "stale_socket": False,
+            "socket_path": "/tmp/android-harness/daemon.sock",
+            "status": "not running: /tmp/android-harness/daemon.sock",
+        }
+
+    monkeypatch.setattr(run.helpers, "set_device", fail_set_device)
+    monkeypatch.setattr(run, "daemon_status_report", fake_daemon_status_report)
+
+    assert run.main(["daemon", "status", "--json", "--compact", "--output", str(output)]) == 0
+
+    stdout_payload = json.loads(capsys.readouterr().out)
+    file_payload = json.loads(output.read_text())
+    assert stdout_payload == file_payload
+    assert stdout_payload["schema_version"] == "android-harness.daemon.status.v1"

@@ -1,3 +1,5 @@
+import json
+from pathlib import Path
 import time
 
 import pytest
@@ -5,6 +7,9 @@ import pytest
 from android_harness import daemon
 from android_harness.adb import AdbError
 from android_harness.daemon import daemon_status, start_daemon, stop_daemon
+
+
+FIXTURES = Path(__file__).parent / "fixtures"
 
 
 def test_daemon_lifecycle_start_status_stop(tmp_path):
@@ -36,6 +41,17 @@ def test_daemon_status_and_stop_report_not_running_for_missing_socket(tmp_path):
 
     assert daemon_status(socket_path) == f"not running: {socket_path}"
     assert stop_daemon(socket_path) == f"not running: {socket_path}"
+
+
+def test_daemon_status_report_matches_public_schema_fixture(monkeypatch):
+    socket_path = Path("/tmp/android-harness/daemon.sock")
+
+    monkeypatch.setattr(daemon, "daemon_status", lambda path=None: f"not running: {path}")
+
+    report = daemon.daemon_status_report(socket_path)
+    fixture = json.loads((FIXTURES / "daemon_status_v1.json").read_text())
+
+    assert report == fixture
 
 
 def test_daemon_status_reports_stale_socket(tmp_path):

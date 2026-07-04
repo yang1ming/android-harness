@@ -21,6 +21,7 @@ from .transport import AdbError, SubprocessAdbTransport, default_socket_path
 DAEMON_START_TIMEOUT = 5.0
 DAEMON_START_POLL_INTERVAL = 0.05
 DAEMON_LOG_TAIL_BYTES = 4000
+DAEMON_STATUS_SCHEMA_VERSION = "android-harness.daemon.status.v1"
 
 
 class DaemonUnixServer(socketserver.ThreadingUnixStreamServer):
@@ -182,6 +183,18 @@ def daemon_status(socket_path: Path | None = None) -> str:
     if path.exists():
         return f"not running: {path} (stale socket)"
     return f"not running: {path}"
+
+
+def daemon_status_report(socket_path: Path | None = None) -> dict[str, object]:
+    path = socket_path or default_socket_path()
+    status = daemon_status(path)
+    return {
+        "schema_version": DAEMON_STATUS_SCHEMA_VERSION,
+        "running": status.startswith("running:"),
+        "stale_socket": "stale socket" in status,
+        "socket_path": str(path),
+        "status": status,
+    }
 
 
 def _ping(path: Path) -> bool:

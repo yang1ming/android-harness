@@ -1,0 +1,7 @@
+{
+  "schema_version": "android-harness.daemon.status.v1",
+  "running": false,
+  "stale_socket": false,
+  "socket_path": "/tmp/android-harness/daemon.sock",
+  "status": "not running: /tmp/android-harness/daemon.sock"
+}

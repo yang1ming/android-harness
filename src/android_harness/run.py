@@ -12,7 +12,7 @@ from pathlib import Path
 from . import __version__
 from . import helpers
 from .admin import doctor, redact_doctor_report, versioned_doctor_report
-from .daemon import daemon_status, start_daemon, stop_daemon
+from .daemon import daemon_status, daemon_status_report, start_daemon, stop_daemon
 from .observation import redact_snapshot_device, redact_snapshot_text, summarize_snapshot, versioned_snapshot
 from .smoke import redact_smoke_report, run_smoke
 
@@ -125,7 +125,22 @@ def main(argv: list[str] | None = None) -> int:
     daemon_subparsers = daemon_parser.add_subparsers(dest="daemon_command")
     daemon_subparsers.add_parser("start", help="start the local adb daemon")
     daemon_subparsers.add_parser("stop", help="stop the local adb daemon")
-    daemon_subparsers.add_parser("status", help="show local adb daemon status")
+    daemon_status_parser = daemon_subparsers.add_parser("status", help="show local adb daemon status")
+    daemon_status_parser.add_argument(
+        "--json",
+        action="store_true",
+        help="print daemon status as JSON",
+    )
+    daemon_status_parser.add_argument(
+        "--compact",
+        action="store_true",
+        help="print compact single-line JSON with --json",
+    )
+    daemon_status_parser.add_argument(
+        "--output",
+        type=Path,
+        help="write daemon status output to a file",
+    )
 
     args = parser.parse_args(argv)
 
@@ -137,7 +152,18 @@ def main(argv: list[str] | None = None) -> int:
             print(stop_daemon())
             return 0
         if args.daemon_command == "status":
-            print(daemon_status())
+            if args.json:
+                report = daemon_status_report()
+                if args.compact:
+                    payload = json.dumps(report, ensure_ascii=False, separators=(",", ":"))
+                else:
+                    payload = json.dumps(report, ensure_ascii=False, indent=2)
+            else:
+                payload = daemon_status()
+            if args.output:
+                args.output.parent.mkdir(parents=True, exist_ok=True)
+                args.output.write_text(payload + "\n")
+            print(payload)
             return 0
         daemon_parser.print_help()
         return 0
