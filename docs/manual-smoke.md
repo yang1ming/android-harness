@@ -36,6 +36,7 @@ Expected result:
 android-harness smoke
 android-harness smoke --compact --output /tmp/android-harness-smoke.json
 android-harness smoke --redact-device --output /tmp/android-harness-smoke-redacted.json
+android-harness smoke --redact-paths --output /tmp/android-harness-smoke-paths-redacted.json
 ```
 
 Expected result:
@@ -48,6 +49,7 @@ Expected result:
   paths or device identifiers that should stay private.
 - Use `--redact-device` when the report should preserve check results but hide
   selected device serials.
+- Use `--redact-paths` when the report should hide local daemon socket paths.
 
 ## Device Readiness
 

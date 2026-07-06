@@ -106,6 +106,25 @@ def test_redact_smoke_report_removes_device_identifiers():
     assert report["selected_serial"] == "emulator-5554"
 
 
+def test_redact_smoke_paths_removes_daemon_socket_path():
+    report = {
+        "schema_version": smoke.SMOKE_SCHEMA_VERSION,
+        "ok": True,
+        "daemon": {
+            "running": False,
+            "status": "not running: /tmp/android-harness-1000/daemon.sock (stale socket)",
+        },
+    }
+
+    redacted = smoke.redact_smoke_paths(report)
+
+    encoded = json.dumps(redacted)
+    assert "/tmp/android-harness-1000/daemon.sock" not in encoded
+    assert redacted["paths_redacted"] is True
+    assert redacted["daemon"]["status"] == "not running: <redacted-path> (stale socket)"
+    assert report["daemon"]["status"] == "not running: /tmp/android-harness-1000/daemon.sock (stale socket)"
+
+
 def test_run_smoke_marks_failed_device_probe(monkeypatch):
     def fake_doctor(serial=None, *, transport_name=None):
         return FakeReport(

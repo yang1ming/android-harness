@@ -8,10 +8,12 @@ from typing import Any
 
 from .admin import doctor
 from .daemon import daemon_status
+from .transport import default_socket_path
 
 
 SMOKE_SCHEMA_VERSION = "android-harness.smoke.v1"
 REDACTED_DEVICE = "<redacted-device>"
+REDACTED_PATH = "<redacted-path>"
 
 
 def run_smoke(serial: str | None = None, *, transport_name: str | None = None) -> dict[str, Any]:
@@ -62,6 +64,19 @@ def redact_smoke_report(report: dict[str, Any]) -> dict[str, Any]:
                 check["detail"] = _replace_identifiers(detail, identifiers)
 
     redacted["device_redacted"] = True
+    return redacted
+
+
+def redact_smoke_paths(report: dict[str, Any]) -> dict[str, Any]:
+    """Remove local filesystem paths from a smoke report."""
+
+    redacted = copy.deepcopy(report)
+    daemon = redacted.get("daemon")
+    if isinstance(daemon, dict):
+        status = daemon.get("status")
+        if isinstance(status, str):
+            daemon["status"] = _replace_paths(status, _path_identifiers_from_status(status))
+    redacted["paths_redacted"] = True
     return redacted
 
 
@@ -151,4 +166,22 @@ def _replace_identifiers(value: str, identifiers: list[str]) -> str:
     redacted = value
     for identifier in identifiers:
         redacted = redacted.replace(identifier, REDACTED_DEVICE)
+    return redacted
+
+
+def _path_identifiers_from_status(status: str) -> list[str]:
+    paths = [str(default_socket_path())]
+    for prefix in ("running: ", "not running: "):
+        if status.startswith(prefix):
+            path = status[len(prefix) :].split(" ", 1)[0]
+            if path:
+                paths.append(path)
+    return sorted(set(paths), key=len, reverse=True)
+
+
+def _replace_paths(value: str, paths: list[str]) -> str:
+    redacted = value
+    for path in paths:
+        if path:
+            redacted = redacted.replace(path, REDACTED_PATH)
     return redacted

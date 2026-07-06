@@ -445,6 +445,28 @@ def test_cli_smoke_can_redact_device_identifiers(monkeypatch, capsys):
     assert payload["selected_serial"] == "<redacted-device>"
 
 
+def test_cli_smoke_can_redact_paths(monkeypatch, capsys):
+    def fake_run_smoke(serial=None, *, transport_name=None):
+        return {
+            "schema_version": "android-harness.smoke.v1",
+            "ok": True,
+            "daemon": {
+                "running": True,
+                "status": "running: /tmp/android-harness-1000/daemon.sock",
+            },
+        }
+
+    monkeypatch.setattr(run, "run_smoke", fake_run_smoke)
+
+    assert run.main(["smoke", "--redact-paths"]) == 0
+
+    out = capsys.readouterr().out
+    assert "/tmp/android-harness-1000/daemon.sock" not in out
+    payload = json.loads(out)
+    assert payload["paths_redacted"] is True
+    assert payload["daemon"]["status"] == "running: <redacted-path>"
+
+
 def test_cli_unknown_command_fails_with_error(capsys):
     with pytest.raises(SystemExit) as exc:
         run.main(["invalid"])

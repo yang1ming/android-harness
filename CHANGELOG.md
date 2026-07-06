@@ -23,6 +23,8 @@ All notable changes to Android Harness are tracked here.
   doctor` JSON output.
 - `android-harness doctor --redact-device` to hide selected device identifiers
   in diagnostic reports.
+- `android-harness smoke --redact-paths` to hide local daemon socket paths in
+  smoke reports.
 - `android-harness smoke --redact-device` to hide selected device identifiers in
   issue-triage reports.
 - GitHub Actions `Release Build` workflow and release checklist documentation

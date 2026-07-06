@@ -20,7 +20,7 @@ from .observation import (
     summarize_snapshot,
     versioned_snapshot,
 )
-from .smoke import redact_smoke_report, run_smoke
+from .smoke import redact_smoke_paths, redact_smoke_report, run_smoke
 
 
 VERSION_SCHEMA_VERSION = "android-harness.version.v1"
@@ -113,6 +113,11 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="redact selected device identifiers from the smoke report",
     )
+    smoke_parser.add_argument(
+        "--redact-paths",
+        action="store_true",
+        help="redact local filesystem paths from the smoke report",
+    )
     version_parser = subparsers.add_parser("version", help="print version information")
     version_parser.add_argument(
         "--json",
@@ -188,6 +193,8 @@ def main(argv: list[str] | None = None) -> int:
         report = run_smoke(args.serial, transport_name=args.transport)
         if args.redact_device:
             report = redact_smoke_report(report)
+        if args.redact_paths:
+            report = redact_smoke_paths(report)
         payload = _json_payload(report, compact=args.compact)
         _emit_payload(payload, output=args.output)
         return 0 if report.get("ok") else 1
