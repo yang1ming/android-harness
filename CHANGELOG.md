@@ -59,6 +59,8 @@ All notable changes to Android Harness are tracked here.
 
 ### Fixed
 
+- `set_device()` and `adb_connect()` now preserve the current ADB transport
+  unless a new transport is explicitly selected.
 - `android-harness smoke` now explains skipped screenshot and uiautomator
   probes when no selected device is ready.
 - `type_text()` now rejects literal `%`, Unicode, and control characters instead

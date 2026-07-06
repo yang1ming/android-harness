@@ -2,9 +2,24 @@ import json
 
 import pytest
 
-from android_harness.adb import AdbError
+from android_harness.adb import AdbClient, AdbError
 from android_harness import helpers
+from android_harness.transport import AdbResult, SubprocessAdbTransport
 from android_harness.ui import Bounds, Element
+
+
+class _FakeTransport:
+    def __init__(self, stdout: str = ""):
+        self.stdout = stdout
+        self.calls = []
+
+    def run(self, adb_path, serial, args, *, timeout=30, text=True):
+        self.calls.append((adb_path, serial, list(args), timeout, text))
+        return AdbResult(tuple([adb_path, *args]), 0, self.stdout, "")
+
+    def screenshot(self, adb_path, serial, path, *, timeout=30):
+        self.calls.append((adb_path, serial, ["screenshot", str(path)], timeout, True))
+        return path
 
 
 def _element(text: str | None, bounds: Bounds | None = None, enabled: bool = True) -> Element:
@@ -45,6 +60,42 @@ def test_get_client_returns_selected_client(monkeypatch):
     monkeypatch.setattr(helpers, "_client", client)
 
     assert helpers.get_client() is client
+
+
+def test_set_device_preserves_current_transport_when_unspecified(monkeypatch):
+    transport = _FakeTransport()
+    monkeypatch.setattr(helpers, "_client", AdbClient(serial="old-device", adb_path="custom-adb", transport=transport))
+
+    helpers.set_device("new-device")
+
+    client = helpers.get_client()
+    assert client.serial == "new-device"
+    assert client.adb_path == "custom-adb"
+    assert client.transport is transport
+
+
+def test_set_device_can_explicitly_replace_transport(monkeypatch):
+    transport = _FakeTransport()
+    monkeypatch.setattr(helpers, "_client", AdbClient(serial="old-device", transport=transport))
+
+    helpers.set_device("new-device", transport_name="subprocess")
+
+    client = helpers.get_client()
+    assert client.serial == "new-device"
+    assert isinstance(client.transport, SubprocessAdbTransport)
+
+
+def test_adb_connect_preserves_current_transport(monkeypatch):
+    transport = _FakeTransport(stdout="connected to 192.168.1.20:5555\n")
+    monkeypatch.setattr(helpers, "_client", AdbClient(transport=transport))
+
+    output = helpers.adb_connect("192.168.1.20")
+
+    client = helpers.get_client()
+    assert output == "connected to 192.168.1.20:5555"
+    assert client.serial == "192.168.1.20:5555"
+    assert client.transport is transport
+    assert transport.calls == [("adb", None, ["connect", "192.168.1.20:5555"], 30, True)]
 
 
 def test_helpers_star_import_exports_only_agent_surface():

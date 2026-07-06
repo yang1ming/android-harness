@@ -17,7 +17,8 @@ authorized.
 ## Device And Transport
 
 - `set_device(serial, transport_name=None)` selects the device and optional
-  transport for later helper calls.
+  transport for later helper calls. When `transport_name` is omitted, it keeps
+  the current transport selection.
 - `get_client()` returns the active `AdbClient` for advanced helpers and
   plugins.
 - `adb_connect(host, port=5555)` connects to an adb-over-TCP/IP target and

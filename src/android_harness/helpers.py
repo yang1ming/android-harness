@@ -73,7 +73,10 @@ def set_device(serial: str | None, *, transport_name: str | None = None) -> None
     """Select the device used by subsequent helper calls."""
 
     global _client
-    _client = AdbClient(serial=serial, transport_name=transport_name)
+    if transport_name is None:
+        _client = AdbClient(serial=serial, adb_path=_client.adb_path, transport=_client.transport)
+    else:
+        _client = AdbClient(serial=serial, adb_path=_client.adb_path, transport_name=transport_name)
 
 
 def get_client() -> AdbClient:
