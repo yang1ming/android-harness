@@ -351,6 +351,43 @@ def test_cli_snapshot_can_redact_paths(monkeypatch, capsys):
     assert payload["screenshot"] == "<redacted-path>"
 
 
+def test_cli_snapshot_can_redact_all_sensitive_fields(monkeypatch, capsys):
+    def fake_state_snapshot(include_screenshot=False):
+        return {
+            "device_info": {"serial": "emulator-5554", "model": "Pixel Test"},
+            "current_app": {"package": "com.example", "activity": ".Main"},
+            "visible_texts": ["Secret"],
+            "screenshot": "/tmp/android-harness/screen.png",
+        }
+
+    def fake_page_info():
+        return {
+            "current_app": {"package": "com.example", "activity": ".Main"},
+            "visible_texts": ["Secret"],
+            "clickable": [{"text": "Pay", "content_desc": "Pay now"}],
+        }
+
+    monkeypatch.setattr(run.helpers, "set_device", lambda serial=None, *, transport_name=None: None)
+    monkeypatch.setattr(run.helpers, "state_snapshot", fake_state_snapshot)
+    monkeypatch.setattr(run.helpers, "page_info", fake_page_info)
+
+    assert run.main(["snapshot", "--screenshot", "--page-info", "--redact-all"]) == 0
+
+    out = capsys.readouterr().out
+    assert "emulator-5554" not in out
+    assert "Secret" not in out
+    assert "/tmp/android-harness/screen.png" not in out
+    payload = json.loads(out)
+    assert payload["text_redacted"] is True
+    assert payload["device_redacted"] is True
+    assert payload["paths_redacted"] is True
+    assert payload["device_info"]["serial"] == "<redacted-device>"
+    assert payload["screenshot"] == "<redacted-path>"
+    assert payload["visible_text_count"] == 1
+    assert payload["page_info"]["clickable"][0]["text"] is None
+    assert payload["page_info"]["clickable"][0]["content_desc"] is None
+
+
 def test_cli_snapshot_can_print_summary(monkeypatch, capsys):
     def fake_state_snapshot(include_screenshot=False):
         return {

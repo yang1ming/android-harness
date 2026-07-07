@@ -93,6 +93,11 @@ def main(argv: list[str] | None = None) -> int:
         help="redact local filesystem paths from the snapshot",
     )
     snapshot_parser.add_argument(
+        "--redact-all",
+        action="store_true",
+        help="redact text, selected device identifiers, and local filesystem paths from the snapshot",
+    )
+    snapshot_parser.add_argument(
         "--summary",
         action="store_true",
         help="print a count-based snapshot summary for logs and CI",
@@ -224,11 +229,11 @@ def main(argv: list[str] | None = None) -> int:
             snapshot["page_info"] = helpers.page_info()
         if args.summary:
             snapshot = summarize_snapshot(snapshot)
-        elif args.redact_text:
+        elif args.redact_text or args.redact_all:
             snapshot = redact_snapshot_text(snapshot)
-        if args.redact_device:
+        if args.redact_device or args.redact_all:
             snapshot = redact_snapshot_device(snapshot)
-        if args.redact_paths:
+        if args.redact_paths or args.redact_all:
             snapshot = redact_snapshot_paths(snapshot)
         payload = _json_payload(versioned_snapshot(snapshot), compact=args.compact)
         _emit_payload(payload, output=args.output)

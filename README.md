@@ -165,6 +165,7 @@ android-harness snapshot --compact
 android-harness snapshot --redact-text
 android-harness snapshot --redact-device
 android-harness snapshot --redact-paths
+android-harness snapshot --redact-all
 android-harness snapshot --summary
 android-harness snapshot --page-info --output /tmp/android-snapshot.json
 ```

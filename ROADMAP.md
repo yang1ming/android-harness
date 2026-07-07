@@ -50,6 +50,7 @@ host-side, ADB-first Android automation layer.
 - Daemon status path redaction for safer issue triage artifacts.
 - Helper device switching preserves the selected ADB transport.
 - Smoke report path redaction for safer issue triage artifacts.
+- Snapshot share-safe redaction preset for issue triage artifacts.
 
 ## Next
 
