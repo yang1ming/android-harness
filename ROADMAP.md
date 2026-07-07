@@ -51,6 +51,7 @@ host-side, ADB-first Android automation layer.
 - Helper device switching preserves the selected ADB transport.
 - Smoke report path redaction for safer issue triage artifacts.
 - Snapshot share-safe redaction preset for issue triage artifacts.
+- Smoke report share-safe redaction preset for issue triage artifacts.
 
 ## Next
 

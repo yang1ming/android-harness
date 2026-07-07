@@ -123,6 +123,11 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="redact local filesystem paths from the smoke report",
     )
+    smoke_parser.add_argument(
+        "--redact-all",
+        action="store_true",
+        help="redact selected device identifiers and local filesystem paths from the smoke report",
+    )
     version_parser = subparsers.add_parser("version", help="print version information")
     version_parser.add_argument(
         "--json",
@@ -196,9 +201,9 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.command == "smoke":
         report = run_smoke(args.serial, transport_name=args.transport)
-        if args.redact_device:
+        if args.redact_device or args.redact_all:
             report = redact_smoke_report(report)
-        if args.redact_paths:
+        if args.redact_paths or args.redact_all:
             report = redact_smoke_paths(report)
         payload = _json_payload(report, compact=args.compact)
         _emit_payload(payload, output=args.output)

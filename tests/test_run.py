@@ -504,6 +504,44 @@ def test_cli_smoke_can_redact_paths(monkeypatch, capsys):
     assert payload["daemon"]["status"] == "running: <redacted-path>"
 
 
+def test_cli_smoke_can_redact_all_sensitive_fields(monkeypatch, capsys):
+    def fake_run_smoke(serial=None, *, transport_name=None):
+        return {
+            "schema_version": "android-harness.smoke.v1",
+            "ok": False,
+            "selected_serial": "emulator-5554",
+            "checks": [
+                {
+                    "name": "device_ready",
+                    "ok": False,
+                    "detail": "selected device emulator-5554 is offline",
+                }
+            ],
+            "doctor": {
+                "selected_serial": "emulator-5554",
+                "devices": [["emulator-5554", "offline"]],
+                "error": "selected device emulator-5554 is not ready",
+            },
+            "daemon": {
+                "running": False,
+                "status": "not running: /tmp/android-harness-1000/daemon.sock",
+            },
+        }
+
+    monkeypatch.setattr(run, "run_smoke", fake_run_smoke)
+
+    assert run.main(["smoke", "--redact-all"]) == 1
+
+    out = capsys.readouterr().out
+    assert "emulator-5554" not in out
+    assert "/tmp/android-harness-1000/daemon.sock" not in out
+    payload = json.loads(out)
+    assert payload["device_redacted"] is True
+    assert payload["paths_redacted"] is True
+    assert payload["selected_serial"] == "<redacted-device>"
+    assert payload["daemon"]["status"] == "not running: <redacted-path>"
+
+
 def test_cli_unknown_command_fails_with_error(capsys):
     with pytest.raises(SystemExit) as exc:
         run.main(["invalid"])
