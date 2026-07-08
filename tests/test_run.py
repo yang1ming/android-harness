@@ -122,6 +122,36 @@ def test_cli_doctor_can_redact_device_identifiers(monkeypatch, capsys):
     assert payload["selected_serial"] == "<redacted-device>"
 
 
+def test_cli_doctor_can_print_summary(monkeypatch, capsys):
+    class FakeReport:
+        def to_dict(self):
+            return {
+                "adb_available": True,
+                "devices": [["emulator-5554", "offline"], ["192.168.1.20:5555", "device"]],
+                "selected_serial": "emulator-5554",
+                "device_ready": False,
+                "tcpip_target": "192.168.1.20:5555",
+                "error": "selected device emulator-5554 is offline",
+            }
+
+    monkeypatch.setattr(run, "doctor", lambda serial=None, *, transport_name=None: FakeReport())
+
+    assert run.main(["doctor", "--summary"]) == 1
+
+    out = capsys.readouterr().out
+    assert "emulator-5554" not in out
+    assert "192.168.1.20:5555" not in out
+    assert "selected device" not in out
+    payload = json.loads(out)
+    assert payload["schema_version"] == "android-harness.doctor.v1"
+    assert payload["summary"] is True
+    assert payload["device_count"] == 2
+    assert payload["ready_device_count"] == 1
+    assert payload["selected"] is True
+    assert payload["tcpip_selected"] is True
+    assert payload["error_present"] is True
+
+
 def test_cli_no_args_prints_help(monkeypatch, capsys):
     monkeypatch.setattr(run.sys, "stdin", io.StringIO(""))
 

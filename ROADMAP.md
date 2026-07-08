@@ -52,6 +52,7 @@ host-side, ADB-first Android automation layer.
 - Smoke report path redaction for safer issue triage artifacts.
 - Snapshot share-safe redaction preset for issue triage artifacts.
 - Smoke report share-safe redaction preset for issue triage artifacts.
+- Doctor count-based summary for safer diagnostic artifacts.
 
 ## Next
 

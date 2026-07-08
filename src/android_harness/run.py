@@ -11,7 +11,7 @@ from pathlib import Path
 
 from . import __version__
 from . import helpers
-from .admin import doctor, redact_doctor_report, versioned_doctor_report
+from .admin import doctor, redact_doctor_report, summarize_doctor_report, versioned_doctor_report
 from .daemon import daemon_status, daemon_status_report, redact_daemon_status_report, start_daemon, stop_daemon
 from .observation import (
     redact_snapshot_device,
@@ -55,6 +55,11 @@ def main(argv: list[str] | None = None) -> int:
         "--redact-device",
         action="store_true",
         help="redact selected device identifiers from the doctor report",
+    )
+    doctor_parser.add_argument(
+        "--summary",
+        action="store_true",
+        help="print a count-based doctor summary for logs and CI",
     )
     snapshot_parser = subparsers.add_parser("snapshot", help="print a JSON state snapshot")
     snapshot_parser.add_argument(
@@ -222,7 +227,9 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.command == "doctor":
         report = versioned_doctor_report(doctor(args.serial, transport_name=args.transport).to_dict())
-        if args.redact_device:
+        if args.summary:
+            report = summarize_doctor_report(report)
+        elif args.redact_device:
             report = redact_doctor_report(report)
         payload = _json_payload(report, compact=args.compact)
         _emit_payload(payload, output=args.output)

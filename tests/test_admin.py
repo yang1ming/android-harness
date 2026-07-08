@@ -106,3 +106,39 @@ def test_redact_doctor_report_removes_device_identifiers():
         [admin.REDACTED_DEVICE, "device"],
     ]
     assert report["selected_serial"] == "emulator-5554"
+
+
+def test_summarize_doctor_report_returns_counts_without_identifiers():
+    report = {
+        "schema_version": admin.DOCTOR_SCHEMA_VERSION,
+        "adb_available": True,
+        "devices": [["emulator-5554", "offline"], ("192.168.1.20:5555", "device")],
+        "selected_serial": "emulator-5554",
+        "device_ready": False,
+        "tcpip_target": "192.168.1.20:5555",
+        "tcpip_connected": False,
+        "uiautomator_available": None,
+        "screenshot_available": None,
+        "error": "selected device emulator-5554 failed",
+    }
+
+    summary = admin.summarize_doctor_report(report)
+    encoded = json.dumps(summary)
+
+    assert "emulator-5554" not in encoded
+    assert "192.168.1.20:5555" not in encoded
+    assert "selected device" not in encoded
+    assert summary == {
+        "schema_version": admin.DOCTOR_SCHEMA_VERSION,
+        "summary": True,
+        "adb_available": True,
+        "device_ready": False,
+        "device_count": 2,
+        "ready_device_count": 1,
+        "selected": True,
+        "tcpip_selected": True,
+        "error_present": True,
+        "tcpip_connected": False,
+        "uiautomator_available": None,
+        "screenshot_available": None,
+    }

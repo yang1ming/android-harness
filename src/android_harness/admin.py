@@ -68,6 +68,32 @@ def redact_doctor_report(report: Mapping[str, Any]) -> dict[str, Any]:
     return redacted
 
 
+def summarize_doctor_report(report: Mapping[str, Any]) -> dict[str, Any]:
+    """Return a count-based doctor summary for logs and CI."""
+
+    devices = report.get("devices")
+    device_entries = devices if isinstance(devices, list) else []
+    summary: dict[str, Any] = {}
+    if "schema_version" in report:
+        summary["schema_version"] = report["schema_version"]
+    summary.update(
+        {
+            "summary": True,
+            "adb_available": report.get("adb_available"),
+            "device_ready": report.get("device_ready"),
+            "device_count": len(device_entries),
+            "ready_device_count": _ready_device_count(device_entries),
+            "selected": bool(report.get("selected_serial")),
+            "tcpip_selected": bool(report.get("tcpip_target")),
+            "error_present": bool(report.get("error")),
+        }
+    )
+    for key in ("tcpip_connected", "uiautomator_available", "screenshot_available"):
+        if key in report:
+            summary[key] = report.get(key)
+    return summary
+
+
 def doctor(serial: str | None = None, *, transport_name: str | None = None) -> DoctorReport:
     client = AdbClient(serial=serial, transport_name=transport_name)
     try:
@@ -250,3 +276,11 @@ def _replace_identifiers(value: str, identifiers: list[str]) -> str:
     for identifier in identifiers:
         redacted = redacted.replace(identifier, REDACTED_DEVICE)
     return redacted
+
+
+def _ready_device_count(devices: list[Any]) -> int:
+    count = 0
+    for entry in devices:
+        if isinstance(entry, (list, tuple)) and len(entry) >= 2 and entry[1] == "device":
+            count += 1
+    return count

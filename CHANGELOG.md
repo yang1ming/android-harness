@@ -19,6 +19,7 @@ All notable changes to Android Harness are tracked here.
 - Public JSON schema fixture for `android-harness version --json` output.
 - `android-harness doctor --compact` and `--output PATH` for machine-readable
   diagnostic artifacts.
+- `android-harness doctor --summary` for count-based diagnostic artifacts.
 - `android-harness snapshot --redact-device` to hide selected device identifiers
   in snapshot artifacts.
 - Stable `schema_version` marker and fixture coverage for `android-harness
