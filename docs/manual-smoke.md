@@ -35,6 +35,7 @@ Expected result:
 ```bash
 android-harness smoke
 android-harness smoke --compact --output /tmp/android-harness-smoke.json
+android-harness smoke --summary --output /tmp/android-harness-smoke-summary.json
 android-harness smoke --redact-device --output /tmp/android-harness-smoke-redacted.json
 android-harness smoke --redact-paths --output /tmp/android-harness-smoke-paths-redacted.json
 android-harness smoke --redact-all --output /tmp/android-harness-smoke-safe.json
@@ -48,6 +49,8 @@ Expected result:
   and uiautomator probing are available.
 - The report can be attached to issues after removing any environment-specific
   paths or device identifiers that should stay private.
+- Use `--summary` when the report should only include check counts, failed check
+  names, and high-level daemon/doctor status.
 - Use `--redact-device` when the report should preserve check results but hide
   selected device serials.
 - Use `--redact-paths` when the report should hide local daemon socket paths.

@@ -82,6 +82,7 @@ Authorized-device smoke checks:
 ```bash
 android-harness smoke
 android-harness smoke --compact --output /tmp/android-harness-smoke.json
+android-harness smoke --summary --output /tmp/android-harness-smoke-summary.json
 android-harness smoke --redact-device --output /tmp/android-harness-smoke-redacted.json
 android-harness smoke --redact-paths --output /tmp/android-harness-smoke-paths-redacted.json
 android-harness smoke --redact-all --output /tmp/android-harness-smoke-safe.json

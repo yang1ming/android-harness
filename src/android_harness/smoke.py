@@ -6,7 +6,7 @@ import copy
 import os
 from typing import Any
 
-from .admin import doctor
+from .admin import doctor, summarize_doctor_report
 from .daemon import daemon_status
 from .transport import default_socket_path
 
@@ -78,6 +78,45 @@ def redact_smoke_paths(report: dict[str, Any]) -> dict[str, Any]:
             daemon["status"] = _replace_paths(status, _path_identifiers_from_status(status))
     redacted["paths_redacted"] = True
     return redacted
+
+
+def summarize_smoke_report(report: dict[str, Any]) -> dict[str, Any]:
+    """Return a count-based smoke summary for logs and CI."""
+
+    checks = report.get("checks")
+    check_entries = checks if isinstance(checks, list) else []
+    failed_checks = [
+        str(check.get("name"))
+        for check in check_entries
+        if isinstance(check, dict) and isinstance(check.get("name"), str) and check.get("ok") is not True
+    ]
+
+    summary: dict[str, Any] = {}
+    if "schema_version" in report:
+        summary["schema_version"] = report["schema_version"]
+    summary.update(
+        {
+            "summary": True,
+            "ok": report.get("ok"),
+            "transport": report.get("transport"),
+            "check_count": len(check_entries),
+            "failed_check_count": len(failed_checks),
+            "failed_checks": failed_checks,
+        }
+    )
+
+    daemon = report.get("daemon")
+    if isinstance(daemon, dict):
+        summary["daemon"] = {
+            "running": daemon.get("running"),
+            "status_present": bool(daemon.get("status")),
+        }
+
+    doctor_report = report.get("doctor")
+    if isinstance(doctor_report, dict):
+        summary["doctor"] = summarize_doctor_report(doctor_report)
+
+    return summary
 
 
 def _checks_from_doctor(doctor_report: dict[str, Any]) -> list[dict[str, object]]:

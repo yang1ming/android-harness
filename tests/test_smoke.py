@@ -125,6 +125,49 @@ def test_redact_smoke_paths_removes_daemon_socket_path():
     assert report["daemon"]["status"] == "not running: /tmp/android-harness-1000/daemon.sock (stale socket)"
 
 
+def test_summarize_smoke_report_returns_counts_without_identifiers_or_paths():
+    report = {
+        "schema_version": smoke.SMOKE_SCHEMA_VERSION,
+        "ok": False,
+        "transport": "daemon",
+        "selected_serial": "emulator-5554",
+        "checks": [
+            {"name": "adb_available", "ok": True},
+            {"name": "device_ready", "ok": False, "detail": "selected device emulator-5554 is offline"},
+        ],
+        "doctor": {
+            "adb_available": True,
+            "devices": [["emulator-5554", "offline"], ["192.168.1.20:5555", "device"]],
+            "selected_serial": "emulator-5554",
+            "device_ready": False,
+            "error": "selected device emulator-5554 is offline",
+        },
+        "daemon": {
+            "running": False,
+            "status": "not running: /tmp/android-harness-1000/daemon.sock",
+        },
+    }
+
+    summary = smoke.summarize_smoke_report(report)
+    encoded = json.dumps(summary)
+
+    assert "emulator-5554" not in encoded
+    assert "192.168.1.20:5555" not in encoded
+    assert "/tmp/android-harness-1000/daemon.sock" not in encoded
+    assert "selected device" not in encoded
+    assert summary["schema_version"] == smoke.SMOKE_SCHEMA_VERSION
+    assert summary["summary"] is True
+    assert summary["ok"] is False
+    assert summary["transport"] == "daemon"
+    assert summary["check_count"] == 2
+    assert summary["failed_check_count"] == 1
+    assert summary["failed_checks"] == ["device_ready"]
+    assert summary["daemon"] == {"running": False, "status_present": True}
+    assert summary["doctor"]["device_count"] == 2
+    assert summary["doctor"]["ready_device_count"] == 1
+    assert summary["doctor"]["error_present"] is True
+
+
 def test_run_smoke_marks_failed_device_probe(monkeypatch):
     def fake_doctor(serial=None, *, transport_name=None):
         return FakeReport(

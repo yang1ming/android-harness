@@ -572,6 +572,48 @@ def test_cli_smoke_can_redact_all_sensitive_fields(monkeypatch, capsys):
     assert payload["daemon"]["status"] == "not running: <redacted-path>"
 
 
+def test_cli_smoke_can_print_summary(monkeypatch, capsys):
+    def fake_run_smoke(serial=None, *, transport_name=None):
+        return {
+            "schema_version": "android-harness.smoke.v1",
+            "ok": False,
+            "transport": "daemon",
+            "selected_serial": "emulator-5554",
+            "checks": [
+                {"name": "adb_available", "ok": True},
+                {"name": "device_ready", "ok": False, "detail": "selected device emulator-5554 is offline"},
+            ],
+            "doctor": {
+                "adb_available": True,
+                "devices": [["emulator-5554", "offline"]],
+                "selected_serial": "emulator-5554",
+                "device_ready": False,
+                "error": "selected device emulator-5554 is offline",
+            },
+            "daemon": {
+                "running": False,
+                "status": "not running: /tmp/android-harness-1000/daemon.sock",
+            },
+        }
+
+    monkeypatch.setattr(run, "run_smoke", fake_run_smoke)
+
+    assert run.main(["smoke", "--summary"]) == 1
+
+    out = capsys.readouterr().out
+    assert "emulator-5554" not in out
+    assert "/tmp/android-harness-1000/daemon.sock" not in out
+    assert "selected device" not in out
+    payload = json.loads(out)
+    assert payload["schema_version"] == "android-harness.smoke.v1"
+    assert payload["summary"] is True
+    assert payload["check_count"] == 2
+    assert payload["failed_checks"] == ["device_ready"]
+    assert payload["daemon"] == {"running": False, "status_present": True}
+    assert payload["doctor"]["device_count"] == 1
+    assert payload["doctor"]["error_present"] is True
+
+
 def test_cli_unknown_command_fails_with_error(capsys):
     with pytest.raises(SystemExit) as exc:
         run.main(["invalid"])
