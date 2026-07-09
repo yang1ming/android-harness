@@ -32,6 +32,7 @@ All notable changes to Android Harness are tracked here.
 - `android-harness smoke --redact-all` as a share-safe preset for smoke
   reports.
 - `android-harness smoke --summary` for count-based smoke artifacts.
+- Public JSON schema fixture for `android-harness smoke --summary` output.
 - `android-harness smoke --redact-device` to hide selected device identifiers in
   issue-triage reports.
 - GitHub Actions `Release Build` workflow and release checklist documentation

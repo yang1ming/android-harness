@@ -55,6 +55,7 @@ host-side, ADB-first Android automation layer.
 - Doctor count-based summary for safer diagnostic artifacts.
 - Smoke count-based summary for safer issue triage artifacts.
 - Doctor summary schema compatibility fixture.
+- Smoke summary schema compatibility fixture.
 
 ## Next
 

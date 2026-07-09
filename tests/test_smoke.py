@@ -73,6 +73,30 @@ def test_smoke_report_matches_public_schema_fixture(monkeypatch):
     assert payload == fixture
 
 
+def test_smoke_summary_matches_public_schema_fixture(monkeypatch):
+    def fake_doctor(serial=None, *, transport_name=None):
+        return FakeReport(
+            {
+                "adb_available": True,
+                "devices": [["emulator-5554", "device"]],
+                "selected_serial": "emulator-5554",
+                "device_ready": True,
+                "screenshot_available": True,
+                "uiautomator_available": True,
+                "error": None,
+            }
+        )
+
+    monkeypatch.setattr(smoke, "doctor", fake_doctor)
+    monkeypatch.setattr(smoke, "daemon_status", lambda: "running: /tmp/android-harness/daemon.sock")
+
+    report = smoke.run_smoke("emulator-5554", transport_name="daemon")
+    payload = json.loads(json.dumps(smoke.summarize_smoke_report(report)))
+    fixture = json.loads((FIXTURES / "smoke_summary_v1.json").read_text())
+
+    assert payload == fixture
+
+
 def test_redact_smoke_report_removes_device_identifiers():
     report = {
         "schema_version": smoke.SMOKE_SCHEMA_VERSION,

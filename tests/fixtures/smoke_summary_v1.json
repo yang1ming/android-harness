@@ -1,0 +1,25 @@
+{
+  "schema_version": "android-harness.smoke.v1",
+  "summary": true,
+  "ok": true,
+  "transport": "daemon",
+  "check_count": 4,
+  "failed_check_count": 0,
+  "failed_checks": [],
+  "daemon": {
+    "running": true,
+    "status_present": true
+  },
+  "doctor": {
+    "summary": true,
+    "adb_available": true,
+    "device_ready": true,
+    "device_count": 1,
+    "ready_device_count": 1,
+    "selected": true,
+    "tcpip_selected": false,
+    "error_present": false,
+    "uiautomator_available": true,
+    "screenshot_available": true
+  }
+}
