@@ -1,0 +1,14 @@
+{
+  "schema_version": "android-harness.doctor.v1",
+  "summary": true,
+  "adb_available": true,
+  "device_ready": true,
+  "device_count": 1,
+  "ready_device_count": 1,
+  "selected": true,
+  "tcpip_selected": true,
+  "error_present": false,
+  "tcpip_connected": true,
+  "uiautomator_available": true,
+  "screenshot_available": true
+}

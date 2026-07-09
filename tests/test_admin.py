@@ -82,6 +82,17 @@ def test_doctor_report_matches_public_schema_fixture(monkeypatch):
     assert payload == fixture
 
 
+def test_doctor_summary_matches_public_schema_fixture(monkeypatch):
+    FakeAdbClient.connected = False
+    monkeypatch.setattr(admin, "AdbClient", FakeAdbClient)
+
+    report = admin.versioned_doctor_report(admin.doctor("192.168.1.20:5555").to_dict())
+    payload = json.loads(json.dumps(admin.summarize_doctor_report(report)))
+    fixture = json.loads((FIXTURES / "doctor_summary_v1.json").read_text())
+
+    assert payload == fixture
+
+
 def test_redact_doctor_report_removes_device_identifiers():
     report = {
         "schema_version": admin.DOCTOR_SCHEMA_VERSION,
