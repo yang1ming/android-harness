@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import base64
+import errno
 import json
 from pathlib import Path
 import socket
@@ -164,14 +165,24 @@ def stop_daemon(socket_path: Path | None = None) -> str:
     path = socket_path or default_socket_path()
     if not path.exists():
         return f"not running: {path}"
-    try:
-        response = _send(path, {"id": "stop", "op": "shutdown"})
-    except Exception:
+    if not _is_socket_file(path):
         try:
             _unlink_stale_socket(path)
         except AdbError as exc:
             return f"error: {exc}"
         return f"not running: {path} (removed stale socket)"
+    try:
+        response = _send(path, {"id": "stop", "op": "shutdown"})
+    except OSError as exc:
+        if not _is_stale_socket_error(exc):
+            return f"error: daemon did not respond at {path}: {exc}"
+        try:
+            _unlink_stale_socket(path)
+        except AdbError as exc:
+            return f"error: {exc}"
+        return f"not running: {path} (removed stale socket)"
+    except Exception as exc:
+        return f"error: daemon did not respond at {path}: {exc}"
     if response.get("ok"):
         return f"stopping: {path}"
     return f"error: {response.get('error', 'unknown error')}"
@@ -252,8 +263,22 @@ def _daemon_log_path(socket_path: Path) -> Path:
 def _unlink_stale_socket(path: Path) -> None:
     try:
         path.unlink()
+    except FileNotFoundError:
+        return
     except OSError as exc:
         raise AdbError(f"stale adb daemon socket exists at {path} but could not be removed: {exc}") from exc
+
+
+def _is_socket_file(path: Path) -> bool:
+    try:
+        return path.is_socket()
+    except OSError:
+        return False
+
+
+def _is_stale_socket_error(exc: OSError) -> bool:
+    stale_errnos = {errno.ECONNREFUSED, errno.ENOENT, errno.ENOTSOCK}
+    return isinstance(exc, (ConnectionRefusedError, FileNotFoundError)) or exc.errno in stale_errnos
 
 
 def _daemon_start_error(path: Path, detail: str, log_path: Path) -> str:

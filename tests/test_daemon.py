@@ -1,5 +1,6 @@
 import json
 from pathlib import Path
+import socket
 import time
 
 import pytest
@@ -87,6 +88,20 @@ def test_stop_daemon_removes_stale_socket(tmp_path):
 
     assert stop_daemon(socket_path) == f"not running: {socket_path} (removed stale socket)"
     assert not socket_path.exists()
+
+
+def test_stop_daemon_preserves_socket_on_transient_timeout(tmp_path, monkeypatch):
+    socket_path = tmp_path / "daemon.sock"
+    socket_path.write_text("socket still owned by daemon\n")
+
+    def fake_send(path, request):
+        raise socket.timeout("timed out")
+
+    monkeypatch.setattr(daemon, "_is_socket_file", lambda path: True)
+    monkeypatch.setattr(daemon, "_send", fake_send)
+
+    assert stop_daemon(socket_path) == f"error: daemon did not respond at {socket_path}: timed out"
+    assert socket_path.exists()
 
 
 def test_start_daemon_removes_stale_socket_before_starting(tmp_path):

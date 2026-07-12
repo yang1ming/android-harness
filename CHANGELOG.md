@@ -69,6 +69,8 @@ All notable changes to Android Harness are tracked here.
 
 ### Fixed
 
+- `stop_daemon()` now preserves a live daemon socket when shutdown fails with
+  a transient timeout or connection error.
 - Permission dialog handling no longer mistakes `Don't allow` or `不允许`
   buttons for allow actions.
 - `set_device()` and `adb_connect()` now preserve the current ADB transport
