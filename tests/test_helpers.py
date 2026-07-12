@@ -182,6 +182,27 @@ def test_find_permission_button_prefers_candidate_order(monkeypatch):
     assert helpers._find_permission_button(True).text == "仅在使用中允许"
 
 
+def test_find_permission_button_does_not_match_allow_inside_deny_text(monkeypatch):
+    elements = [_element("不允许"), _element("允许")]
+    monkeypatch.setattr(helpers, "ui_tree", lambda: elements)
+
+    assert helpers._find_permission_button(True).text == "允许"
+
+
+def test_find_permission_button_matches_common_deny_text(monkeypatch):
+    elements = [_element("允许"), _element("不允许")]
+    monkeypatch.setattr(helpers, "ui_tree", lambda: elements)
+
+    assert helpers._find_permission_button(False).text == "不允许"
+
+
+def test_find_permission_button_does_not_match_english_allow_inside_deny_text(monkeypatch):
+    elements = [_element("Don't Allow"), _element("Allow")]
+    monkeypatch.setattr(helpers, "ui_tree", lambda: elements)
+
+    assert helpers._find_permission_button(True).text == "Allow"
+
+
 def test_tap_if_text_taps_first_match(monkeypatch):
     tapped = []
     element = _element("Allow")

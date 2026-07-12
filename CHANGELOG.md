@@ -69,6 +69,8 @@ All notable changes to Android Harness are tracked here.
 
 ### Fixed
 
+- Permission dialog handling no longer mistakes `Don't allow` or `不允许`
+  buttons for allow actions.
 - `set_device()` and `adb_connect()` now preserve the current ADB transport
   unless a new transport is explicitly selected.
 - `android-harness smoke` now explains skipped screenshot and uiautomator

@@ -66,7 +66,7 @@ _ALLOW_PERMISSION_TEXTS = (
     "While using the app",
     "Only this time",
 )
-_DENY_PERMISSION_TEXTS = ("拒绝", "Deny")
+_DENY_PERMISSION_TEXTS = ("拒绝", "不允许", "Deny", "Don't allow", "Don’t allow")
 
 
 def set_device(serial: str | None, *, transport_name: str | None = None) -> None:
@@ -435,15 +435,39 @@ def _permission_button_texts(allow: bool) -> tuple[str, ...]:
 
 
 def _find_permission_button(allow: bool) -> Element | None:
-    elements = ui_tree()
-    for candidate in _permission_button_texts(allow):
+    elements = [element for element in ui_tree() if element.enabled]
+    target_texts = _permission_button_texts(allow)
+    opposite_texts = _permission_button_texts(not allow)
+
+    for candidate in target_texts:
         for element in elements:
-            if not element.enabled:
-                continue
             texts = [value for value in (element.text, element.content_desc) if value]
-            if any(value == candidate or candidate in value for value in texts):
+            if any(_permission_text_equals(value, candidate) for value in texts):
+                return element
+
+    for candidate in target_texts:
+        for element in elements:
+            texts = [value for value in (element.text, element.content_desc) if value]
+            if any(_permission_text_matches(value, opposite_texts) for value in texts):
+                continue
+            if any(_permission_text_contains(value, candidate) for value in texts):
                 return element
     return None
+
+
+def _permission_text_equals(value: str, candidate: str) -> bool:
+    return value == candidate or value.casefold() == candidate.casefold()
+
+
+def _permission_text_contains(value: str, candidate: str) -> bool:
+    return candidate.casefold() in value.casefold()
+
+
+def _permission_text_matches(value: str, candidates: tuple[str, ...]) -> bool:
+    for candidate in candidates:
+        if _permission_text_equals(value, candidate) or _permission_text_contains(value, candidate):
+            return True
+    return False
 
 
 def _screen_bytes() -> bytes:
