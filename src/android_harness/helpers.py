@@ -372,6 +372,7 @@ def page_info() -> dict[str, object]:
                 "text": element.text,
                 "content_desc": element.content_desc,
                 "resource_id": element.resource_id,
+                "class_name": element.class_name,
                 "bounds": _bounds_to_dict(element.bounds),
             }
             for element in elements

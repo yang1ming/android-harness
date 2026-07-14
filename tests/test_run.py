@@ -262,6 +262,7 @@ def test_cli_snapshot_can_include_page_info_and_write_output(tmp_path, monkeypat
                     "text": "Start",
                     "content_desc": None,
                     "resource_id": "pkg:id/start",
+                    "class_name": "android.widget.Button",
                     "bounds": {"left": 1, "top": 2, "right": 101, "bottom": 202},
                 }
             ],
@@ -317,6 +318,7 @@ def test_cli_snapshot_can_redact_text(monkeypatch, capsys):
                     "text": "Pay",
                     "content_desc": "Pay now",
                     "resource_id": "pkg:id/pay",
+                    "class_name": "android.widget.Button",
                     "bounds": {"left": 1, "top": 2, "right": 101, "bottom": 202},
                 }
             ],
@@ -435,6 +437,7 @@ def test_cli_snapshot_can_print_summary(monkeypatch, capsys):
                     "text": "Pay",
                     "content_desc": "Pay now",
                     "resource_id": "pkg:id/pay",
+                    "class_name": "android.widget.Button",
                     "bounds": {"left": 1, "top": 2, "right": 101, "bottom": 202},
                 }
             ],

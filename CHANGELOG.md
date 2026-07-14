@@ -6,6 +6,8 @@ All notable changes to Android Harness are tracked here.
 
 ### Added
 
+- `page_info()` and `android-harness snapshot --page-info` now include class
+  names for clickable elements.
 - `android-harness daemon status --json` with compact and file output options.
 - `android-harness daemon status --redact-paths` to hide local socket paths in
   daemon status artifacts.
