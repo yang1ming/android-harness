@@ -32,7 +32,7 @@ class Element:
 
 
 def parse_bounds(value: str) -> Bounds:
-    match = re.fullmatch(r"\[(\d+),(\d+)\]\[(\d+),(\d+)\]", value)
+    match = re.fullmatch(r"\[(-?\d+),(-?\d+)\]\[(-?\d+),(-?\d+)\]", value)
     if match is None:
         raise ValueError(f"invalid uiautomator bounds: {value!r}")
     left, top, right, bottom = match.groups()

@@ -18,6 +18,16 @@ def test_parse_bounds_rejects_malformed_value():
         parse_bounds("10,20,110,220")
 
 
+def test_parse_bounds_accepts_signed_coordinates():
+    bounds = parse_bounds("[-5,-10][95,190]")
+
+    assert bounds.left == -5
+    assert bounds.top == -10
+    assert bounds.right == 95
+    assert bounds.bottom == 190
+    assert bounds.center == (45, 90)
+
+
 def test_parse_ui_xml_elements():
     xml = """<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
     <hierarchy rotation="0">
