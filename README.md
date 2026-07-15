@@ -179,7 +179,8 @@ consumer needs clickable element text, content descriptions, resource IDs,
 class names, and bounds. Use `--compact` when a single-line JSON record is
 easier to consume in logs or pipelines. Use `--redact-text` when logs should
 keep structure and counts without visible UI text or content descriptions. Use
-`--summary` when logs only need counts and foreground-app context.
+`--summary` when logs only need counts, clickable class distribution, and
+foreground-app context.
 
 Optional OCR lives in the plugin layer and uses the host's Tesseract CLI when
 available:

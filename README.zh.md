@@ -168,7 +168,8 @@ android-harness snapshot --page-info --output /tmp/android-snapshot.json
 description、resource ID、class name 和 bounds，可以使用 `--page-info`。如果
 日志或 pipeline 更适合消费单行 JSON，可以使用 `--compact`。如果日志只需要
 保留结构和数量，不应该暴露可见 UI 文本或 content description，可以使用
-`--redact-text`。如果日志只需要数量和当前 app 上下文，可以使用 `--summary`。
+`--redact-text`。如果日志只需要数量、clickable class 分布和当前 app 上下文，
+可以使用 `--summary`。
 
 可选 OCR 放在插件层，在 host 上存在 Tesseract CLI 时可用：
 

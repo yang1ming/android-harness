@@ -110,8 +110,9 @@ def test_summarize_snapshot_returns_counts_without_text_content():
             "current_app": {"package": "com.example", "activity": ".Main"},
             "visible_texts": ["Ready"],
             "clickable": [
-                {"text": "Start", "content_desc": "Start button"},
-                {"text": "Stop", "content_desc": "Stop button"},
+                {"text": "Start", "content_desc": "Start button", "class_name": "android.widget.Button"},
+                {"text": "Name", "content_desc": None, "class_name": "android.widget.EditText"},
+                {"text": "Stop", "content_desc": "Stop button", "class_name": "android.widget.Button"},
             ],
         },
     }
@@ -127,7 +128,11 @@ def test_summarize_snapshot_returns_counts_without_text_content():
         "page_info": {
             "current_app": {"package": "com.example", "activity": ".Main"},
             "visible_text_count": 1,
-            "clickable_count": 2,
+            "clickable_count": 3,
+            "clickable_class_counts": {
+                "android.widget.Button": 2,
+                "android.widget.EditText": 1,
+            },
         },
     }
 
@@ -142,8 +147,8 @@ def test_snapshot_summary_matches_public_schema_fixture():
             "current_app": {"package": "com.example", "activity": ".Main"},
             "visible_texts": ["Ready"],
             "clickable": [
-                {"text": "Start", "content_desc": "Start button"},
-                {"text": "Stop", "content_desc": "Stop button"},
+                {"text": "Start", "content_desc": "Start button", "class_name": "android.widget.Button"},
+                {"text": "Stop", "content_desc": "Stop button", "class_name": "android.widget.Button"},
             ],
         },
     }

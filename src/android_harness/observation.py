@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import copy
+from collections import Counter
 from collections.abc import Mapping
 from typing import Any
 
@@ -84,6 +85,9 @@ def summarize_snapshot(snapshot: Mapping[str, Any]) -> dict[str, Any]:
         clickable = page_info.get("clickable")
         if isinstance(clickable, list):
             page_summary["clickable_count"] = len(clickable)
+            clickable_class_counts = _clickable_class_counts(clickable)
+            if clickable_class_counts:
+                page_summary["clickable_class_counts"] = clickable_class_counts
         summary["page_info"] = page_summary
 
     return summary
@@ -105,3 +109,12 @@ def _redact_clickable_entry(entry: Any) -> Any:
     if "content_desc" in redacted:
         redacted["content_desc"] = None
     return redacted
+
+
+def _clickable_class_counts(clickable: list[Any]) -> dict[str, int]:
+    counts = Counter(
+        entry["class_name"]
+        for entry in clickable
+        if isinstance(entry, Mapping) and isinstance(entry.get("class_name"), str) and entry["class_name"]
+    )
+    return dict(sorted(counts.items()))

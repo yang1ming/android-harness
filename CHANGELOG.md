@@ -6,6 +6,8 @@ All notable changes to Android Harness are tracked here.
 
 ### Added
 
+- Snapshot summaries now include clickable class counts when page info is
+  present.
 - `page_info()` and `android-harness snapshot --page-info` now include class
   names for clickable elements.
 - `android-harness daemon status --json` with compact and file output options.

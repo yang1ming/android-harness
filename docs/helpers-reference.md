@@ -41,7 +41,8 @@ authorized.
   can also include `page_info()`, write the JSON payload to a file, print
   compact single-line JSON with `--compact`, and remove text content with
   `--redact-text`. Use `--redact-all` for share-safe issue artifacts and
-  `--summary` for count-only CI and log output.
+  `--summary` for count-only CI and log output, including clickable class
+  counts when page info is present.
 - `ui_xml()` dumps uiautomator XML and returns it as text.
 - `ui_tree()` parses uiautomator XML into `Element` objects.
 - `visible_texts()` returns visible text and content descriptions from the UI

@@ -17,6 +17,9 @@
       "activity": ".Main"
     },
     "visible_text_count": 1,
-    "clickable_count": 2
+    "clickable_count": 2,
+    "clickable_class_counts": {
+      "android.widget.Button": 2
+    }
   }
 }
