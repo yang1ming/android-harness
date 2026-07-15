@@ -394,11 +394,14 @@ def logcat_tail(lines: int = 200) -> str:
 
 
 def _bounds_to_dict(bounds: Bounds) -> dict[str, int]:
+    center_x, center_y = bounds.center
     return {
         "left": bounds.left,
         "top": bounds.top,
         "right": bounds.right,
         "bottom": bounds.bottom,
+        "center_x": center_x,
+        "center_y": center_y,
     }
 
 

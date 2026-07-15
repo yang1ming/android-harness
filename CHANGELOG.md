@@ -6,6 +6,7 @@ All notable changes to Android Harness are tracked here.
 
 ### Added
 
+- `page_info()` clickable bounds now include tap center coordinates.
 - Snapshot summaries now include clickable class counts when page info is
   present.
 - `page_info()` and `android-harness snapshot --page-info` now include class

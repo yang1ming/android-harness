@@ -165,6 +165,8 @@ def test_page_info_is_json_serializable(monkeypatch):
         "top": 20,
         "right": 110,
         "bottom": 220,
+        "center_x": 60,
+        "center_y": 120,
     }
     json.dumps(info)
 

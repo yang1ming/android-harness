@@ -48,7 +48,7 @@ authorized.
 - `visible_texts()` returns visible text and content descriptions from the UI
   tree.
 - `page_info()` returns current app, visible texts, and clickable enabled
-  elements with class names and bounds.
+  elements with class names, bounds, and tap centers.
 
 ## Finding And Tapping UI
 
