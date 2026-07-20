@@ -122,6 +122,7 @@ def test_summarize_snapshot_returns_counts_without_text_content():
         "screenshot": "/tmp/android-harness/screen.png",
         "page_info": {
             "current_app": {"package": "com.example", "activity": ".Main"},
+            "element_count": 5,
             "visible_texts": ["Ready"],
             "clickable": [
                 {"text": "Start", "content_desc": "Start button", "class_name": "android.widget.Button"},
@@ -141,6 +142,7 @@ def test_summarize_snapshot_returns_counts_without_text_content():
         "visible_text_count": 2,
         "page_info": {
             "current_app": {"package": "com.example", "activity": ".Main"},
+            "element_count": 5,
             "visible_text_count": 1,
             "clickable_count": 3,
             "clickable_class_counts": {
@@ -159,6 +161,7 @@ def test_snapshot_summary_matches_public_schema_fixture():
         "screenshot": "/tmp/android-harness/screen.png",
         "page_info": {
             "current_app": {"package": "com.example", "activity": ".Main"},
+            "element_count": 4,
             "visible_texts": ["Ready"],
             "clickable": [
                 {"text": "Start", "content_desc": "Start button", "class_name": "android.widget.Button"},

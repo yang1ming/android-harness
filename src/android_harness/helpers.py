@@ -366,6 +366,7 @@ def page_info() -> dict[str, object]:
     elements = ui_tree()
     return {
         "current_app": current_app(),
+        "element_count": len(elements),
         "visible_texts": _visible_texts(elements),
         "clickable": [_element_to_dict(element) for element in elements if element.clickable and element.enabled],
         "focused": [_element_to_dict(element) for element in elements if element.focused and element.enabled],

@@ -82,6 +82,9 @@ def summarize_snapshot(snapshot: Mapping[str, Any]) -> dict[str, Any]:
         page_summary: dict[str, Any] = {}
         if "current_app" in page_info:
             page_summary["current_app"] = page_info["current_app"]
+        element_count = page_info.get("element_count")
+        if isinstance(element_count, int):
+            page_summary["element_count"] = element_count
         page_visible_texts = page_info.get("visible_texts")
         if isinstance(page_visible_texts, list):
             page_summary["visible_text_count"] = len(page_visible_texts)

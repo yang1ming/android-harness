@@ -160,6 +160,7 @@ def test_page_info_is_json_serializable(monkeypatch):
 
     info = helpers.page_info()
 
+    assert info["element_count"] == 2
     assert info["clickable"][0]["class_name"] == "android.widget.Button"
     assert info["clickable"][0]["bounds"] == {
         "left": 10,

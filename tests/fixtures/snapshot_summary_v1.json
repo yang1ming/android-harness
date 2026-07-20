@@ -16,6 +16,7 @@
       "package": "com.example",
       "activity": ".Main"
     },
+    "element_count": 4,
     "visible_text_count": 1,
     "clickable_count": 2,
     "clickable_class_counts": {
