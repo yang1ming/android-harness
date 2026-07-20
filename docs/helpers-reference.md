@@ -47,8 +47,8 @@ authorized.
 - `ui_tree()` parses uiautomator XML into `Element` objects.
 - `visible_texts()` returns visible text and content descriptions from the UI
   tree.
-- `page_info()` returns current app, visible texts, and clickable enabled
-  elements with class names, bounds, and tap centers.
+- `page_info()` returns current app, visible texts, clickable enabled elements,
+  and focused enabled elements with class names, bounds, and tap centers.
 
 ## Finding And Tapping UI
 

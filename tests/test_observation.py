@@ -46,6 +46,14 @@ def test_redact_snapshot_text_removes_text_content_but_preserves_counts():
                     "bounds": {"left": 1, "top": 2, "right": 3, "bottom": 4},
                 }
             ],
+            "focused": [
+                {
+                    "text": "Secret input",
+                    "content_desc": "Name field",
+                    "resource_id": "pkg:id/name",
+                    "bounds": {"left": 5, "top": 6, "right": 7, "bottom": 8},
+                }
+            ],
         },
     }
 
@@ -61,6 +69,12 @@ def test_redact_snapshot_text_removes_text_content_but_preserves_counts():
         "content_desc": None,
         "resource_id": "pkg:id/start",
         "bounds": {"left": 1, "top": 2, "right": 3, "bottom": 4},
+    }
+    assert redacted["page_info"]["focused"][0] == {
+        "text": None,
+        "content_desc": None,
+        "resource_id": "pkg:id/name",
+        "bounds": {"left": 5, "top": 6, "right": 7, "bottom": 8},
     }
     assert snapshot["visible_texts"] == ["Ready", "Secret"]
 

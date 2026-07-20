@@ -367,17 +367,8 @@ def page_info() -> dict[str, object]:
     return {
         "current_app": current_app(),
         "visible_texts": _visible_texts(elements),
-        "clickable": [
-            {
-                "text": element.text,
-                "content_desc": element.content_desc,
-                "resource_id": element.resource_id,
-                "class_name": element.class_name,
-                "bounds": _bounds_to_dict(element.bounds),
-            }
-            for element in elements
-            if element.clickable and element.enabled
-        ],
+        "clickable": [_element_to_dict(element) for element in elements if element.clickable and element.enabled],
+        "focused": [_element_to_dict(element) for element in elements if element.focused and element.enabled],
     }
 
 
@@ -402,6 +393,16 @@ def _bounds_to_dict(bounds: Bounds) -> dict[str, int]:
         "bottom": bounds.bottom,
         "center_x": center_x,
         "center_y": center_y,
+    }
+
+
+def _element_to_dict(element: Element) -> dict[str, object]:
+    return {
+        "text": element.text,
+        "content_desc": element.content_desc,
+        "resource_id": element.resource_id,
+        "class_name": element.class_name,
+        "bounds": _bounds_to_dict(element.bounds),
     }
 
 

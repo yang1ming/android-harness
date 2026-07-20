@@ -22,7 +22,7 @@ class _FakeTransport:
         return path
 
 
-def _element(text: str | None, bounds: Bounds | None = None, enabled: bool = True) -> Element:
+def _element(text: str | None, bounds: Bounds | None = None, enabled: bool = True, focused: bool = False) -> Element:
     return Element(
         text=text,
         resource_id=None,
@@ -31,7 +31,7 @@ def _element(text: str | None, bounds: Bounds | None = None, enabled: bool = Tru
         bounds=bounds or Bounds(10, 20, 110, 220),
         clickable=True,
         enabled=enabled,
-        focused=False,
+        focused=focused,
     )
 
 
@@ -153,8 +153,9 @@ def test_type_text_rejects_non_ascii(monkeypatch):
 
 
 def test_page_info_is_json_serializable(monkeypatch):
-    element = _element("Allow")
-    monkeypatch.setattr(helpers, "ui_tree", lambda: [element])
+    clickable = _element("Allow")
+    focused = _element("Name", Bounds(20, 40, 220, 100), focused=True)
+    monkeypatch.setattr(helpers, "ui_tree", lambda: [clickable, focused])
     monkeypatch.setattr(helpers, "current_app", lambda: {"package": "com.example", "activity": ".Main"})
 
     info = helpers.page_info()
@@ -167,6 +168,15 @@ def test_page_info_is_json_serializable(monkeypatch):
         "bottom": 220,
         "center_x": 60,
         "center_y": 120,
+    }
+    assert info["focused"][0]["text"] == "Name"
+    assert info["focused"][0]["bounds"] == {
+        "left": 20,
+        "top": 40,
+        "right": 220,
+        "bottom": 100,
+        "center_x": 120,
+        "center_y": 70,
     }
     json.dumps(info)
 

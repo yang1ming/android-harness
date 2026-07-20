@@ -6,6 +6,8 @@ All notable changes to Android Harness are tracked here.
 
 ### Added
 
+- `page_info()` now includes focused enabled elements for machine-readable
+  observation and redacts their text with `--redact-text`.
 - `page_info()` clickable bounds now include tap center coordinates.
 - Snapshot summaries now include clickable class counts when page info is
   present.

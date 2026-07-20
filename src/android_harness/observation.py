@@ -32,6 +32,9 @@ def redact_snapshot_text(snapshot: Mapping[str, Any]) -> dict[str, Any]:
         clickable = page.get("clickable")
         if isinstance(clickable, list):
             page["clickable"] = [_redact_clickable_entry(entry) for entry in clickable]
+        focused = page.get("focused")
+        if isinstance(focused, list):
+            page["focused"] = [_redact_clickable_entry(entry) for entry in focused]
         redacted["page_info"] = page
 
     redacted["text_redacted"] = True
