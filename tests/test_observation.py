@@ -129,6 +129,9 @@ def test_summarize_snapshot_returns_counts_without_text_content():
                 {"text": "Name", "content_desc": None, "class_name": "android.widget.EditText"},
                 {"text": "Stop", "content_desc": "Stop button", "class_name": "android.widget.Button"},
             ],
+            "focused": [
+                {"text": "Name", "content_desc": None, "class_name": "android.widget.EditText"},
+            ],
         },
     }
 
@@ -149,6 +152,7 @@ def test_summarize_snapshot_returns_counts_without_text_content():
                 "android.widget.Button": 2,
                 "android.widget.EditText": 1,
             },
+            "focused_count": 1,
         },
     }
 
@@ -166,6 +170,9 @@ def test_snapshot_summary_matches_public_schema_fixture():
             "clickable": [
                 {"text": "Start", "content_desc": "Start button", "class_name": "android.widget.Button"},
                 {"text": "Stop", "content_desc": "Stop button", "class_name": "android.widget.Button"},
+            ],
+            "focused": [
+                {"text": "Name", "content_desc": None, "class_name": "android.widget.EditText"},
             ],
         },
     }

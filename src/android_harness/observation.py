@@ -94,6 +94,9 @@ def summarize_snapshot(snapshot: Mapping[str, Any]) -> dict[str, Any]:
             clickable_class_counts = _clickable_class_counts(clickable)
             if clickable_class_counts:
                 page_summary["clickable_class_counts"] = clickable_class_counts
+        focused = page_info.get("focused")
+        if isinstance(focused, list):
+            page_summary["focused_count"] = len(focused)
         summary["page_info"] = page_summary
 
     return summary

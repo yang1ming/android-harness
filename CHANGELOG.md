@@ -6,6 +6,8 @@ All notable changes to Android Harness are tracked here.
 
 ### Added
 
+- Snapshot summaries now include focused element counts when page info is
+  present.
 - `page_info()` and snapshot summaries now include total parsed UI element
   counts when page info is present.
 - `page_info()` now includes focused enabled elements for machine-readable

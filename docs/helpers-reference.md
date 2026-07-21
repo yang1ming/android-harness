@@ -42,7 +42,7 @@ authorized.
   compact single-line JSON with `--compact`, and remove text content with
   `--redact-text`. Use `--redact-all` for share-safe issue artifacts and
   `--summary` for count-only CI and log output, including clickable class
-  counts when page info is present.
+  counts and the focused element count when page info is present.
 - `ui_xml()` dumps uiautomator XML and returns it as text.
 - `ui_tree()` parses uiautomator XML into `Element` objects.
 - `visible_texts()` returns visible text and content descriptions from the UI

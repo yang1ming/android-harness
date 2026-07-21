@@ -180,8 +180,8 @@ class names, bounds, tap centers, focused element details, and total parsed
 element counts. Use `--compact` when a single-line JSON record is easier to
 consume in logs or pipelines. Use `--redact-text` when logs should keep
 structure and counts without visible UI text or content descriptions. Use
-`--summary` when logs only need counts, clickable class distribution, and
-foreground-app context.
+`--summary` when logs only need counts (including focused elements), clickable
+class distribution, and foreground-app context.
 
 Optional OCR lives in the plugin layer and uses the host's Tesseract CLI when
 available:

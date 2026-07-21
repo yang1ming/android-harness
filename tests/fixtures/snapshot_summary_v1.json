@@ -21,6 +21,7 @@
     "clickable_count": 2,
     "clickable_class_counts": {
       "android.widget.Button": 2
-    }
+    },
+    "focused_count": 1
   }
 }
