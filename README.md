@@ -176,9 +176,9 @@ android-harness snapshot --page-info --output /tmp/android-snapshot.json
 Snapshot output includes a `schema_version` field so agents and CI jobs can
 parse it safely as the observation format evolves. Use `--page-info` when the
 consumer needs clickable element text, content descriptions, resource IDs,
-class names, bounds, tap centers, focused element details, and total parsed
-element counts. Use `--compact` when a single-line JSON record is easier to
-consume in logs or pipelines. Use `--redact-text` when logs should keep
+class names, bounds with dimensions and tap centers, focused element details,
+and total parsed element counts. Use `--compact` when a single-line JSON record
+is easier to consume in logs or pipelines. Use `--redact-text` when logs should keep
 structure and counts without visible UI text or content descriptions. Use
 `--summary` when logs only need counts (including focused elements), clickable
 class distribution, and foreground-app context.

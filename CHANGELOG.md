@@ -6,6 +6,7 @@ All notable changes to Android Harness are tracked here.
 
 ### Added
 
+- `page_info()` element bounds now include width and height dimensions.
 - Snapshot summaries now include focused element counts when page info is
   present.
 - `page_info()` and snapshot summaries now include total parsed UI element

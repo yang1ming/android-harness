@@ -392,6 +392,8 @@ def _bounds_to_dict(bounds: Bounds) -> dict[str, int]:
         "top": bounds.top,
         "right": bounds.right,
         "bottom": bounds.bottom,
+        "width": bounds.right - bounds.left,
+        "height": bounds.bottom - bounds.top,
         "center_x": center_x,
         "center_y": center_y,
     }

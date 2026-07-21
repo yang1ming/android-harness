@@ -49,7 +49,7 @@ authorized.
   tree.
 - `page_info()` returns current app, total element count, visible texts,
   clickable enabled elements, and focused enabled elements with class names,
-  bounds, and tap centers.
+  bounds, dimensions, and tap centers.
 
 ## Finding And Tapping UI
 

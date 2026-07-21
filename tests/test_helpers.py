@@ -167,6 +167,8 @@ def test_page_info_is_json_serializable(monkeypatch):
         "top": 20,
         "right": 110,
         "bottom": 220,
+        "width": 100,
+        "height": 200,
         "center_x": 60,
         "center_y": 120,
     }
@@ -176,6 +178,8 @@ def test_page_info_is_json_serializable(monkeypatch):
         "top": 40,
         "right": 220,
         "bottom": 100,
+        "width": 200,
+        "height": 60,
         "center_x": 120,
         "center_y": 70,
     }
