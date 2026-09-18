@@ -36,7 +36,8 @@ source and may be incomplete for WebView, games, canvas, or custom-rendered UI.
 
 Target controls in this order: text or content description, resource ID and
 bounds, screenshot inspection, stable coordinates, then optional host-side OCR.
-See `interaction-skills/targeting.md` for the compact fallback pattern.
+Before choosing a UI target, read and follow
+`interaction-skills/targeting.md` for the compact fallback pattern.
 
 ## Safety
 
