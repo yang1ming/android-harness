@@ -22,6 +22,21 @@ class _FakeTransport:
         return path
 
 
+class _LaunchClient:
+    def __init__(self, resolution="", resolve_error=None):
+        self.resolution = resolution
+        self.resolve_error = resolve_error
+        self.commands = []
+
+    def shell(self, args, timeout=30):
+        self.commands.append(args)
+        if args[:3] == ["cmd", "package", "resolve-activity"]:
+            if self.resolve_error:
+                raise self.resolve_error
+            return self.resolution
+        return ""
+
+
 def _element(text: str | None, bounds: Bounds | None = None, enabled: bool = True, focused: bool = False) -> Element:
     return Element(
         text=text,
@@ -150,6 +165,79 @@ def test_type_text_rejects_non_ascii(monkeypatch):
 
     with pytest.raises(AdbError, match="printable ASCII"):
         helpers.type_text("你好")
+
+
+def test_launch_app_resolves_launcher_component_before_starting(monkeypatch):
+    client = _LaunchClient("com.example/.MainActivity\n")
+    monkeypatch.setattr(helpers, "_client", client)
+
+    helpers.launch_app("com.example")
+
+    assert client.commands == [
+        [
+            "cmd",
+            "package",
+            "resolve-activity",
+            "--brief",
+            "--components",
+            "-a",
+            "android.intent.action.MAIN",
+            "-c",
+            "android.intent.category.LAUNCHER",
+            "-p",
+            "com.example",
+        ],
+        ["am", "start", "-n", "com.example/.MainActivity"],
+    ]
+
+
+def test_launch_app_preserves_fully_qualified_launcher_alias(monkeypatch):
+    client = _LaunchClient("com.example/com.example.alias.LauncherAlias\n")
+    monkeypatch.setattr(helpers, "_client", client)
+
+    helpers.launch_app("com.example")
+
+    assert client.commands[-1] == [
+        "am",
+        "start",
+        "-n",
+        "com.example/com.example.alias.LauncherAlias",
+    ]
+
+
+@pytest.mark.parametrize("output", ["", "No activity found\n", "com.other/.MainActivity\n"])
+def test_launch_app_falls_back_when_resolution_is_unusable(monkeypatch, output):
+    client = _LaunchClient(output)
+    monkeypatch.setattr(helpers, "_client", client)
+
+    helpers.launch_app("com.example")
+
+    assert client.commands[-1] == [
+        "monkey",
+        "-p",
+        "com.example",
+        "-c",
+        "android.intent.category.LAUNCHER",
+        "1",
+    ]
+
+
+def test_launch_app_falls_back_when_resolution_is_unavailable(monkeypatch):
+    client = _LaunchClient(resolve_error=AdbError("package resolver unavailable"))
+    monkeypatch.setattr(helpers, "_client", client)
+
+    helpers.launch_app("com.example")
+
+    assert client.commands[-1][0] == "monkey"
+
+
+def test_launch_app_with_explicit_activity_keeps_existing_behavior(monkeypatch):
+    client = _LaunchClient()
+    monkeypatch.setattr(helpers, "_client", client)
+
+    helpers.launch_app("com.example", ".SettingsActivity")
+
+    assert client.commands == [["am", "start", "-n", "com.example/.SettingsActivity"]]
 
 
 def test_page_info_is_json_serializable(monkeypatch):
