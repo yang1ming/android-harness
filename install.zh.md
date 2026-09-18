@@ -87,10 +87,10 @@ android-harness doctor
 然后验证 helper 环境：
 
 ```bash
+android-harness snapshot --page-info --summary
 android-harness <<'PY'
 print(device_info())
 print(current_app())
-print(page_info())
 PY
 ```
 

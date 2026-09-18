@@ -6,6 +6,8 @@ All notable changes to Android Harness are tracked here.
 
 ### Added
 
+- First-pass UI inspection and semantic-targeting fallback guidance for safer,
+  lower-context observation.
 - `page_info()` element bounds now include width and height dimensions.
 - Snapshot summaries now include focused element counts when page info is
   present.

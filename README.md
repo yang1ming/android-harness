@@ -170,18 +170,26 @@ android-harness snapshot --redact-device
 android-harness snapshot --redact-paths
 android-harness snapshot --redact-all
 android-harness snapshot --summary
+android-harness snapshot --page-info --summary
 android-harness snapshot --page-info --output /tmp/android-snapshot.json
 ```
 
 Snapshot output includes a `schema_version` field so agents and CI jobs can
-parse it safely as the observation format evolves. Use `--page-info` when the
-consumer needs clickable element text, content descriptions, resource IDs,
-class names, bounds with dimensions and tap centers, focused element details,
-and total parsed element counts. Use `--compact` when a single-line JSON record
-is easier to consume in logs or pipelines. Use `--redact-text` when logs should keep
-structure and counts without visible UI text or content descriptions. Use
-`--summary` when logs only need counts (including focused elements), clickable
-class distribution, and foreground-app context.
+parse it safely as the observation format evolves. Start broad inspection with
+`--page-info --summary` so logs contain counts rather than visible UI text. Use
+`--page-info` without a summary only when the scoped task needs clickable element
+text, content descriptions, resource IDs, class names, bounds with dimensions
+and tap centers, focused element details, and total parsed element counts. Use
+`--redact-text` when those structural details are needed without visible text or
+content descriptions, and `--redact-all` for share-safe artifacts. Use `--compact`
+when a single-line JSON record is easier to consume in logs or pipelines.
+
+Full page-info output can include unrelated visible account or search-history
+text and consume substantial context. For targeting, prefer text or content
+description, then resource ID and bounds, screenshot inspection, stable
+coordinates, and finally optional OCR. UiAutomator XML may be incomplete for
+WebView and custom-rendered UI, so screenshots remain the primary observation
+source.
 
 Optional OCR lives in the plugin layer and uses the host's Tesseract CLI when
 available:
@@ -205,7 +213,7 @@ Disable local workspace helpers:
 
 ```bash
 android-harness --no-workspace <<'PY'
-print(page_info())
+print(current_app())
 PY
 ```
 

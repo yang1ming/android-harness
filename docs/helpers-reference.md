@@ -1,14 +1,11 @@
 # Helper Reference
 
 These helpers are preloaded when code runs through `android-harness`, including
-stdin execution, `android-harness repl`, and `android-harness exec`.
+stdin execution, `android-harness repl`, and `android-harness exec`. For a broad
+first pass, prefer the count-only CLI snapshot:
 
 ```bash
-android-harness <<'PY'
-print(device_info())
-print(current_app())
-print(page_info())
-PY
+android-harness snapshot --page-info --summary
 ```
 
 Use these helpers only with devices, apps, and environments where automation is
@@ -51,6 +48,18 @@ authorized.
   clickable enabled elements, and focused enabled elements with class names,
   bounds, dimensions, and tap centers.
 
+### First-pass inspection
+
+Prefer `android-harness snapshot --page-info --summary` for broad inspection so
+logs contain counts and foreground-app context instead of visible UI text. Use
+`--redact-text` when resource IDs, classes, and bounds are needed without text,
+and `--redact-all` for artifacts that will be shared.
+
+Use full `page_info()` output only when the foreground app and screen are already
+in scope and the complete semantic labels are necessary. It includes all visible
+text and content descriptions exposed by UiAutomator, which can reveal unrelated
+account or search-history text and consume substantial agent context.
+
 ## Finding And Tapping UI
 
 - `find_text(text, exact=False)` returns UI elements whose text or content
@@ -62,6 +71,10 @@ authorized.
 - `tap_if_text(text, exact=False)` taps the first current match when present.
 - `bounds_center(bounds)` returns the center of a `Bounds` object or compatible
   mapping/object.
+
+Use the fallback ladder in `interaction-skills/targeting.md`: text or content
+description, resource ID and bounds, screenshot inspection, stable coordinates,
+then optional host-side OCR.
 
 ## Input And App Control
 

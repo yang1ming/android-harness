@@ -160,16 +160,22 @@ android-harness snapshot --redact-device
 android-harness snapshot --redact-paths
 android-harness snapshot --redact-all
 android-harness snapshot --summary
+android-harness snapshot --page-info --summary
 android-harness snapshot --page-info --output /tmp/android-snapshot.json
 ```
 
 快照输出包含 `schema_version` 字段，便于 agent 和 CI 在后续 observation
-格式演进时稳定解析。如果消费者需要 clickable 元素的文本、content
-description、resource ID、class name、带尺寸和 tap center 的 bounds、focused
-元素细节和总解析节点数，可以使用 `--page-info`。如果日志或 pipeline 更适合消费
-单行 JSON，可以使用 `--compact`。如果日志只需要保留结构和数量，不应该暴露可见 UI 文本或
-content description，可以使用 `--redact-text`。如果日志只需要数量（包括 focused
-元素数量）、clickable class 分布和当前 app 上下文，可以使用 `--summary`。
+格式演进时稳定解析。广泛检查时先使用 `--page-info --summary`，让日志只包含数量和
+当前 app 上下文，而不包含可见 UI 文本。只有任务范围已经明确，并且确实需要 clickable
+元素的文本、content description、resource ID、class name、带尺寸和 tap center 的
+bounds、focused 元素细节和总解析节点数时，才使用不带 summary 的 `--page-info`。
+如果需要结构信息但不应该暴露文本，可以使用 `--redact-text`；需要分享 artifact 时使用
+`--redact-all`。如果日志或 pipeline 更适合消费单行 JSON，可以使用 `--compact`。
+
+完整的 page-info 输出可能包含与任务无关的可见账号或搜索历史文本，也会占用大量上下文。
+定位控件时依次优先使用：文本或 content description、resource ID 和 bounds、截图检查、
+稳定坐标，最后才是可选 OCR。UiAutomator XML 在 WebView 和自绘 UI 中可能不完整，因此
+截图仍然是主要的 observation 来源。
 
 可选 OCR 放在插件层，在 host 上存在 Tesseract CLI 时可用：
 
@@ -192,7 +198,7 @@ PY
 
 ```bash
 android-harness --no-workspace <<'PY'
-print(page_info())
+print(current_app())
 PY
 ```
 
