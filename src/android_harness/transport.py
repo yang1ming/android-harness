@@ -8,6 +8,7 @@ import os
 from pathlib import Path
 import socket
 import subprocess
+import tempfile
 import uuid
 from dataclasses import dataclass
 from typing import Protocol, Sequence
@@ -15,6 +16,9 @@ from typing import Protocol, Sequence
 
 class AdbError(RuntimeError):
     """Raised when an adb command fails."""
+
+
+_PNG_SIGNATURE = b"\x89PNG\r\n\x1a\n"
 
 
 @dataclass(frozen=True)
@@ -83,12 +87,11 @@ class SubprocessAdbTransport:
         timeout: float | None = 30,
     ) -> Path:
         cmd = _base_args(adb_path, serial, ["exec-out", "screencap", "-p"])
-        with path.open("wb") as handle:
-            proc = subprocess.run(cmd, stdout=handle, stderr=subprocess.PIPE, check=False, timeout=timeout)
+        proc = subprocess.run(cmd, capture_output=True, check=False, timeout=timeout)
         if proc.returncode != 0:
             stderr = proc.stderr.decode("utf-8", "replace")
             raise AdbError(f"adb failed ({proc.returncode}): {' '.join(cmd)}\n{stderr.strip()}")
-        return path
+        return _write_png(path, proc.stdout)
 
 
 class DaemonAdbTransport:
@@ -143,8 +146,11 @@ class DaemonAdbTransport:
         encoded = response.get("png_b64")
         if not isinstance(encoded, str):
             raise AdbError("daemon screenshot response missing png_b64")
-        path.write_bytes(base64.b64decode(encoded.encode("ascii")))
-        return path
+        try:
+            data = base64.b64decode(encoded.encode("ascii"), validate=True)
+        except (UnicodeEncodeError, ValueError) as exc:
+            raise AdbError("daemon screenshot response contains invalid png_b64") from exc
+        return _write_png(path, data)
 
     def _request(self, request: dict[str, object], *, timeout: float | None = 30) -> dict[str, object]:
         try:
@@ -188,6 +194,29 @@ def _base_args(adb_path: str, serial: str | None, args: Sequence[str]) -> list[s
         cmd.extend(["-s", serial])
     cmd.extend(args)
     return cmd
+
+
+def _write_png(path: Path, data: bytes) -> Path:
+    signature_offset = data.find(_PNG_SIGNATURE)
+    if signature_offset < 0:
+        raise AdbError("screenshot output does not contain a PNG signature")
+
+    temporary_path: Path | None = None
+    try:
+        with tempfile.NamedTemporaryFile(
+            prefix=f".{path.name}.",
+            suffix=".tmp",
+            dir=path.parent,
+            delete=False,
+        ) as handle:
+            temporary_path = Path(handle.name)
+            handle.write(data[signature_offset:])
+        temporary_path.replace(path)
+    except Exception:
+        if temporary_path is not None:
+            temporary_path.unlink(missing_ok=True)
+        raise
+    return path
 
 
 def _read_json_line(client: socket.socket) -> dict[str, object]:
