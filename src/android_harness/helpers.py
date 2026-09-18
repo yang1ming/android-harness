@@ -212,8 +212,48 @@ def launch_app(package: str, activity: str | None = None) -> None:
     if activity:
         component = f"{package}/{activity}"
         _client.shell(["am", "start", "-n", component])
-    else:
-        _client.shell(["monkey", "-p", package, "-c", "android.intent.category.LAUNCHER", "1"])
+        return
+
+    component = _resolve_launcher_component(package)
+    if component:
+        _client.shell(["am", "start", "-n", component])
+        return
+
+    _client.shell(["monkey", "-p", package, "-c", "android.intent.category.LAUNCHER", "1"])
+
+
+def _resolve_launcher_component(package: str) -> str | None:
+    try:
+        output = _client.shell(
+            [
+                "cmd",
+                "package",
+                "resolve-activity",
+                "--brief",
+                "--components",
+                "-a",
+                "android.intent.action.MAIN",
+                "-c",
+                "android.intent.category.LAUNCHER",
+                "-p",
+                package,
+            ]
+        )
+    except AdbError:
+        return None
+
+    for line in reversed(output.splitlines()):
+        candidate = line.strip()
+        resolved_package, separator, activity = candidate.partition("/")
+        if (
+            separator
+            and resolved_package == package
+            and activity
+            and "/" not in activity
+            and not any(character.isspace() for character in candidate)
+        ):
+            return candidate
+    return None
 
 
 def force_stop(package: str) -> None:
