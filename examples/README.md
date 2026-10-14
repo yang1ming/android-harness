@@ -10,18 +10,18 @@ android-harness exec examples/basic_observe.py
 ```
 
 This prints device facts, foreground app information, a screenshot path, and a
-small UI summary.
+count-only UI summary without printing visible text.
 
 ## Authorized Device Smoke
 
 ```bash
 android-harness -s emulator-5554 exec examples/authorized_device_smoke.py
-android-harness snapshot --compact
-android-harness snapshot --page-info --output /tmp/android-snapshot.json
+android-harness snapshot --page-info --summary
+android-harness snapshot --page-info --redact-text --output /tmp/android-snapshot.json
 ```
 
 Use this against an authorized emulator or test device when you want a compact
-readiness check without app-specific business actions.
+readiness check without app-specific business actions or visible-text output.
 
 ## Daemon Transport
 

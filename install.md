@@ -91,10 +91,10 @@ android-harness doctor
 Then verify the helper environment:
 
 ```bash
+android-harness snapshot --page-info --summary
 android-harness <<'PY'
 print(device_info())
 print(current_app())
-print(page_info())
 PY
 ```
 

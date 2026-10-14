@@ -12,14 +12,18 @@ Direct Android device control through ADB. For task-specific edits, use
 ## Usage
 
 ```bash
-android-harness <<'PY'
-print(device_info())
-print(current_app())
-print(page_info())
-PY
+android-harness snapshot --page-info --summary
 ```
 
-Helpers are pre-imported. Prefer this loop:
+This count-only snapshot is the preferred broad first pass. Use
+`android-harness snapshot --page-info --redact-text` when resource IDs, classes,
+and bounds are needed without visible text, or `--redact-all` when the artifact
+will be shared. Print the full `page_info()` only after confirming the foreground
+app and screen are in scope and the complete visible text and content descriptions
+are needed locally; they can include unrelated account or search-history text and
+consume substantial context.
+
+Helpers are pre-imported for scripts. Prefer this loop:
 
 1. Take a screenshot.
 2. Inspect current app and UI tree if needed.
@@ -29,6 +33,11 @@ Helpers are pre-imported. Prefer this loop:
 
 Screenshots are the primary observation source. `uiautomator` XML is an auxiliary
 source and may be incomplete for WebView, games, canvas, or custom-rendered UI.
+
+Target controls in this order: text or content description, resource ID and
+bounds, screenshot inspection, stable coordinates, then optional host-side OCR.
+Before choosing a UI target, read and follow
+`interaction-skills/targeting.md` for the compact fallback pattern.
 
 ## Safety
 
