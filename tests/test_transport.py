@@ -3,6 +3,7 @@ import json
 import os
 from pathlib import Path
 import socket
+import subprocess
 import threading
 
 import pytest
@@ -10,6 +11,11 @@ import pytest
 from android_harness.adb import AdbClient, AdbError
 from android_harness.daemon import handle_daemon_request
 from android_harness.transport import DaemonAdbTransport, SubprocessAdbTransport, default_socket_path
+
+
+PNG = base64.b64decode(
+    "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII="
+)
 
 
 def _serve_once(socket_path, response):
@@ -79,13 +85,12 @@ def test_daemon_transport_unavailable_raises(tmp_path):
 
 def test_daemon_transport_screenshot_writes_png(tmp_path):
     socket_path = tmp_path / "daemon.sock"
-    png = b"\x89PNG\r\n"
     thread = _serve_once(
         socket_path,
         {
             "id": "response",
             "ok": True,
-            "png_b64": base64.b64encode(png).decode("ascii"),
+            "png_b64": base64.b64encode(PNG).decode("ascii"),
         },
     )
     output = tmp_path / "screen.png"
@@ -93,7 +98,49 @@ def test_daemon_transport_screenshot_writes_png(tmp_path):
     DaemonAdbTransport(socket_path).screenshot("adb", "serial", output)
 
     thread.join(timeout=2)
-    assert output.read_bytes() == png
+    assert output.read_bytes() == PNG
+
+
+def test_subprocess_transport_screenshot_writes_clean_png(monkeypatch, tmp_path):
+    monkeypatch.setattr(
+        subprocess,
+        "run",
+        lambda cmd, **kwargs: subprocess.CompletedProcess(cmd, 0, stdout=PNG, stderr=b""),
+    )
+    output = tmp_path / "screen.png"
+
+    SubprocessAdbTransport().screenshot("adb", "serial", output)
+
+    assert output.read_bytes() == PNG
+
+
+def test_subprocess_transport_screenshot_strips_diagnostic_prefix(monkeypatch, tmp_path):
+    diagnostic = b"WARNING: linker: screencap: unsupported ELF flags\n"
+    monkeypatch.setattr(
+        subprocess,
+        "run",
+        lambda cmd, **kwargs: subprocess.CompletedProcess(cmd, 0, stdout=diagnostic + PNG, stderr=b""),
+    )
+    output = tmp_path / "screen.png"
+
+    SubprocessAdbTransport().screenshot("adb", None, output)
+
+    assert output.read_bytes() == PNG
+
+
+def test_subprocess_transport_screenshot_rejects_invalid_output_without_overwriting(monkeypatch, tmp_path):
+    monkeypatch.setattr(
+        subprocess,
+        "run",
+        lambda cmd, **kwargs: subprocess.CompletedProcess(cmd, 0, stdout=b"diagnostic only\n", stderr=b""),
+    )
+    output = tmp_path / "screen.png"
+    output.write_bytes(PNG)
+
+    with pytest.raises(AdbError, match="does not contain a PNG signature"):
+        SubprocessAdbTransport().screenshot("adb", None, output)
+
+    assert output.read_bytes() == PNG
 
 
 def test_daemon_handler_unknown_op_returns_error():

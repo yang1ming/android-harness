@@ -81,6 +81,8 @@ All notable changes to Android Harness are tracked here.
 
 ### Fixed
 
+- Screenshot capture now strips diagnostic output before the PNG signature and
+  rejects invalid output without replacing an existing destination file.
 - UI XML bounds parsing now accepts signed coordinates from off-screen or
   partially clipped elements.
 - `stop_daemon()` now preserves a live daemon socket when shutdown fails with
