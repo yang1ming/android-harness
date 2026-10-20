@@ -44,3 +44,4 @@ tmp/
 
 agent-workspace/app-skills/*
 !agent-workspace/app-skills/.gitkeep
+!agent-workspace/app-skills/README.md

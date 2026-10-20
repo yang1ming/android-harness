@@ -6,6 +6,8 @@ All notable changes to Android Harness are tracked here.
 
 ### Added
 
+- Launch and navigation recovery guidance in interaction skills, with
+  package-specific note conventions in the agent workspace rather than core.
 - First-pass UI inspection and semantic-targeting fallback guidance for safer,
   lower-context observation.
 - `page_info()` element bounds now include width and height dimensions.
