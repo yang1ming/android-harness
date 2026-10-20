@@ -23,9 +23,10 @@ class _FakeTransport:
 
 
 class _LaunchClient:
-    def __init__(self, resolution="", resolve_error=None):
+    def __init__(self, resolution="", resolve_error=None, start_error=None):
         self.resolution = resolution
         self.resolve_error = resolve_error
+        self.start_error = start_error
         self.commands = []
 
     def shell(self, args, timeout=30):
@@ -34,6 +35,8 @@ class _LaunchClient:
             if self.resolve_error:
                 raise self.resolve_error
             return self.resolution
+        if args[:2] == ["am", "start"] and self.start_error:
+            raise self.start_error
         return ""
 
 
@@ -187,7 +190,17 @@ def test_launch_app_resolves_launcher_component_before_starting(monkeypatch):
             "-p",
             "com.example",
         ],
-        ["am", "start", "-n", "com.example/.MainActivity"],
+        [
+            "am",
+            "start",
+            "-a",
+            "android.intent.action.MAIN",
+            "-c",
+            "android.intent.category.LAUNCHER",
+            "--activity-reset-task-if-needed",
+            "-n",
+            "com.example/.MainActivity",
+        ],
     ]
 
 
@@ -200,12 +213,27 @@ def test_launch_app_preserves_fully_qualified_launcher_alias(monkeypatch):
     assert client.commands[-1] == [
         "am",
         "start",
+        "-a",
+        "android.intent.action.MAIN",
+        "-c",
+        "android.intent.category.LAUNCHER",
+        "--activity-reset-task-if-needed",
         "-n",
         "com.example/com.example.alias.LauncherAlias",
     ]
 
 
-@pytest.mark.parametrize("output", ["", "No activity found\n", "com.other/.MainActivity\n"])
+@pytest.mark.parametrize(
+    "output",
+    [
+        "",
+        "No activity found\n",
+        "com.other/.MainActivity\n",
+        "com.example/\n",
+        "com.example/.Main/extra\n",
+        "com.example/.Main Activity\n",
+    ],
+)
 def test_launch_app_falls_back_when_resolution_is_unusable(monkeypatch, output):
     client = _LaunchClient(output)
     monkeypatch.setattr(helpers, "_client", client)
@@ -229,6 +257,34 @@ def test_launch_app_falls_back_when_resolution_is_unavailable(monkeypatch):
     helpers.launch_app("com.example")
 
     assert client.commands[-1][0] == "monkey"
+
+
+def test_launch_app_ignores_resolver_diagnostic_lines(monkeypatch):
+    client = _LaunchClient(
+        "priority=0 preferredOrder=0 match=0x108000\n"
+        "  com.example/.MainActivity  \n"
+        "resolver diagnostic\n"
+    )
+    monkeypatch.setattr(helpers, "_client", client)
+
+    helpers.launch_app("com.example")
+
+    assert client.commands[-1][-2:] == ["-n", "com.example/.MainActivity"]
+    assert len(client.commands) == 2
+
+
+def test_launch_app_does_not_retry_after_start_error(monkeypatch):
+    client = _LaunchClient(
+        "com.example/.MainActivity\n",
+        start_error=AdbError("activity start failed"),
+    )
+    monkeypatch.setattr(helpers, "_client", client)
+
+    with pytest.raises(AdbError, match="activity start failed"):
+        helpers.launch_app("com.example")
+
+    assert len(client.commands) == 2
+    assert client.commands[-1][:2] == ["am", "start"]
 
 
 def test_launch_app_with_explicit_activity_keeps_existing_behavior(monkeypatch):

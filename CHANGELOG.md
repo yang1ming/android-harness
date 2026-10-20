@@ -84,7 +84,8 @@ All notable changes to Android Harness are tracked here.
 ### Fixed
 
 - Package-only `launch_app()` calls now resolve and start the package's
-  MAIN/LAUNCHER component before falling back to Monkey.
+  MAIN/LAUNCHER component with launcher intent semantics before falling back to
+  Monkey when resolution is unavailable or unusable.
 - Screenshot capture now strips diagnostic output before the PNG signature and
   rejects invalid output without replacing an existing destination file.
 - UI XML bounds parsing now accepts signed coordinates from off-screen or

@@ -216,7 +216,20 @@ def launch_app(package: str, activity: str | None = None) -> None:
 
     component = _resolve_launcher_component(package)
     if component:
-        _client.shell(["am", "start", "-n", component])
+        # Preserve Monkey's launcher intent; am start adds NEW_TASK itself.
+        _client.shell(
+            [
+                "am",
+                "start",
+                "-a",
+                "android.intent.action.MAIN",
+                "-c",
+                "android.intent.category.LAUNCHER",
+                "--activity-reset-task-if-needed",
+                "-n",
+                component,
+            ]
+        )
         return
 
     _client.shell(["monkey", "-p", package, "-c", "android.intent.category.LAUNCHER", "1"])
