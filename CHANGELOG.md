@@ -6,6 +6,8 @@ All notable changes to Android Harness are tracked here.
 
 ### Added
 
+- Launch and navigation recovery guidance in interaction skills, with
+  package-specific note conventions in the agent workspace rather than core.
 - First-pass UI inspection and semantic-targeting fallback guidance for safer,
   lower-context observation.
 - `page_info()` element bounds now include width and height dimensions.
@@ -83,6 +85,9 @@ All notable changes to Android Harness are tracked here.
 
 ### Fixed
 
+- Package-only `launch_app()` calls now resolve and start the package's
+  MAIN/LAUNCHER component with launcher intent semantics before falling back to
+  Monkey when resolution is unavailable or unusable.
 - Screenshot capture now strips diagnostic output before the PNG signature and
   rejects invalid output without replacing an existing destination file.
 - UI XML bounds parsing now accepts signed coordinates from off-screen or

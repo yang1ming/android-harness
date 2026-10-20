@@ -100,6 +100,30 @@ Expected result:
 - The screen reaches a stable state.
 - A screenshot is captured.
 
+## Package Launch
+
+Use an authorized test app with no unsaved work. Replace `com.example.app` with
+its verified package:
+
+```bash
+android-harness <<'PY'
+package = "com.example.app"
+launch_app(package)
+print(wait_for_app(package, timeout=10))
+print(screenshot())
+PY
+```
+
+Check both an app with no running task and an app resumed from the background
+after visiting a nested screen. If available, include an app with a launcher
+activity alias. Confirm the foreground package and inspect the resulting screen;
+do not assume a launcher request always returns to the app's home screen.
+
+Also verify a known explicit activity still opens as before. Resolver fallback,
+invalid output, and command-error cases are covered by unit tests; do not alter
+device permissions or app data just to trigger them. If navigation is unexpected,
+follow `interaction-skills/recovery.md` rather than adding retries to core.
+
 ## Optional Daemon Transport
 
 ```bash

@@ -52,6 +52,7 @@ note should make later runs faster and more consistent.
 | [docs/troubleshooting.md](docs/troubleshooting.md) | Linux, ADB, emulator, ADB-over-TCP, and daemon failure checks. |
 | [examples/](examples/) | Runnable examples for observation, daemon transport, and authorized device smoke checks. |
 | [docs/helpers-reference.md](docs/helpers-reference.md) | Agent-facing helper API reference. |
+| [interaction-skills/recovery.md](interaction-skills/recovery.md) | Launch and navigation recovery decisions outside core. |
 | [docs/plugin-author-guide.md](docs/plugin-author-guide.md) | Plugin boundaries and extension patterns. |
 | [docs/manual-smoke.md](docs/manual-smoke.md) | Manual checks for authorized devices and emulators. |
 | [docs/release.md](docs/release.md) | Release checklist, package build, and artifact boundary. |

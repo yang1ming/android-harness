@@ -48,6 +48,7 @@ uiautomator XML、日志和文件。
 | [docs/troubleshooting.zh.md](docs/troubleshooting.zh.md) | Linux、ADB、模拟器、ADB-over-TCP 和 daemon 常见故障排查。 |
 | [examples/](examples/) | 观察、daemon transport 和授权设备 smoke check 的可运行示例。 |
 | [docs/helpers-reference.md](docs/helpers-reference.md) | 面向 agent 的 helper API 参考。 |
+| [interaction-skills/recovery.md](interaction-skills/recovery.md) | 启动与导航异常的恢复策略，保留在 core 之外。 |
 | [docs/plugin-author-guide.md](docs/plugin-author-guide.md) | 插件边界和扩展模式。 |
 | [docs/manual-smoke.md](docs/manual-smoke.md) | 面向已授权设备和模拟器的手动验收。 |
 | [docs/release.zh.md](docs/release.zh.md) | 发布检查清单、包构建和 artifact 边界。 |
