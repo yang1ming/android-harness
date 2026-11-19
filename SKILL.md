@@ -39,6 +39,10 @@ bounds, screenshot inspection, stable coordinates, then optional host-side OCR.
 Before choosing a UI target, read and follow
 `interaction-skills/targeting.md` for the compact fallback pattern.
 
+If launch or navigation leaves an unexpected screen, read
+`interaction-skills/recovery.md` before retrying. Keep app-specific recovery
+knowledge in `agent-workspace/app-skills/<package>/`, not core.
+
 ## Safety
 
 Use this harness only on devices and apps where automation is authorized. The

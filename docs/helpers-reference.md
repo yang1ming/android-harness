@@ -87,8 +87,14 @@ then optional host-side OCR.
 - `type_text(text)` types printable ASCII without literal `%` through
   `adb shell input text`; use an input-method plugin for percent signs,
   newlines, complex Unicode, and device-specific shell input failures.
-- `launch_app(package, activity=None)` starts an app by package or explicit
-  component.
+- `launch_app(package, activity=None)` starts an app by explicit component, or
+  resolves the package's MAIN/LAUNCHER activity and starts it with launcher
+  intent semantics (`MAIN`, `LAUNCHER`, and `RESET_TASK_IF_NEEDED`;
+  `am start` supplies `NEW_TASK`). Package-only launches fall back to Android's
+  Monkey command only when activity resolution is unavailable or returns no
+  usable component. Explicit-activity calls keep the existing `am start -n`
+  behavior. This helper requests a launch; it does not verify the foreground
+  app, reset app state, or guarantee the app's home screen.
 - `force_stop(package)` force-stops an app.
 - `open_deeplink(uri)` opens a URI through Android's `VIEW` intent.
 
