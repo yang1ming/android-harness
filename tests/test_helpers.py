@@ -22,22 +22,30 @@ class _FakeTransport:
         return path
 
 
-class _LaunchClient:
-    def __init__(self, resolution="", resolve_error=None, start_error=None):
-        self.resolution = resolution
-        self.resolve_error = resolve_error
-        self.start_error = start_error
+class _LaunchTransport:
+    def __init__(self):
+        self.resolution = ""
+        self.resolve_error = None
+        self.start_result = (0, "", "")
         self.commands = []
 
-    def shell(self, args, timeout=30):
-        self.commands.append(args)
-        if args[:3] == ["cmd", "package", "resolve-activity"]:
+    def run(self, adb_path, serial, args, *, timeout=30, text=True):
+        command = list(args[1:])
+        self.commands.append(command)
+        if command[:3] == ["cmd", "package", "resolve-activity"]:
             if self.resolve_error:
                 raise self.resolve_error
-            return self.resolution
-        if args[:2] == ["am", "start"] and self.start_error:
-            raise self.start_error
-        return ""
+            return AdbResult(tuple(args), 0, self.resolution, "")
+        if command[:2] == ["am", "start"]:
+            return AdbResult(tuple(args), *self.start_result)
+        return AdbResult(tuple(args), 0, "", "")
+
+
+@pytest.fixture
+def launch_transport(monkeypatch):
+    transport = _LaunchTransport()
+    monkeypatch.setattr(helpers, "_client", AdbClient(transport=transport))
+    return transport
 
 
 def _element(text: str | None, bounds: Bounds | None = None, enabled: bool = True, focused: bool = False) -> Element:
@@ -170,13 +178,12 @@ def test_type_text_rejects_non_ascii(monkeypatch):
         helpers.type_text("你好")
 
 
-def test_launch_app_resolves_launcher_component_before_starting(monkeypatch):
-    client = _LaunchClient("com.example/.MainActivity\n")
-    monkeypatch.setattr(helpers, "_client", client)
+def test_launch_app_resolves_launcher_component_before_starting(launch_transport):
+    launch_transport.resolution = "com.example/.MainActivity\n"
 
     helpers.launch_app("com.example")
 
-    assert client.commands == [
+    assert launch_transport.commands == [
         [
             "cmd",
             "package",
@@ -204,13 +211,12 @@ def test_launch_app_resolves_launcher_component_before_starting(monkeypatch):
     ]
 
 
-def test_launch_app_preserves_fully_qualified_launcher_alias(monkeypatch):
-    client = _LaunchClient("com.example/com.example.alias.LauncherAlias\n")
-    monkeypatch.setattr(helpers, "_client", client)
+def test_launch_app_preserves_fully_qualified_launcher_alias(launch_transport):
+    launch_transport.resolution = "com.example/com.example.alias.LauncherAlias\n"
 
     helpers.launch_app("com.example")
 
-    assert client.commands[-1] == [
+    assert launch_transport.commands[-1] == [
         "am",
         "start",
         "-a",
@@ -234,13 +240,12 @@ def test_launch_app_preserves_fully_qualified_launcher_alias(monkeypatch):
         "com.example/.Main Activity\n",
     ],
 )
-def test_launch_app_falls_back_when_resolution_is_unusable(monkeypatch, output):
-    client = _LaunchClient(output)
-    monkeypatch.setattr(helpers, "_client", client)
+def test_launch_app_falls_back_when_resolution_is_unusable(launch_transport, output):
+    launch_transport.resolution = output
 
     helpers.launch_app("com.example")
 
-    assert client.commands[-1] == [
+    assert launch_transport.commands[-1] == [
         "monkey",
         "-p",
         "com.example",
@@ -250,50 +255,74 @@ def test_launch_app_falls_back_when_resolution_is_unusable(monkeypatch, output):
     ]
 
 
-def test_launch_app_falls_back_when_resolution_is_unavailable(monkeypatch):
-    client = _LaunchClient(resolve_error=AdbError("package resolver unavailable"))
-    monkeypatch.setattr(helpers, "_client", client)
+def test_launch_app_falls_back_when_resolution_is_unavailable(launch_transport):
+    launch_transport.resolve_error = AdbError("package resolver unavailable")
 
     helpers.launch_app("com.example")
 
-    assert client.commands[-1][0] == "monkey"
+    assert launch_transport.commands[-1][0] == "monkey"
 
 
-def test_launch_app_ignores_resolver_diagnostic_lines(monkeypatch):
-    client = _LaunchClient(
+def test_launch_app_ignores_resolver_diagnostic_lines(launch_transport):
+    launch_transport.resolution = (
         "priority=0 preferredOrder=0 match=0x108000\n"
         "  com.example/.MainActivity  \n"
         "resolver diagnostic\n"
     )
-    monkeypatch.setattr(helpers, "_client", client)
-
     helpers.launch_app("com.example")
 
-    assert client.commands[-1][-2:] == ["-n", "com.example/.MainActivity"]
-    assert len(client.commands) == 2
+    assert launch_transport.commands[-1][-2:] == ["-n", "com.example/.MainActivity"]
+    assert len(launch_transport.commands) == 2
 
 
-def test_launch_app_does_not_retry_after_start_error(monkeypatch):
-    client = _LaunchClient(
-        "com.example/.MainActivity\n",
-        start_error=AdbError("activity start failed"),
-    )
-    monkeypatch.setattr(helpers, "_client", client)
+def test_launch_app_does_not_retry_after_start_error(launch_transport):
+    launch_transport.resolution = "com.example/.MainActivity\n"
+    launch_transport.start_result = (1, "", "activity start failed")
 
     with pytest.raises(AdbError, match="activity start failed"):
         helpers.launch_app("com.example")
 
-    assert len(client.commands) == 2
-    assert client.commands[-1][:2] == ["am", "start"]
+    assert len(launch_transport.commands) == 2
+    assert launch_transport.commands[-1][:2] == ["am", "start"]
 
 
-def test_launch_app_with_explicit_activity_keeps_existing_behavior(monkeypatch):
-    client = _LaunchClient()
-    monkeypatch.setattr(helpers, "_client", client)
+@pytest.mark.parametrize("activity", [None, ".MainActivity"])
+@pytest.mark.parametrize("stream", ["stdout", "stderr"])
+def test_launch_app_reports_start_errors_with_zero_exit_status(launch_transport, activity, stream):
+    launch_transport.resolution = "com.example/.MainActivity\n"
+    starting = "Starting: Intent { cmp=com.example/.MainActivity }\n"
+    error = "Error type 3\nError: Activity class {com.example/.MainActivity} does not exist.\n"
+    if stream == "stdout":
+        launch_transport.start_result = (0, starting + error, "")
+    else:
+        launch_transport.start_result = (0, starting, error)
+
+    with pytest.raises(AdbError, match="Activity class .* does not exist"):
+        helpers.launch_app("com.example", activity)
+
+    assert len(launch_transport.commands) == (2 if activity is None else 1)
+    assert launch_transport.commands[-1][:2] == ["am", "start"]
+
+
+def test_launch_app_accepts_task_brought_to_front_warning(launch_transport):
+    launch_transport.resolution = "com.example/.MainActivity\n"
+    launch_transport.start_result = (
+        0,
+        "Starting: Intent { cmp=com.example/.MainActivity }\n",
+        "Warning: Activity not started, its current task has been brought to the front\n",
+    )
+
+    helpers.launch_app("com.example")
+
+    assert len(launch_transport.commands) == 2
+    assert launch_transport.commands[-1][:2] == ["am", "start"]
+
+
+def test_launch_app_with_explicit_activity_keeps_existing_behavior(launch_transport):
 
     helpers.launch_app("com.example", ".SettingsActivity")
 
-    assert client.commands == [["am", "start", "-n", "com.example/.SettingsActivity"]]
+    assert launch_transport.commands == [["am", "start", "-n", "com.example/.SettingsActivity"]]
 
 
 def test_page_info_is_json_serializable(monkeypatch):

@@ -210,29 +210,27 @@ def type_text(text: str) -> None:
 
 def launch_app(package: str, activity: str | None = None) -> None:
     if activity:
-        component = f"{package}/{activity}"
-        _client.shell(["am", "start", "-n", component])
-        return
-
-    component = _resolve_launcher_component(package)
-    if component:
+        start_args = ["-n", f"{package}/{activity}"]
+    elif component := _resolve_launcher_component(package):
         # Preserve Monkey's launcher intent; am start adds NEW_TASK itself.
-        _client.shell(
-            [
-                "am",
-                "start",
-                "-a",
-                "android.intent.action.MAIN",
-                "-c",
-                "android.intent.category.LAUNCHER",
-                "--activity-reset-task-if-needed",
-                "-n",
-                component,
-            ]
-        )
+        start_args = [
+            "-a",
+            "android.intent.action.MAIN",
+            "-c",
+            "android.intent.category.LAUNCHER",
+            "--activity-reset-task-if-needed",
+            "-n",
+            component,
+        ]
+    else:
+        _client.shell(["monkey", "-p", package, "-c", "android.intent.category.LAUNCHER", "1"])
         return
 
-    _client.shell(["monkey", "-p", package, "-c", "android.intent.category.LAUNCHER", "1"])
+    result = _client.run(["shell", "am", "start", *start_args])
+    # Android can report a launch error while exiting with status zero.
+    for output in (result.stderr, result.stdout):
+        if any(line.lstrip().startswith(("Error:", "Error type ")) for line in output.splitlines()):
+            raise AdbError(f"am start failed:\n{output.strip()}")
 
 
 def _resolve_launcher_component(package: str) -> str | None:
